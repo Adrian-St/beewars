@@ -12,7 +12,7 @@ Game.init = function(){
 Game.preload = function() {
     game.load.tilemap('map', 'assets/map/outside_map.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.spritesheet('tileset', 'assets/map/grass.png',32,32);
-    game.load.image('sprite','assets/sprites/bees64px.png');
+    game.load.image('sprite','assets/sprites/bees64px-version2.png');
 };
 
 Game.create = function(){
