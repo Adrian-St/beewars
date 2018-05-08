@@ -1,8 +1,3 @@
-/*
- * Author: Jerome Renaux
- * E-mail: jerome.renaux@gmail.com
- */
-
 var Game = {};
 
 Game.init = function(){
