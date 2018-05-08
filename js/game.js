@@ -14,8 +14,6 @@ Game.preload = function() {
 
 Game.create = function(){
     Game.playerMap = {};
-    var testKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-    testKey.onDown.add(Client.sendTest, this);
 
     var map = game.add.tilemap('map');
     map.addTilesetImage('grass', 'tileset'); // tilesheet is the key of the tileset in map's JSON file

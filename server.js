@@ -29,7 +29,6 @@ io.on('connection',function(socket){
         socket.broadcast.emit('newplayer',socket.player);
 
         socket.on('click',function(data){
-            console.log('click to '+ data.x + ', ' + data.y);
             socket.player.x = data.x;
             socket.player.y = data.y;
             io.emit('move',socket.player);
@@ -38,10 +37,6 @@ io.on('connection',function(socket){
         socket.on('disconnect',function(){
             io.emit('remove',socket.player.id);
         });
-    });
-
-    socket.on('test',function(){
-        console.log('test received');
     });
 });
 
