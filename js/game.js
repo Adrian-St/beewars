@@ -1,4 +1,5 @@
 var Game = {};
+var tween;
 
 Game.init = function(){
     game.stage.disableVisibilityChange = true;
@@ -51,9 +52,10 @@ Game.addNewPlayer = function(id,x,y){
 };
 
 Game.movePlayer = function(id,x,y){
+    if(tween) tween.stop();
     var player = Game.playerMap[id];
     var distance = Phaser.Math.distance(player.x,player.y,x,y);
-    var tween = game.add.tween(player);
+    tween = game.add.tween(player);
     var duration = distance*10;
     tween.to({x:x,y:y}, duration);
     tween.start();
