@@ -33,14 +33,23 @@ Game.create = function(){
 
 Game.getCoordinates = function(layer,pointer){
     if(layer.key == 'beehive'){
-        Game.returnToHive(); 
+        Game.goToHive(); 
     } else {
-        Client.sendClick(pointer.worldX,pointer.worldY);
+        Client.goTo(pointer.worldX,pointer.worldY);
     } 
 };
 
-Game.returnToHive = function(){
-    Client.sendClick(150,450);
+Game.goToHive = function(){
+    Client.goTo(150,450);
+}
+
+Game.goToFlower = function(){
+    Client.goTo(450,150);
+}
+
+Game.getPollen = function(){
+    Game.goToFlower();
+    Game.goToHive();
 }
 
 Game.addNewPlayer = function(id,x,y){
