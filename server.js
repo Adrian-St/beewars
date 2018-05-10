@@ -17,7 +17,7 @@ server.listen(process.env.PORT || 8081,function(){
     console.log('Listening on '+server.address().port);
 });
 
-io.on('connection',function(socket){
+io.on('connection', socket => {
 
     socket.on('newplayer',function(){
         socket.player = {

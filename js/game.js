@@ -11,43 +11,63 @@ Game.init = function(){
 
 Game.preload = function() {
     game.load.tilemap('map', 'assets/map/outside_map.json', null, Phaser.Tilemap.TILED_JSON);
-    game.load.spritesheet('tileset', 'assets/map/grass.png',32,32);
-    game.load.spritesheet('beehive', 'assets/sprites/beehive.png')
+    game.load.spritesheet('grass', 'assets/map/grass.png',32,32);
+    game.load.spritesheet('flowers', 'assets/map/flowers.png',64,64);
+    game.load.spritesheet('beehive', 'assets/map/beehive.png',128,160);
     game.load.image('sprite','assets/sprites/bees64px-version2.png');
 };
 
 Game.create = function(){
     Game.playerMap = {};
-    var testKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-    testKey.onDown.add(Client.sendTest, this);
-
     var map = game.add.tilemap('map');
-    map.addTilesetImage('grass', 'tileset'); // tilesheet is the key of the tileset in map's JSON file
-    var layer = map.createLayer('Background');
-    layer.inputEnabled = true; // Allows clicking on the map ; it's enough to do it on the last layer
-    layer.events.onInputUp.add(Game.getCoordinates, this);
-    //layer.resizeWorld();
-
-    var beehiveLayer = game.add.group();
-    var beehive = beehiveLayer.create(32, 320, 'beehive');
-    beehive.inputEnabled = true;
-    beehive.input.pixelPerfectOver = true;
-    beehive.events.onInputUp.add(Game.getCoordinates, this);
-
+    Game.addBackGround(map);
+    Game.addFlowers(map);
+    Game.addBeehive(map);
     Client.askNewPlayer();
 };
 
-Game.getCoordinates = function(layer,pointer){
-    if(layer.key == 'beehive'){
-        Game.returnToHive(); 
-    } else {
-        Client.sendClick(pointer.worldX,pointer.worldY);
-    } 
+Game.getCoordinates = function(object,pointer,is_over){
+    console.log("Clicked");
+    console.log(object.type);
+    if(object.name == 'beehive'){
+        Client.sendClick(object.centerX,object.centerY);
+    } else if (['flower-white','flower-red','flower-purple','flower-yellow'].includes(object.name) ){
+        Client.sendClick(object.centerX,object.centerY);
+    }
+};
+
+Game.addBackGround = function(map) {
+  map.addTilesetImage('grass'); // tilesheet is the key of the tileset in map's JSON file
+  var layer = map.createLayer('Background');
+  layer.resizeWorld();
+};
+
+Game.addFlowers = function(map){
+  map.addTilesetImage('flowers');
+  var flowers = game.add.group();
+  map.createFromObjects('Flowers', 'flower-white', 'flowers', 0, true, false, flowers);
+  map.createFromObjects('Flowers', 'flower-purple', 'flowers', 1, true, false, flowers);
+  map.createFromObjects('Flowers', 'flower-red', 'flowers', 2, true, false, flowers);
+  map.createFromObjects('Flowers', 'flower-yellow', 'flowers', 3, true, false, flowers);
+  flowers.children.forEach(function(object) {
+    object.inputEnabled = true;
+    object.events.onInputUp.add(Game.getCoordinates, this);
+  });
+};
+
+Game.addBeehive = function(map){
+  map.addTilesetImage('beehive');
+  var beehive = game.add.group();
+  map.createFromObjects('Beehive', 'beehive', 'beehive', 0, true, false, beehive);
+  beehive.children.forEach(function(object) {
+    object.inputEnabled = true;
+    object.events.onInputUp.add(Game.getCoordinates, this);
+  });
 };
 
 Game.returnToHive = function(){
-    Client.sendClick(150,450);
-}
+
+};
 
 Game.addNewPlayer = function(id,x,y){
     var sprite = game.add.sprite(x,y,'sprite');
