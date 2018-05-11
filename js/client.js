@@ -7,8 +7,12 @@ Client.askNewPlayer = function(){
 };
 
 Client.goTo = function(x,y){
-  Client.socket.emit('click',{x:x,y:y});
+  Client.socket.emit('goTo',{x:x,y:y});
 };
+
+Client.addRessource = function(value) {
+    Client.socket.emit('addRessource',value);    
+}
 
 Client.socket.on('newplayer',function(data){
     Game.addNewPlayer(data.id,data.x,data.y);
@@ -23,8 +27,12 @@ Client.socket.on('allplayers',function(data){
         Game.movePlayer(data.id,data.x,data.y);
     });
 
-    Client.socket.on('remove',function(id){
+    Client.socket.on('remove', function (id) {
         Game.removePlayer(id);
+    });
+
+    Client.socket.on('updateRessource', function (ressources) {
+        Game.printRessource(ressources);
     });
 });
 
