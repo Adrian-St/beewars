@@ -1,3 +1,4 @@
-var game = new Phaser.Game(24*32, 17*32, Phaser.AUTO, document.getElementById('game'));
-game.state.add('Game', Game);
-game.state.start('Game');
+var Beewars = Beewars || {};
+Beewars.game = new Phaser.Game(30*32, 20*32, Phaser.AUTO, document.getElementById('game'));
+Beewars.game.state.add('Game', Beewars.Game);
+Beewars.game.state.start('Game');

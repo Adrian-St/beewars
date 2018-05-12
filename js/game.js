@@ -1,125 +1,159 @@
-var Game = {};
-var tween;
-var bee = {
+var Beewars = Beewars || {};
+Beewars.Game = new function() {
+  var Game = this;
+  Game.tween;
+  Game.playerMap;
+  Game.beehive; //A Sprite
+  Game.flowers; //A Group of sprites
+  Game.bee = {
     nectar: 0
-}
+  }
+  Game.ressourceLabel;
+  Game.beeLabel;
+  Game.beehivePosition = {
+    x: 0,
+    y: 0
+  }
 
-Game.init = function(){
-    game.stage.disableVisibilityChange = true;
-};
+  Game.init = function(){
+    Beewars.game.stage.disableVisibilityChange = true;
+  };
 
-Game.preload = function() {
-    game.load.tilemap('map', 'assets/map/outside_map.json', null, Phaser.Tilemap.TILED_JSON);
-    game.load.spritesheet('tileset', 'assets/map/grass.png',32,32);
-    game.load.spritesheet('beehive', 'assets/sprites/beehive.png')
-    game.load.image('sprite','assets/sprites/bees64px-version2.png');
-};
+  Game.preload = function() {
+    Beewars.game.load.tilemap('map', 'assets/map/outside_map.json', null, Phaser.Tilemap.TILED_JSON);
+    Beewars.game.load.spritesheet('grass', 'assets/map/grass.png',32,32);
+    Beewars.game.load.spritesheet('flowers', 'assets/map/flowers.png',64,64);
+    Beewars.game.load.spritesheet('beehive', 'assets/map/beehive.png',128,160);
+    Beewars.game.load.image('sprite','assets/sprites/bees64px-version2.png');
+  };
 
-Game.create = function(){
+  Game.create = function(){
     Game.playerMap = {};
-
-    var map = game.add.tilemap('map');
-    map.addTilesetImage('grass', 'tileset'); // tilesheet is the key of the tileset in map's JSON file
-    var layer = map.createLayer('Background');
-    layer.inputEnabled = true; // Allows clicking on the map ; it's enough to do it on the last layer
-    layer.events.onInputUp.add(Game.getCoordinates, this);
-    //layer.resizeWorld();
-
-    ressourceLabel = game.add.text(5, 0, '');
+    var map = Beewars.game.add.tilemap('map');
+    Game.addBackGround(map);
+    Game.addFlowers(map);
+    Game.addBeehive(map);
+    Game.ressourceLabel = Beewars.game.add.text(5, 0, '');
     Game.printRessource(0);
 
     //just for testing purposes. delete later on
-    beeLabel = game.add.text(5, 30, '');    
+    Game.beeLabel = Beewars.game.add.text(5, 30, '');
     Game.printBee(0);
+    Beewars.Client.askNewPlayer();
+  };
 
-    var beehiveLayer = game.add.group();
-    var beehive = beehiveLayer.create(32, 320, 'beehive');
-    beehive.inputEnabled = true;
-    beehive.input.pixelPerfectOver = true;
-    beehive.events.onInputUp.add(Game.getCoordinates, this);    
+  Game.addBackGround = function(map) {
+    map.addTilesetImage('grass'); // tilesheet is the key of the tileset in map's JSON file
+    var layer = map.createLayer('Background');
+    layer.resizeWorld();
+  };
 
-    Client.askNewPlayer();
-};
+  Game.addFlowers = function(map){
+    map.addTilesetImage('flowers');
+    Game.flowers = Beewars.game.add.group();
+    map.createFromObjects('Flowers', 'flower-white', 'flowers', 0, true, false, Game.flowers);
+    map.createFromObjects('Flowers', 'flower-purple', 'flowers', 1, true, false, Game.flowers);
+    map.createFromObjects('Flowers', 'flower-red', 'flowers', 2, true, false, Game.flowers);
+    map.createFromObjects('Flowers', 'flower-yellow', 'flowers', 3, true, false, Game.flowers);
+    Game.flowers.children.forEach(function(object) {
+      object.inputEnabled = true;
+      object.events.onInputUp.add(Game.getCoordinates, this);
+    });
+  };
 
-Game.getCoordinates = function(layer,pointer){
-    if (layer.key == 'beehive') {
-        Game.goToHive();
+  Game.addBeehive = function(map){
+    map.addTilesetImage('beehive');
+    var beehiveGroup = Beewars.game.add.group();
+    map.createFromObjects('Beehive', 'beehive', 'beehive', 0, true, false, beehiveGroup);
+    Game.beehive = beehiveGroup.getAt(0);
+    Game.beehive.inputEnabled = true;
+    Game.beehive.events.onInputUp.add(Game.getCoordinates, this);
+    Game.setBeehivePosition(Game.beehive.centerX + 30, Game.beehive.centerY + 50 )
+  };
+
+  Game.getCoordinates = function(object,pointer){
+    console.log("clicked");
+    if(object.name == 'beehive'){
+      Game.goToHive();
+    } else if (['flower-white','flower-red','flower-purple','flower-yellow'].includes(object.name) ){
+      Game.goToFlower(object);;
     }
-    else {
-        Client.goTo(pointer.worldX, pointer.worldY);
+  };
+
+  Game.goToHive = function(){
+    Beewars.Client.goTo(Game.beehivePosition.x, Game.beehivePosition.y);
+  }
+
+  Game.setBeehivePosition = function(x, y) {
+    Game.beehivePosition.x = x;
+    Game.beehivePosition.y = y;
+  }
+
+  Game.goToFlower = function(flower){
+    if(flower === undefined){
+      var flower = Game.flowers.getRandom();
     }
-};
+    Beewars.Client.goTo(flower.centerX,flower.centerY);
+  }
 
-Game.hivePosition = {
-    x : 150,
-    y : 450
-}
+  Game.printRessource = function (value) {
+    Game.ressourceLabel.setText('Nectar at Hive: ' + value);
+  }
 
-Game.goToHive = function () {
-    Client.goTo(Game.hivePosition.x, Game.hivePosition.y);
-}
+  //just for testing purposes. delete later on
+  Game.printBee = function (value) {
+    Game.beeLabel.setText('Nectar on Bee: ' + value);
+  }
 
-Game.goToFlower = function(){
-    Client.goTo(0,0);
-}
-
-Game.printRessource = function (value) {
-    ressourceLabel.setText('Nectar at Hive: ' + value);
-}
-
-//just for testing purposes. delete later on
-Game.printBee = function (value) {
-    beeLabel.setText('Nectar on Bee: ' + value);
-}
-
-Game.updateTimer = function (value, label) {    
+  Game.updateTimer = function (value, label) {
     label.setText(value);
-}
+  }
 
-Game.countDown = function (seconds) {
-    //make a counter so bee wait for some time before it gets the nectar. use callback
-}
+  Game.countDown = function (seconds) {
+      //make a counter so bee wait for some time before it gets the nectar. use callback
+  }
 
-Game.getNectar = function(){      
+  Game.getNectar = function(){
     Game.countDown(10);
-    bee.nectar += 10;
+    Game.bee.nectar += 10;
     //just for testing purposes. delete later on
-    Game.printBee(bee.nectar);
-}
+    Game.printBee(Game.bee.nectar);
+  }
 
-Game.returnNectar = function(){        
-    Client.addRessource(bee.nectar);
-    bee.nectar = 0;
-    Game.printBee(bee.nectar);
-}
+  Game.returnNectar = function(){
+    Beewars.Client.addRessource(Game.bee.nectar);
+    Game.bee.nectar = 0;
+    Game.printBee(Game.bee.nectar);
+  }
 
-Game.addNewPlayer = function(id,x,y){
-    var sprite = game.add.sprite(x,y,'sprite');
+  Game.addNewPlayer = function(id,x,y){
+    var sprite = Beewars.game.add.sprite(x,y,'sprite');
     sprite.anchor.setTo(0.5);
     Game.playerMap[id] = sprite;
-};
+  };
 
-Game.movePlayer = function(id,x,y){
-    if(tween) tween.stop();
+  Game.movePlayer = function(id,x,y){
+    console.log("move");
+    if(Game.tween) Game.tween.stop();
     var player = Game.playerMap[id];
     var distance = Phaser.Math.distance(player.x,player.y,x,y);
-    tween = game.add.tween(player);
+    Game.tween = Beewars.game.add.tween(player);
     var duration = distance*10;
-    tween.to({x:x,y:y}, duration);    
-    tween.onComplete.add(function (player) { Game.moveCallback(player) }, this);
-    tween.start();
-};
+    Game.tween.to({x:x,y:y}, duration);
+    Game.tween.onComplete.add(Game.moveCallback, this);
+    Game.tween.start();
+  };
 
-Game.moveCallback = function(player) {
-    if (player.x == Game.hivePosition.x && player.y == Game.hivePosition.y) {
+  Game.moveCallback = function(player) {
+    if (player.x == Game.beehivePosition.x && player.y == Game.beehivePosition.y) {
         Game.returnNectar();
     }
     else {
         Game.getNectar();
     }
-}
-
-Game.removePlayer = function(id){
+  }
+  Game.removePlayer = function(id){
     Game.playerMap[id].destroy();
     delete Game.playerMap[id];
+  };
 };
