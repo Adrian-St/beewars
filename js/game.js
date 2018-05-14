@@ -30,7 +30,7 @@ Beewars.Game = new function() {
   Game.create = function(){
     Game.playerMap = {};
     var map = Beewars.game.add.tilemap('map');
-    Game.addBackGround(map);
+    Game.addBackground(map);
     Game.addFlowers(map);
     Game.addBeehive(map);
     Game.ressourceLabel = Beewars.game.add.text(5, 0, '');
@@ -42,7 +42,7 @@ Beewars.Game = new function() {
     Beewars.Client.askNewPlayer();
   };
 
-  Game.addBackGround = function(map) {
+  Game.addBackground = function(map) {
     map.addTilesetImage('grass'); // tilesheet is the key of the tileset in map's JSON file
     var layer = map.createLayer('Background');
     layer.resizeWorld();
