@@ -3,36 +3,30 @@ Beewars.Client = new function(){
   var Client = this;
   Client.socket = io.connect();
 
-  Client.askNewPlayer = function(){
-    Client.socket.emit('newplayer');
-  };
+  Client.askNewPlayer = () => Client.socket.emit('newplayer');
 
-  Client.goTo = function(x,y){
-    Client.socket.emit('goTo',{x:x,y:y});
-  };
+  Client.goTo = (x, y) => Client.socket.emit('goTo',{x: x, y: y});
 
-  Client.socket.on('newplayer',function(data){
+  Client.socket.on('newplayer', data => {
     Beewars.Game.addNewPlayer(data.id,data.x,data.y);
   });
 
-  Client.addRessource = function(value) {
-	   Client.socket.emit('addRessource',value);
-  }
+  Client.addRessource = value => Client.socket.emit('addRessource',value);
 
-  Client.socket.on('allplayers',function(data){
+  Client.socket.on('allplayers', data => {
     for(var i = 0; i < data.length; i++){
-        Beewars.Game.addNewPlayer(data[i].id,data[i].x,data[i].y);
+        Beewars.Game.addNewPlayer(data[i].id, data[i].x, data[i].y);
     }
 
-    Client.socket.on('move',function(data){
-        Beewars.Game.movePlayer(data.id,data.x,data.y);
+    Client.socket.on('move', data => {
+        Beewars.Game.movePlayer(data.id, data.x, data.y);
     });
 
-  	Client.socket.on('remove', function (id) {
+  	Client.socket.on('remove', id => {
   	    Beewars.Game.removePlayer(id);
   	});
 
-  	Client.socket.on('updateRessource', function (ressources) {
+  	Client.socket.on('updateRessource', ressources => {
   	    Beewars.Game.printRessource(ressources);
   	});
   });
