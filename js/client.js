@@ -5,7 +5,7 @@ Beewars.Client = new function(){
 
   Client.askNewPlayer = () => Client.socket.emit('newplayer');
 
-  Client.goTo = (x, y) => Client.socket.emit('goTo',{x: x, y: y});
+  Client.goTo = (id, x, y) => Client.socket.emit('goTo', {id: id, x: x, y: y});
 
   Client.socket.on('newplayer', data => {
     Beewars.Game.addNewPlayer(data.id,data.x,data.y);

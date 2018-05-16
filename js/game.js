@@ -16,6 +16,8 @@ Beewars.Game = new function() {
   }
   Game.line;
   Game.graphics;
+  Game.shadow;
+  Game.shadowTween;
 
   Game.init = () => Beewars.game.stage.disableVisibilityChange = true;
 
@@ -28,7 +30,7 @@ Beewars.Game = new function() {
   };
 
   Game.create = () => {
-    Game.playerMap = {};
+    Game.playerMap = [];
     var map = Beewars.game.add.tilemap('map');
     Game.addBackground(map);
     Game.addFlowers(map);
@@ -48,6 +50,12 @@ Beewars.Game = new function() {
     map.addTilesetImage('grass'); // tilesheet is the key of the tileset in map's JSON file
     var layer = map.createLayer('Background');
     layer.resizeWorld();
+    layer.inputEnabled = true;
+    layer.events.onInputUp.add((object, pointer) => {
+      if(Game.shadow) Game.shadow.destroy();
+      Game.shadow = null;
+      if(Game.shadowTween) Game.shadowTween.stop();
+    }, this)
   };
 
   Game.addFlowers = map => {
@@ -57,7 +65,7 @@ Beewars.Game = new function() {
     map.createFromObjects('Flowers', 'flower-purple', 'flowers', 1, true, false, Game.flowers);
     map.createFromObjects('Flowers', 'flower-red', 'flowers', 2, true, false, Game.flowers);
     map.createFromObjects('Flowers', 'flower-yellow', 'flowers', 3, true, false, Game.flowers);
-    Game.flowers.children.forEach(function(object) {
+    Game.flowers.children.forEach(object => {
       object.inputEnabled = true;
       object.events.onInputUp.add(Game.getCoordinates, this);
     });
@@ -75,6 +83,7 @@ Beewars.Game = new function() {
 
   Game.getCoordinates = (object,pointer) => {
     console.log("clicked");
+    if(!Game.shadow) return;
     if(object.name == 'beehive'){
       Game.goToHive();
     } else if (['flower-white','flower-red','flower-purple','flower-yellow'].includes(object.name) ){
@@ -82,7 +91,7 @@ Beewars.Game = new function() {
     }
   };
 
-  Game.goToHive = () => Beewars.Client.goTo(Game.beehivePosition.x, Game.beehivePosition.y);
+  Game.goToHive = () => Beewars.Client.goTo(Game.shadow.followId, Game.beehivePosition.x, Game.beehivePosition.y);
 
   Game.setBeehivePosition = (x, y) => {
     Game.beehivePosition.x = x;
@@ -93,7 +102,8 @@ Beewars.Game = new function() {
     if(flower === undefined){
       var flower = Game.flowers.getRandom();
     }
-    Beewars.Client.goTo(flower.centerX,flower.centerY);
+    console.log(Game.shadow.followId);
+    Beewars.Client.goTo(Game.shadow.followId, flower.centerX, flower.centerY);
   };
 
   Game.printRessource = value => Game.ressourceLabel.setText('Nectar at Hive: ' + value);
@@ -121,26 +131,33 @@ Beewars.Game = new function() {
   };
 
   Game.addNewPlayer = (id, x, y) => {
-    var sprite = Beewars.game.add.sprite(x,y,'sprite');
+    var sprite = Beewars.game.add.sprite(x, y, 'sprite');
     sprite.anchor.setTo(0.5);
+    sprite.inputEnabled = true;
+    sprite.events.onInputUp.add(Game.onUp, this);
+
     Game.playerMap[id] = sprite;
   };
 
   Game.movePlayer = (id, x, y) => {
-    console.log("move");
-    if(Game.tween) Game.tween.stop();
     var player = Game.playerMap[id];
-    var distance = Phaser.Math.distance(player.x,player.y,x,y);
+
+    var distance = Phaser.Math.distance(player.x, player.y, x, y);
+    var duration = distance * 10;
+
+    if(Game.tween && Game.tween.target === player) Game.tween.stop();
     Game.tween = Beewars.game.add.tween(player);
-    var duration = distance*10;
-    Game.line = new Phaser.Line(player.x,player.y,x,y);
-    Game.graphics.lineStyle(10, 0xffd900, 1);
-    Game.graphics.moveTo(Game.line.start.x,Game.line.start.y);//moving position of graphic if you draw mulitple lines
-    Game.graphics.lineTo(Game.line.end.x,Game.line.end.y);
-    Game.graphics.endFill();
-    Game.tween.to({x:x,y:y}, duration);
+    Game.tween.to({x: x, y: y}, duration);
     Game.tween.onComplete.add(Game.moveCallback, this);
+
+    if(Game.shadowTween) Game.shadowTween.stop();
+    if(Game.shadow){
+      Game.shadowTween = Beewars.game.add.tween(Game.shadow);
+      Game.shadowTween.to({x: x,y: y}, duration);
+    }
+
     Game.tween.start();
+    if(Game.shadowTween) Game.shadowTween.start();
   };
 
   Game.moveCallback = player => {
@@ -150,6 +167,32 @@ Beewars.Game = new function() {
     else {
         Game.getNectar();
     }
+  };
+
+  Game.onUp = (sprite, pointer) => {
+    var clickedId = Game.playerMap.findIndex(item => item === sprite);
+    if(Game.shadow) {
+      if(Game.shadow.followId === clickedId) {
+        Game.shadow.destroy();
+        Game.shadow = null;
+        return;
+      }
+      Game.shadow.destroy();
+    }
+
+    /*Game.line = new Phaser.Line(player.x,player.y,x,y);
+    Game.graphics.lineStyle(10, 0xffd900, 1);
+    Game.graphics.moveTo(Game.line.start.x,Game.line.start.y);
+    Game.graphics.lineTo(Game.line.end.x,Game.line.end.y);
+    Game.graphics.endFill();*/
+
+    Game.shadow = Beewars.game.add.sprite(sprite.x, sprite.y, 'sprite');
+    Game.shadow.anchor.set(0.5);
+    Game.shadow.tint = 0x000000;
+    Game.shadow.alpha = 0.6;
+    Game.shadow.scale.setTo(1.1, 1.1);
+    Game.shadow.followId = clickedId;
+    sprite.bringToTop();
   };
 
   Game.removePlayer = id => {

@@ -33,7 +33,7 @@ io.on('connection', socket => {
     socket.on('goTo', data => {
       socket.player.x = data.x;
       socket.player.y = data.y;
-      io.emit('move', socket.player);
+      io.emit('move', data);
     });
 
     socket.on('addRessource', value => {
