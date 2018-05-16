@@ -55,6 +55,7 @@ Beewars.Game = new function() {
       if(Game.shadow) Game.shadow.destroy();
       Game.shadow = null;
       if(Game.shadowTween) Game.shadowTween.stop();
+      Game.graphics.clear();
     }, this)
   };
 
@@ -102,7 +103,6 @@ Beewars.Game = new function() {
     if(flower === undefined){
       var flower = Game.flowers.getRandom();
     }
-    console.log(Game.shadow.followId);
     Beewars.Client.goTo(Game.shadow.followId, flower.centerX, flower.centerY);
   };
 
@@ -154,10 +154,13 @@ Beewars.Game = new function() {
     if(Game.shadow){
       Game.shadowTween = Beewars.game.add.tween(Game.shadow);
       Game.shadowTween.to({x: x,y: y}, duration);
+      Game.shadowTween.start();
     }
 
     Game.tween.start();
-    if(Game.shadowTween) Game.shadowTween.start();
+    if(Game.shadow) Game.drawCurrentActions();
+    Game.tween.onUpdateCallback(Game.onTweenRunning, this);
+    console.log(Game.tween)
   };
 
   Game.moveCallback = player => {
@@ -175,16 +178,13 @@ Beewars.Game = new function() {
       if(Game.shadow.followId === clickedId) {
         Game.shadow.destroy();
         Game.shadow = null;
+        Game.graphics.clear();
         return;
       }
       Game.shadow.destroy();
     }
 
-    /*Game.line = new Phaser.Line(player.x,player.y,x,y);
-    Game.graphics.lineStyle(10, 0xffd900, 1);
-    Game.graphics.moveTo(Game.line.start.x,Game.line.start.y);
-    Game.graphics.lineTo(Game.line.end.x,Game.line.end.y);
-    Game.graphics.endFill();*/
+    Game.drawCurrentActions();
 
     Game.shadow = Beewars.game.add.sprite(sprite.x, sprite.y, 'sprite');
     Game.shadow.anchor.set(0.5);
@@ -193,7 +193,33 @@ Beewars.Game = new function() {
     Game.shadow.scale.setTo(1.1, 1.1);
     Game.shadow.followId = clickedId;
     sprite.bringToTop();
+
+    if(Game.tween && Game.tween.isRunning){
+      Game.shadowTween = Beewars.game.add.tween(Game.shadow);
+      Game.shadowTween.to({x: Game.tween.properties.x, y: Game.tween.properties.y}, Game.tween.timeline[0].duration - Game.tween.timeline[0].dt);
+      Game.shadowTween.start();
+    }
   };
+
+  Game.drawCurrentActions = () => {
+      if(Game.shadow && Game.tween && Game.tween.isRunning){
+      Game.line = new Phaser.Line(Game.tween.target.x, Game.tween.target.y, Game.tween.properties.x, Game.tween.properties.y);
+      Game.graphics.lineStyle(10, 0xffd900, 1);
+      Game.graphics.moveTo(Game.line.start.x, Game.line.start.y);
+      Game.graphics.lineTo(Game.line.end.x, Game.line.end.y);
+      Game.graphics.endFill();
+    }
+  };
+
+  Game.onTweenRunning = () => {
+    if(!Game.shadow) return;
+    Game.graphics.clear();
+    Game.line = new Phaser.Line(Game.tween.target.x, Game.tween.target.y, Game.tween.properties.x, Game.tween.properties.y);
+    Game.graphics.lineStyle(10, 0xffd900, 1);
+    Game.graphics.moveTo(Game.line.start.x, Game.line.start.y);
+    Game.graphics.lineTo(Game.line.end.x, Game.line.end.y);
+    Game.graphics.endFill();
+  }
 
   Game.removePlayer = id => {
     Game.playerMap[id].destroy();
