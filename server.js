@@ -12,19 +12,18 @@ app.use('/css',express.static(__dirname + '/css'));
 app.use('/js',express.static(__dirname + '/js'));
 app.use('/assets',express.static(__dirname + '/assets'));
 
-
-app.get('/',function(req,res){
+app.get('/', (req,res) => {
   res.sendFile(__dirname+'/index.html');
 });
 var ressources = 0;
 
-server.listen(process.env.PORT || 8081,function(){
+server.listen(process.env.PORT || 8081, () => {
   console.log('Listening on ' + server.address().port);
 });
 
 io.on('connection', socket => {
 
-  socket.on('newplayer',function(){
+  socket.on('newplayer', () => {
     if (game.lastPlayderID == 0) {
       game.start();
     }
@@ -35,18 +34,18 @@ io.on('connection', socket => {
 
     socket.broadcast.emit('newplayer', socket.player);
 
-    socket.on('goTo',function(data){
+    socket.on('goTo', data => {
       socket.player.x = data.x;
       socket.player.y = data.y;
-      io.emit('move', socket.player);
+      io.emit('move', data);
     });
 
-    socket.on('addRessource',function(value) {
+    socket.on('addRessource', value => {
       ressources += value;
       io.emit('updateRessource', ressources);
     });
 
-    socket.on('disconnect',function(){
+    socket.on('disconnect', () => {
       game.players.splice(socket.player.id, 1);
       io.emit('remove', socket.player.id);
     });
@@ -55,7 +54,7 @@ io.on('connection', socket => {
 
 function getAllPlayers(){
   var players = [];
-  Object.keys(io.sockets.connected).forEach(function(socketID){
+  Object.keys(io.sockets.connected).forEach(socketID => {
     var player = io.sockets.connected[socketID].player;
     if(player) players.push(player);
   });
