@@ -30,7 +30,7 @@ Beewars.Game = new function() {
   Game.create = function(){
     Game.playerMap = {};
     var map = Beewars.game.add.tilemap('map');
-    Game.addBackground(map);
+    Game.addBackGround(map);
     Game.addFlowers(map);
     Game.addBeehive(map);
     Game.ressourceLabel = Beewars.game.add.text(5, 0, '');
@@ -42,7 +42,7 @@ Beewars.Game = new function() {
     Beewars.Client.askNewPlayer();
   };
 
-  Game.addBackground = function(map) {
+  Game.addBackGround = function(map) {
     map.addTilesetImage('grass'); // tilesheet is the key of the tileset in map's JSON file
     var layer = map.createLayer('Background');
     layer.resizeWorld();
@@ -126,10 +126,13 @@ Beewars.Game = new function() {
     Game.printBee(Game.bee.nectar);
   }
 
-  Game.addNewPlayer = function(id,x,y){
-    var sprite = Beewars.game.add.sprite(x,y,'sprite');
+  Game.addNewBee = function(id) {
+    var sprite = Beewars.game.add.sprite(Game.beehivePosition.x,Game.beehivePosition.y,'sprite');
     sprite.anchor.setTo(0.5);
-    Game.playerMap[id] = sprite;
+    Game.beeMap[id] = sprite;
+  }
+  Game.addNewPlayer = function(player) {
+    Game.playerMap[id] = player;
   };
 
   Game.movePlayer = function(id,x,y){

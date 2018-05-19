@@ -7,11 +7,12 @@ Beewars.Client = new function(){
     Client.socket.emit('newplayer');
   };
 
-  Client.goTo = function(x,y){
-    Client.socket.emit('goTo',{x:x,y:y});
+  Client.goTo = function(moveData){
+    //moveData example: {beeID: bee.id, action: 'getPollen', target: 'flower', targetNr(optional):flower.id}
+    Client.socket.emit('goTo', moveData});
   };
 
-  Client.socket.on('newplayer',function(data){
+  Client.socket.on('gameObjects',function(data){
     Beewars.Game.addNewPlayer(data.id,data.x,data.y);
   });
 
@@ -20,12 +21,15 @@ Beewars.Client = new function(){
   }
 
   Client.socket.on('allplayers',function(data){
-    for(var i = 0; i < data.length; i++){
-        Beewars.Game.addNewPlayer(data[i].id,data[i].x,data[i].y);
+    for(var i = 0; i < data.players.length; i++){
+        Beewars.Game.addNewPlayer(data.players[i]);
+    }
+    for(var i = 0; i < data.bees.length; i++) {
+        Beewars.Game.addNewBee(data.bees[id]);
     }
 
-    Client.socket.on('move',function(data){
-        Beewars.Game.movePlayer(data.id,data.x,data.y);
+    Client.socket.on('move',function(moveData){
+        Beewars.Game.moveBee(moveData);
     });
 
   	Client.socket.on('remove', function (id) {
