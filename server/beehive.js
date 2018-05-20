@@ -1,7 +1,6 @@
 var Beehive = {}
-Beehive.Pollen = 0;
-Beehive.Nectar = 0;
-Beehive.Honey = 0;
-Beehive.Honeycombs = 0;
+Beehive.pollen = 0;
+Beehive.honey = 0;
+Beehive.honeycombs = 0;
 
-exports.Beehive = Beehive;
+module.exports = Beehive;
