@@ -1,5 +1,4 @@
-Beewars = Beewars || {};
-
+var Beewars = Beewars || {};
 Beewars.Flower = function(serverFlower, flowerSprite) {
   this.id = serverFlower.id;
   this.pollen = serverFlower.pollen;

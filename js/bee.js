@@ -1,4 +1,4 @@
-Beewars = Beewars || {};
+var Beewars = Beewars || {};
 Beewars.Bee = function(serverBee, sprite) {
   this.id = serverBee.id;
   this.age = serverBee.age;

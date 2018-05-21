@@ -85,13 +85,12 @@ Beewars.Game = new function() {
   };
 
   Game.addBeehiveObject = (beehive) => {
-    Game.beehive = new Beehive(beehive, Game.beehiveSprite);
+    Game.beehive = new Beewars.Beehive(beehive, Game.beehiveSprite);
   };
 
   Game.addFlowerObjects = (flowers) => {
-    console.log(Flower);
     for(i = 0; i < flowers.length ; i++) {
-      Game.flowers.push(new Flower(flowers[i], Game.flowerSprites.children[i]));
+      Game.flowers.push(new Beewars.Flower(flowers[i], Game.flowerSprites.children[i]));
     }
   };
 
@@ -107,13 +106,11 @@ Beewars.Game = new function() {
   };
 
   Game.getCoordinates = (object,pointer) => {
-    console.log("clicked");
+
     if(!Game.shadow) return;
     if(object.name == 'beehive'){
       Game.goToHive();
     } else if (['flower-white','flower-red','flower-purple','flower-yellow'].includes(object.name) ){
-      console.log(object);
-      console.log(Game.flowers);
       var flower = Game.flowers.find( (flower) => {return (flower.sprite === object);});
       Game.getNectar(flower);
     }
@@ -127,7 +124,6 @@ Beewars.Game = new function() {
   };
 
   Game.getNectar = flower => {
-    console.log(flower.id)
     var moveData = {beeID: Game.shadow.followId, action: 'getNectar', target: 'flower', targetID: flower.id }
     Beewars.Client.goTo(moveData);
   };
@@ -159,8 +155,7 @@ Beewars.Game = new function() {
     sprite.anchor.setTo(0.5);
     sprite.inputEnabled = true;
     sprite.events.onInputUp.add(Game.onUp, this);
-    console.log(serverBee);
-    var bee = new Bee(serverBee, sprite);
+    var bee = new Beewars.Bee(serverBee, sprite);
     Game.bees.push(bee);
   }
   Game.addNewPlayer = (player) => {
@@ -168,11 +163,7 @@ Beewars.Game = new function() {
   };
 
   Game.moveBee = (moveData) => {
-    console.log(Game.bees);
-    console.log(moveData.beeID);
     var player = Game.bees[moveData.beeID];
-    console.log(player);
-    console.log(moveData);
     if(moveData.target == 'beehive') {
       var x = Game.beehivePosition.x;
       var y = Game.beehivePosition.y;
@@ -199,7 +190,6 @@ Beewars.Game = new function() {
     Game.tween.start();
     if(Game.shadow) Game.drawCurrentActions();
     Game.tween.onUpdateCallback(Game.onTweenRunning, this);
-    console.log(Game.tween)
   };
 
   Game.moveCallback = player => {
@@ -265,54 +255,4 @@ Beewars.Game = new function() {
     Game.playerMap[id].destroy();
     delete Game.playerMap[id];
   };
-
-  //Object constructors: Bitte auslagern!
-  function Bee(serverBee, sprite) {
-    this.id = serverBee.id;
-    this.age = serverBee.age;
-    this.status = serverBee.status;
-    this.health = serverBee.health;
-    this.energy = serverBee.energy;
-    this.pollen = serverBee.pollen;
-    this.nectar = serverBee.nectar;
-    this.capacity = serverBee.capacity;
-    this.sprite = sprite;
-  }
-
-  Flower = function(serverFlower, flowerSprite) {
-    this.id = serverFlower.id;
-    this.pollen = serverFlower.pollen;
-    this.nectar = serverFlower.nectar;
-    this.sprite = flowerSprite;
-  }
-
-  Flower.prototype.collectPollen = function (amount){
-    this.pollen -= amount;
-    if (this.pollen < 0) {
-      var actualAmount = amount + this.pollen;
-      this.pollen = 0;
-      return actualAmount;
-    }
-    else {
-      return amount;
-    }
-  }
-  Flower.prototype.collectNectar = function (amount){
-    this.pollen -= amount;
-    if (this.pollen < 0) {
-      var actualAmount = amount + this.pollen;
-      this.pollen = 0;
-      return actualAmount;
-    }
-    else {
-      return amount;
-    }
-  }
-
-  function Beehive(serverBeehive, sprite) {
-    this.pollen = serverBeehive.pollen;
-    this.honey = serverBeehive.honey;
-    this.honeycombs = serverBeehive.honeycombs
-    this.sprite = sprite
-  }
 };
