@@ -204,18 +204,22 @@ Beewars.Game = new function() {
   Game.onUp = (sprite, pointer) => {
     var clickedId = Game.bees.findIndex(item => item.sprite === sprite);
 
+    // remove the shadow of the 'old' bee
     if(Game.shadow) {
-      if(Game.shadow.followId === clickedId) {
+        if(Game.shadow.followId === clickedId) {
+            Game.shadow.destroy();
+            Game.shadow = null;
+            Game.graphics.clear();
+            return;
+        }
         Game.shadow.destroy();
         Game.shadow = null;
         Game.graphics.clear();
-        return;
-      }
-      Game.shadow.destroy();
     }
 
     Game.drawCurrentActions();
 
+    // create the new shadow
     Game.shadow = Beewars.game.add.sprite(sprite.x, sprite.y, 'sprite');
     Game.shadow.anchor.set(0.5);
     Game.shadow.tint = 0x000000;
@@ -224,15 +228,16 @@ Beewars.Game = new function() {
     Game.shadow.followId = clickedId;
     sprite.bringToTop();
 
-    if(Game.tween && Game.tween.isRunning){
-      Game.shadowTween = Beewars.game.add.tween(Game.shadow);
-      Game.shadowTween.to({x: Game.tween.properties.x, y: Game.tween.properties.y}, Game.tween.timeline[0].duration - Game.tween.timeline[0].dt);
-      Game.shadowTween.start();
+    // in case the 'new' bee is flying
+    if(Game.tween && Game.tween.isRunning && Game.isCurrentBeeFlying()){
+        Game.shadowTween = Beewars.game.add.tween(Game.shadow);
+        Game.shadowTween.to({x: Game.tween.properties.x, y: Game.tween.properties.y}, Game.tween.timeline[0].duration - Game.tween.timeline[0].dt);
+        Game.shadowTween.start();
     }
   };
 
   Game.drawCurrentActions = () => {
-    if(Game.shadow && Game.tween && Game.tween.isRunning){
+    if(Game.shadow && Game.tween && Game.tween.isRunning && Game.isCurrentBeeFlying()){
       Game.line = new Phaser.Line(Game.tween.target.x, Game.tween.target.y, Game.tween.properties.x, Game.tween.properties.y);
       Game.graphics.lineStyle(10, 0xffd900, 1);
       Game.graphics.moveTo(Game.line.start.x, Game.line.start.y);
@@ -242,7 +247,7 @@ Beewars.Game = new function() {
   };
 
   Game.onTweenRunning = () => {
-    if(!Game.shadow) return;
+    if(!Game.shadow || !Game.isCurrentBeeFlying()) return;
     Game.graphics.clear();
     Game.line = new Phaser.Line(Game.tween.target.x, Game.tween.target.y, Game.tween.properties.x, Game.tween.properties.y);
     Game.graphics.lineStyle(10, 0xffd900, 1);
@@ -255,4 +260,8 @@ Beewars.Game = new function() {
     Game.playerMap[id].destroy();
     delete Game.playerMap[id];
   };
+
+  Game.isCurrentBeeFlying = () => {
+    return Game.tween && Game.shadow && Game.shadow.position.x === Game.tween.target.x && Game.shadow.position.y === Game.tween.target.y
+  }
 };
