@@ -1,10 +1,10 @@
 Game = {};
 
-var Bee = require('./bee.js');
-var Flower = require('./flower.js');
+var Bee = require('./serverBee.js');
+var Flower = require('./serverFlower.js');
 var Player = require('./player.js');
 var connection = require('./connection.js');
-Game.beehive = require('./beehive.js');
+Game.beehive = require('./serverBeehive.js');
 Game.lastPlayerID = 0;
 Game.lastBeeID = 0;
 Game.lastFlowerID = 0;

@@ -1,7 +1,7 @@
 
 var Connection = {};
 var io;
-var game = require('./game.js');
+var game = require('./serverGame.js');
 
 Connection.start = (param) => {
   io = param;
