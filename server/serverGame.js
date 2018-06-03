@@ -54,7 +54,10 @@ Game.performActionForBee = (moveData) => {
 
 Game.handleRessources = (ressourcesData) => {
   Game.beehive.honey += ressourcesData;
-  return Game.beehive.honey;
+  console.log('ressourcesData' + Game.beehive.pollen);
+  console.log('ressourcesData' + Game.beehive.honey);
+  console.log('ressourcesData' + Game.beehive.honeycombs);
+  return {type: 'beehive', content: Game.beehive};
 }
 
 module.exports = Game;

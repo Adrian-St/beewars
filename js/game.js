@@ -9,7 +9,6 @@ Beewars.Game = new function() {
   Game.bees = [];
   Game.ressourceLabel;
   Game.beeLabel;
-  Game.beeNectar = 0;
   Game.beehivePosition = {
     x: 0,
     y: 0
@@ -34,7 +33,7 @@ Beewars.Game = new function() {
     Game.addFlowers(map);
     Game.addBeehive(map);
     Game.ressourceLabel = Beewars.game.add.text(5, 0, '');
-    Game.printRessource(0);
+    Game.printRessource();
 
     Game.graphics = Beewars.game.add.graphics(0,0);
 
@@ -53,6 +52,7 @@ Beewars.Game = new function() {
       Game.deactivateAllOtherShadows({});
       Game.stopAllOtherShadowTweens({});
       Game.graphics.clear();
+      Game.printBee();
     }, this)
   };
 
@@ -130,26 +130,33 @@ Beewars.Game = new function() {
     }
   };
 
-  Game.printRessource = value => Game.ressourceLabel.setText('Nectar at Hive: ' + value);
+  Game.printRessource = () => {
+    if(Game.beehive) Game.ressourceLabel.setText('Honey at Hive: ' + Game.beehive.honey);
+    else Game.ressourceLabel.setText('Honey at Hive: ' + 0);
+  }
 
-  Game.printBee = value => Game.beeLabel.setText('Nectar on Bee: ' + value);
+  Game.printBee = () => {
+    if (Game.isBeeSelected()) Game.beeLabel.setText('Nectar on Bee: ' + Game.getSelectedBee().pollen);
+    else Game.beeLabel.setText('');
+  }
 
   Game.updateTimer = (value, label) => label.setText(value);
 
   Game.countDown = seconds => {
       //make a counter so bee wait for some time before it gets the nectar. use callback
   };
-  Game.returnNectar = () => {
-    Beewars.Client.addRessource(Game.beeNectar);
-    Game.beeNectar = 0;
-    Game.printBee(Game.beeNectar);
+  Game.returnNectar = (bee) => {
+    Beewars.Client.addRessource(bee.pollen);
+    Beewars.Client.addRessource2(bee.pollen);
+    bee.pollen = 0;
+    Game.printBee();
   };
 
-  Game.addNectarToBee = () => {
+  Game.addNectarToBee = (bee) => {
     Game.countDown(10);
-    Game.beeNectar += 10;
-    //just for testing purposes. delete later on
-    Game.printBee(Game.beeNectar);
+    bee.pollen += 10;
+    console.log(bee);//just for testing purposes. delete later on
+    Game.printBee();
   };
 
   Game.addNewBee = (serverBee) => {
@@ -187,27 +194,36 @@ Beewars.Game = new function() {
     }
   };
 
-  Game.moveCallback = bee => {
-    if (bee.x == Game.beehivePosition.x && bee.y == Game.beehivePosition.y) {
-        Game.returnNectar();
+  Game.moveCallback = beeSprite => {
+    const bee = Game.getBeeForSprite(beeSprite);
+    if (beeSprite.x == Game.beehivePosition.x && beeSprite.y == Game.beehivePosition.y) {
+        Game.returnNectar(bee);
     }
     else {
-        Game.addNectarToBee();
+        Game.addNectarToBee(bee);
     }
   };
+
+  Game.getBeeForSprite = (sprite) => {
+    for (var i = 0; i < Game.bees.length; i++) {
+      if(Game.bees[i].sprite == sprite) return Game.bees[i];
+    }
+  }
 
   Game.onUp = (sprite, pointer) => {
     var clickedBee = Game.bees.find(item => item.sprite === sprite);
 
     Game.stopAllOtherShadowTweens(clickedBee);
     Game.deactivateAllOtherShadows(clickedBee);
-
+    
     if (clickedBee.shadow) {    // the bee had already a shadow
         clickedBee.deactivateShadow(); 
+        Game.printBee();
         return;
     }
     if (!clickedBee.shadow){ // the bee wasn't selected before
         clickedBee.activateShadow();
+        Game.printBee();
     }
     if (clickedBee.shadowTween) { // the bee was selected but moving to another (or the same) flower
         clickedBee.startShadowTween(sprite);
@@ -264,6 +280,24 @@ Beewars.Game = new function() {
   Game.getSelectedBee = () => {
     for (var i = 0; i < Game.bees.length; i++) {
         if(Game.bees[i].shadow) return Game.bees[i];
+    }
+  }
+
+  Game.updateRessources = (updateObject) => {
+    if(updateObject.type == "bee") {
+      const updatedBee = updateObject.content;
+
+    } else if (updateObject.type == "beehive") {
+      const updatedBeehive = updateObject.content;
+      Game.beehive.pollen = updatedBeehive.pollen;
+      Game.beehive.honey = updatedBeehive.honey;
+      Game.beehive.honeycombs = updatedBeehive.honeycombs;
+      console.log(Game.beehive.pollen);
+    } else if (updateObject.type == "flower") {
+      const updatedFlower = updateObject.content;
+      
+    } else {
+      console.log('wrong type', updateObject);
     }
   }
 };

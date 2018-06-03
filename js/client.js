@@ -15,6 +15,7 @@ Beewars.Client = new function(){
   });
 
   Client.addRessource = ressourcesData => Client.socket.emit('addRessource',ressourcesData);
+  Client.addRessource2 = ressourcesData => Client.socket.emit('addRessource2',ressourcesData);
 
   Client.socket.on('gameObjects', data => {
     Beewars.Game.addProperties(data);
@@ -27,8 +28,10 @@ Beewars.Client = new function(){
   	    Beewars.Game.removePlayer(id);
   	});
 
-  	Client.socket.on('updateRessource', ressources => {
-  	    Beewars.Game.printRessource(ressources);
+  	Client.socket.on('updateRessource', updatedBeehive => {
+        console.log(updatedBeehive);
+        Beewars.Game.updateRessources(updatedBeehive);
+        Beewars.Game.printRessource();
   	});
   });
 };
