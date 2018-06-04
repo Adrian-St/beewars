@@ -23,14 +23,14 @@ Bee.prototype.states = {
   DEAD: 2
 };
 
-Bee.prototype.increaseAge = () => {
+Bee.prototype.increaseAge = function(){
   this.age += 1;
   if (this.age >= 45) {
     this.satus = this.states.DEAD;
   }
 }
 
-Bee.prototype.reduceHealth = (amount) => {
+Bee.prototype.reduceHealth = function(amount){
   this.health -= amount;
   if (this.health <= 0) {
     this.health = 0;
@@ -38,7 +38,7 @@ Bee.prototype.reduceHealth = (amount) => {
   }
 };
 
-Bee.prototype.performAction = (moveData) => {
+Bee.prototype.performAction = function(moveData){
   //calculate here what action to perform
   //current Implementation always accepts newest action
   return moveData

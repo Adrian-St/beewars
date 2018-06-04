@@ -26,6 +26,10 @@ Connection.start = (param) => {
         Connection.updateGameObject(game.handleSynchronizeBeehive(updatedBeehive));//io.emit('updateGameObject', game.handleSynchronizeBeehive(updatedBeehive));
       });
 
+      socket.on('synchronizeBee', updatedBee => {
+        Connection.updateGameObject(game.handleSynchronizeBee(updatedBee));
+      });
+
       socket.on('disconnect', () => {
         game.players.splice(socket.player.id, 1);
         io.emit('remove', socket.player.id);

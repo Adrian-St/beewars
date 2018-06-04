@@ -13,9 +13,7 @@ Game.bees = [];
 Game.players = [];
 
 Game.setConnection = (newConnection) => {
-  console.log("newConnection", newConnection);
   connection = newConnection;
-  console.log("newConnection2", connection);
 }
 
 Game.start = (gameObjects) => {
@@ -34,8 +32,7 @@ Game.start = (gameObjects) => {
 Game.update = () => {
   for(i = 0; i < Game.bees.length; i++) {
     Game.bees[i].increaseAge();
-    console.log(connection);
-    //connection.updateGameObject({type: 'bee', content: Game.bees[i]});
+    connection.updateGameObject({type: 'bee', content: Game.bees[i]});
   }
 };
 
@@ -68,10 +65,7 @@ Game.handleSynchronizeBeehive = (updatedBeehive) => {
 }
 
 Game.handleSynchronizeBee = (updatedBee) => {
-  var beeToBeUpdated;
-  for(i = 0; i < Game.bees.length; i++) {
-    if(Gane.bees[i].id == updatedBee.id) beeToBeUpdated = Game.bees[i];
-  }
+  var beeToBeUpdated = Game.beeForId(updatedBee.id);
   beeToBeUpdated.age = updatedBee.age;
   beeToBeUpdated.status = updatedBee.status;
   beeToBeUpdated.health = updatedBee.health;
@@ -85,5 +79,9 @@ Game.handleSynchronizeBee = (updatedBee) => {
   Game.beehive.honeycombs = updatedBeehive.honeycombs;
   return {type: 'bee', content: beeToBeUpdated};
 }
+
+ Game.beeForId = id => {
+    return Game.bees.find(bee => {return bee.id === id;});
+  }
 
 module.exports = Game;

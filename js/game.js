@@ -296,7 +296,14 @@ Beewars.Game = new function() {
   Game.updateGameObject = (updateObject) => {
     if(updateObject.type == "bee") {
       console.log('game.js - updateBee');
-      const updatedBee = updateObject.content;
+      var beeToBeUpdated = Game.beeForId(updateObject.content.id);
+      beeToBeUpdated.age = updateObject.content.age;
+      beeToBeUpdated.status = updateObject.content.status;
+      beeToBeUpdated.health = updateObject.content.health;
+      beeToBeUpdated.energy = updateObject.content.energy;
+      beeToBeUpdated.pollen = updateObject.content.pollen;
+      beeToBeUpdated.nectar = updateObject.content.nectar;
+      beeToBeUpdated.capacity = updateObject.content.capacity;
 
     } else if (updateObject.type == "beehive") {
       console.log('game.js - updateBeehive');
@@ -311,5 +318,10 @@ Beewars.Game = new function() {
     } else {
       console.log('wrong type', updateObject);
     }
+  }
+
+  Game.beeForId = id => {
+    console.log(id)
+    return Game.bees.find(bee => {return bee.id === id;});
   }
 };
