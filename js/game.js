@@ -149,8 +149,7 @@ Beewars.Game = new function() {
   Game.returnNectar = (bee) => {
     Game.beehive.pollen += bee.pollen;
     Game.beehive.honey += bee.pollen;
-    Beewars.Client.addRessource({pollen: Game.beehive.pollen, honey: Game.beehive.honey, honeycombs: Game.beehive.honeycombs});//Game.beehive); // as soon as I send an object it fails
-    console.log(Game.beehive);
+    Beewars.Client.synchronizeBeehive(Game.beehive.getSendableBeehive());//Game.beehive); // as soon as I send an object it fails
     bee.pollen = 0;
     Game.printBee();
   };
@@ -159,7 +158,7 @@ Beewars.Game = new function() {
     Game.countDown(10);
     bee.pollen += 10;
     flower.pollen -=10;
-    //Beewars.Client.addRessource(bee.pollen);
+    //Beewars.Client.synchronizeBeehive(bee.pollen);
     //Beewars.Client.synchronizeFlower(flower);
     Game.printBee();
   };
@@ -189,14 +188,20 @@ Beewars.Game = new function() {
     }*/
 
     bee.stopTween(); // In case the bee was flying to another flower (or hive)
-
-    bee.startTween({x: moveData.target.x, y: moveData.target.y});
-
     if(bee.shadowTween) {
         bee.stopShadowTween();
     }
+
+    if(moveData.stop) {
+      if(bee.shadow)
+        Game.showAllActions(bee);
+      return;
+    }
+
+    bee.startTween({x: moveData.target.x, y: moveData.target.y});
+
     if(bee.shadow){
-      bee.startShadowTween({x: moveData.target.x,y: moveData.target.y});
+      bee.startShadowTween({x: moveData.target.x, y: moveData.target.y});
     }
   };
 
@@ -213,10 +218,10 @@ Beewars.Game = new function() {
     }
     else {
       const flower = Game.getFlowerForPosition({x: beeSprite.x, y: beeSprite.y});
-      console.log();
       Game.addNectarToBee(bee, flower);
     }
     Beewars.Client.emptyActions(bee);
+    Game.graphics.clear();
   };
 
   Game.getBeeForSprite = (sprite) => {
@@ -240,10 +245,12 @@ Beewars.Game = new function() {
     if (clickedBee.shadow) {    // the bee had already a shadow
         clickedBee.deactivateShadow(); 
         Game.printBee();
+        Game.graphics.clear();
         return;
     }
     if (!clickedBee.shadow){ // the bee wasn't selected before
         clickedBee.activateShadow();
+        Game.showAllActions(clickedBee);
         Game.printBee();
     }
     if (clickedBee.shadowTween) { // the bee was selected but moving to another (or the same) flower
@@ -267,6 +274,14 @@ Beewars.Game = new function() {
     } else {
        Game.graphics.clear(); 
     }
+  }
+
+  Game.showAllActions = (bee) => {
+    bee.getActions().forEach(action => {
+          Game.graphics.lineStyle(10, 0xffd900, 1);
+          Game.graphics.moveTo(bee.sprite.x, bee.sprite.y);
+          Game.graphics.lineTo(action.x, action.y);
+    });
   }
 
   Game.removePlayer = id => {
@@ -304,18 +319,19 @@ Beewars.Game = new function() {
     }
   }
 
-  Game.updateRessources = (updateObject) => {
+  Game.updateGameObject = (updateObject) => {
     if(updateObject.type == "bee") {
+      console.log('game.js - updateBee');
       const updatedBee = updateObject.content;
 
     } else if (updateObject.type == "beehive") {
-      console.log('game.js - updateRessources');
+      console.log('game.js - updateBeehive');
       const updatedBeehive = updateObject.content;
       Game.beehive.pollen = updatedBeehive.pollen;
       Game.beehive.honey = updatedBeehive.honey;
       Game.beehive.honeycombs = updatedBeehive.honeycombs;
-      console.log(Game.beehive.pollen);
     } else if (updateObject.type == "flower") {
+      console.log('game.js - updateFlower');
       const updatedFlower = updateObject.content;
       
     } else {

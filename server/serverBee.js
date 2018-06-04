@@ -58,7 +58,7 @@ Bee.prototype.performAction = function(playerAction) {
   if(this.playerActions.length > 1) {
     if(this.playerActions[0].weight - this.playerActions[1].weight < 0.2) {
       var newPlayerActions = [];
-      newPlayerActions.push({stop: true});
+      newPlayerActions.push({beeID: this.id, stop: true});
       this.playerActions.forEach(action => newPlayerActions.push(action));
       return newPlayerActions;
     }

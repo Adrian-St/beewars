@@ -3,7 +3,7 @@ Game = {};
 var Bee = require('./serverBee.js');
 var Flower = require('./serverFlower.js');
 var Player = require('./player.js');
-var connection = require('./connection.js');
+var connection; // = require('./connection.js');
 Game.beehive = require('./serverBeehive.js');
 Game.lastPlayerID = 0;
 Game.lastBeeID = 0;
@@ -11,6 +11,12 @@ Game.lastFlowerID = 0;
 Game.flowers = [];
 Game.bees = [];
 Game.players = [];
+
+Game.setConnection = (newConnection) => {
+  console.log("newConnection", newConnection);
+  connection = newConnection;
+  console.log("newConnection2", connection);
+}
 
 Game.start = (gameObjects) => {
   for(i = 0; i < gameObjects.flowers; i++) {
@@ -28,6 +34,8 @@ Game.start = (gameObjects) => {
 Game.update = () => {
   for(i = 0; i < Game.bees.length; i++) {
     Game.bees[i].increaseAge();
+    console.log(connection);
+    //connection.updateGameObject({type: 'bee', content: Game.bees[i]});
   }
 };
 
@@ -55,17 +63,34 @@ Game.performActionForBee = (playerID, playerAction) => {
 
 Game.emptyActionLogOfBee = beeID => {
   Game.bees[beeID].playerActions = [];
-  return 
+  return {type: 'bee', content: Game.bees[beeID]}
 }
 
-Game.handleRessources = (updatedBeehive) => {
-  Game.beehive.pollen += updatedBeehive.pollen;
-  Game.beehive.honey += updatedBeehive.honey;
-  Game.beehive.honeycombs += updatedBeehive.honeycombs;
-  console.log('ressourcesData' + Game.beehive.pollen);
-  console.log('ressourcesData' + Game.beehive.honey);
-  console.log('ressourcesData' + Game.beehive.honeycombs);
+
+Game.handleSynchronizeBeehive = (updatedBeehive) => {
+  Game.beehive.pollen = updatedBeehive.pollen;
+  Game.beehive.honey = updatedBeehive.honey;
+  Game.beehive.honeycombs = updatedBeehive.honeycombs;
   return {type: 'beehive', content: Game.beehive};
+}
+
+Game.handleSynchronizeBee = (updatedBee) => {
+  var beeToBeUpdated;
+  for(i = 0; i < Game.bees.length; i++) {
+    if(Gane.bees[i].id == updatedBee.id) beeToBeUpdated = Game.bees[i];
+  }
+  beeToBeUpdated.age = updatedBee.age;
+  beeToBeUpdated.status = updatedBee.status;
+  beeToBeUpdated.health = updatedBee.health;
+  beeToBeUpdated.energy = updatedBee.energy;
+  beeToBeUpdated.pollen = updatedBee.pollen;
+  beeToBeUpdated.nectar = updatedBee.nectar;
+  beeToBeUpdated.capazity = updatedBee.capazity;
+
+  Game.beehive.pollen = updatedBeehive.pollen;
+  Game.beehive.honey = updatedBeehive.honey;
+  Game.beehive.honeycombs = updatedBeehive.honeycombs;
+  return {type: 'bee', content: beeToBeUpdated};
 }
 
 module.exports = Game;

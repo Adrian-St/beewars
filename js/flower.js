@@ -28,3 +28,11 @@ Beewars.Flower.prototype.collectNectar = function (amount){
     return amount;
   }
 }
+
+Beewars.Flower.prototype.getSendableFlower = function (){
+  return {
+    id: this.id,
+    pollen: this.pollen,
+    nectar: this.nectar
+  }
+}
