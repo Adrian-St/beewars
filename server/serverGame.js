@@ -52,8 +52,10 @@ Game.performActionForBee = (moveData) => {
   return bee.performAction(moveData);
 };
 
-Game.handleRessources = (ressourcesData) => {
-  Game.beehive.honey += ressourcesData;
+Game.handleRessources = (updatedBeehive) => {
+  Game.beehive.pollen += updatedBeehive.pollen;
+  Game.beehive.honey += updatedBeehive.honey;
+  Game.beehive.honeycombs += updatedBeehive.honeycombs;
   console.log('ressourcesData' + Game.beehive.pollen);
   console.log('ressourcesData' + Game.beehive.honey);
   console.log('ressourcesData' + Game.beehive.honeycombs);

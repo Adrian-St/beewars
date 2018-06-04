@@ -146,16 +146,20 @@ Beewars.Game = new function() {
       //make a counter so bee wait for some time before it gets the nectar. use callback
   };
   Game.returnNectar = (bee) => {
-    Beewars.Client.addRessource(bee.pollen);
-    Beewars.Client.addRessource2(bee.pollen);
+    Game.beehive.pollen += bee.pollen;
+    Game.beehive.honey += bee.pollen;
+    Beewars.Client.addRessource({pollen: Game.beehive.pollen, honey: Game.beehive.honey, honeycombs: Game.beehive.honeycombs});//Game.beehive); // as soon as I send an object it fails
+    console.log(Game.beehive);
     bee.pollen = 0;
     Game.printBee();
   };
 
-  Game.addNectarToBee = (bee) => {
+  Game.addNectarToBee = (bee, flower) => {
     Game.countDown(10);
     bee.pollen += 10;
-    console.log(bee);//just for testing purposes. delete later on
+    flower.pollen -=10;
+    //Beewars.Client.addRessource(bee.pollen);
+    //Beewars.Client.synchronizeFlower(flower);
     Game.printBee();
   };
 
@@ -200,13 +204,21 @@ Beewars.Game = new function() {
         Game.returnNectar(bee);
     }
     else {
-        Game.addNectarToBee(bee);
+      const flower = Game.getFlowerForPosition({x: beeSprite.x, y: beeSprite.y});
+      console.log();
+      Game.addNectarToBee(bee, flower);
     }
   };
 
   Game.getBeeForSprite = (sprite) => {
     for (var i = 0; i < Game.bees.length; i++) {
       if(Game.bees[i].sprite == sprite) return Game.bees[i];
+    }
+  }
+
+  Game.getFlowerForPosition = (position) => {
+    for (var i = 0; i < Game.flowers.length; i++) {
+      if(Game.flowers[i].sprite.position.x == position.x && Game.flowers[i].sprite.position.y == position.y) return Game.flowers[i];
     }
   }
 
@@ -288,6 +300,7 @@ Beewars.Game = new function() {
       const updatedBee = updateObject.content;
 
     } else if (updateObject.type == "beehive") {
+      console.log('game.js - updateRessources');
       const updatedBeehive = updateObject.content;
       Game.beehive.pollen = updatedBeehive.pollen;
       Game.beehive.honey = updatedBeehive.honey;

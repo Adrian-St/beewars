@@ -62,8 +62,12 @@ Beewars.Bee.prototype.startShadowTween = function (destination){
 }
 
 Beewars.Bee.prototype.stopShadowTween = function (){
-	if(this.shadowTween){
-    	this.shadowTween.stop();
-    	this.shadowTween = null;
-	}
+  if(this.shadowTween){
+      this.shadowTween.stop();
+      this.shadowTween = null;
+  }
+}
+
+Beewars.Bee.prototype.getSendableBee = function (){
+  
 }

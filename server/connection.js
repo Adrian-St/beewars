@@ -21,8 +21,8 @@ Connection.start = (param) => {
         io.emit('move', game.performActionForBee(moveData));
       });
 
-      socket.on('addRessource', ressourcesData => {
-        io.emit('updateRessource', game.handleRessources(ressourcesData));
+      socket.on('addRessource', updatedBeehive => {
+        io.emit('updateRessource', game.handleRessources(updatedBeehive));
       });
 
       socket.on('disconnect', () => {
