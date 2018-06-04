@@ -14,9 +14,11 @@ Beewars.Client = new function(){
     Beewars.Game.addNewPlayer(data);
   });
 
-  Client.addRessource = beehive => Client.socket.emit('addRessource',beehive);
+  Client.synchronizeBeehive = beehive => Client.socket.emit('synchronizeBeehive',beehive);
 
-  Client.synchronizeFlower = flower => Client.socket.emit('synchronizeFlowers', flower);
+  Client.synchronizeFlower = flower => Client.socket.emit('synchronizeFlower', flower);
+
+  Client.synchronizeBee = bee => Client.socket.emit('synchronizeBee', bee);
 
   Client.socket.on('gameObjects', data => {
     Beewars.Game.addProperties(data);
@@ -29,9 +31,8 @@ Beewars.Client = new function(){
   	    Beewars.Game.removePlayer(id);
   	});
 
-  	Client.socket.on('updateRessource', updatedBeehive => {
-        console.log(updatedBeehive);
-        Beewars.Game.updateRessources(updatedBeehive);
+  	Client.socket.on('updateGameObject', updatedObject => {
+        Beewars.Game.updateGameObject(updatedObject);
         Beewars.Game.printRessource();
   	});
   });

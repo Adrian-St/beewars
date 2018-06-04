@@ -69,5 +69,14 @@ Beewars.Bee.prototype.stopShadowTween = function (){
 }
 
 Beewars.Bee.prototype.getSendableBee = function (){
-  
+  return {
+    id: this.id,
+    age: this.age,
+    status: this.status,
+    health: this.health,
+    energy: this.energy,
+    pollen: this.pollen,
+    nectar: this.nectar,
+    capacity: this.capacity
+  }
 }

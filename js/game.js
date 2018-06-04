@@ -148,8 +148,7 @@ Beewars.Game = new function() {
   Game.returnNectar = (bee) => {
     Game.beehive.pollen += bee.pollen;
     Game.beehive.honey += bee.pollen;
-    Beewars.Client.addRessource({pollen: Game.beehive.pollen, honey: Game.beehive.honey, honeycombs: Game.beehive.honeycombs});//Game.beehive); // as soon as I send an object it fails
-    console.log(Game.beehive);
+    Beewars.Client.synchronizeBeehive(Game.beehive.getSendableBeehive());//Game.beehive); // as soon as I send an object it fails
     bee.pollen = 0;
     Game.printBee();
   };
@@ -158,7 +157,7 @@ Beewars.Game = new function() {
     Game.countDown(10);
     bee.pollen += 10;
     flower.pollen -=10;
-    //Beewars.Client.addRessource(bee.pollen);
+    //Beewars.Client.synchronizeBeehive(bee.pollen);
     //Beewars.Client.synchronizeFlower(flower);
     Game.printBee();
   };
@@ -205,7 +204,6 @@ Beewars.Game = new function() {
     }
     else {
       const flower = Game.getFlowerForPosition({x: beeSprite.x, y: beeSprite.y});
-      console.log();
       Game.addNectarToBee(bee, flower);
     }
   };
@@ -295,18 +293,19 @@ Beewars.Game = new function() {
     }
   }
 
-  Game.updateRessources = (updateObject) => {
+  Game.updateGameObject = (updateObject) => {
     if(updateObject.type == "bee") {
+      console.log('game.js - updateBee');
       const updatedBee = updateObject.content;
 
     } else if (updateObject.type == "beehive") {
-      console.log('game.js - updateRessources');
+      console.log('game.js - updateBeehive');
       const updatedBeehive = updateObject.content;
       Game.beehive.pollen = updatedBeehive.pollen;
       Game.beehive.honey = updatedBeehive.honey;
       Game.beehive.honeycombs = updatedBeehive.honeycombs;
-      console.log(Game.beehive.pollen);
     } else if (updateObject.type == "flower") {
+      console.log('game.js - updateFlower');
       const updatedFlower = updateObject.content;
       
     } else {
