@@ -32,9 +32,9 @@ Game.update = () => {
 };
 
 Game.newPlayer = () => {
-  var player = new Player(Game.lastPlayderID);
-  Game.lastPlayerID++;
+  var player = new Player(Game.lastPlayerID);
   Game.players.push(player);
+  Game.lastPlayerID++;
   return player;
 };
 
@@ -47,10 +47,16 @@ Game.allObjects = () => {
   };
 };
 
-Game.performActionForBee = (moveData) => {
-  var bee = Game.bees[moveData.beeID];
-  return bee.performAction(moveData);
+Game.performActionForBee = (playerID, playerAction) => {
+  var bee = Game.bees[playerAction.beeID];
+  playerAction.playerID = playerID;
+  return bee.performAction(playerAction);
 };
+
+Game.emptyActionLogOfBee = beeID => {
+  Game.bees[beeID].playerActions = [];
+  return 
+}
 
 Game.handleRessources = (updatedBeehive) => {
   Game.beehive.pollen += updatedBeehive.pollen;

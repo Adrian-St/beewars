@@ -1,6 +1,6 @@
 function Player(id) {
   this.id = id;
-  this.experience = 0;
+  this.experience = 1;
 };
 
 module.exports = Player;

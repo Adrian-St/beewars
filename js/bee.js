@@ -12,6 +12,7 @@ Beewars.Bee = function(serverBee, sprite2) {
   this.tween = null;
   this.shadow = null;
   this.shadowTween = null;
+  this.playerActions = [];
 }
 
 Beewars.Bee.prototype.activateShadow = function (){
@@ -71,3 +72,8 @@ Beewars.Bee.prototype.stopShadowTween = function (){
 Beewars.Bee.prototype.getSendableBee = function (){
   
 }
+
+Beewars.Bee.prototype.getActions = function (){
+  return this.playerActions.map(action => {return {x: action.target.x, y: action.target.y}})
+}
+
