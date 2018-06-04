@@ -1,5 +1,5 @@
 var Beewars = Beewars || {};
-Beewars.Bee = function(serverBee, sprite2) {
+Beewars.Bee = function(serverBee, sprite) {
   this.id = serverBee.id;
   this.age = serverBee.age;
   this.status = serverBee.status;
@@ -8,7 +8,7 @@ Beewars.Bee = function(serverBee, sprite2) {
   this.pollen = serverBee.pollen;
   this.nectar = serverBee.nectar;
   this.capacity = serverBee.capacity;
-  this.sprite = sprite2;
+  this.sprite = sprite;
   this.tween = null;
   this.shadow = null;
   this.shadowTween = null;
@@ -71,6 +71,8 @@ Beewars.Bee.prototype.stopShadowTween = function (){
 Beewars.Bee.prototype.getSendableBee = function (){
   return {
     id: this.id,
+    x: this.sprite.x,
+    y: this.sprite.y,
     age: this.age,
     status: this.status,
     health: this.health,

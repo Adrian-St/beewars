@@ -30,6 +30,10 @@ Connection.start = (param) => {
         Connection.updateGameObject(game.handleSynchronizeBee(updatedBee));
       });
 
+      socket.on('synchronizeFlower', updatedFlower => {
+        Connection.updateGameObject(game.handleSynchronizeFlower(updatedFlower));
+      });
+
       socket.on('disconnect', () => {
         game.players.splice(socket.player.id, 1);
         io.emit('remove', socket.player.id);

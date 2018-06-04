@@ -149,6 +149,7 @@ Beewars.Game = new function() {
     Game.beehive.pollen += bee.pollen;
     Game.beehive.honey += bee.pollen;
     Beewars.Client.synchronizeBeehive(Game.beehive.getSendableBeehive());//Game.beehive); // as soon as I send an object it fails
+    Beewars.Client.synchronizeBee(bee.getSendableBee());
     bee.pollen = 0;
     Game.printBee();
   };
@@ -157,8 +158,8 @@ Beewars.Game = new function() {
     Game.countDown(10);
     bee.pollen += 10;
     flower.pollen -=10;
-    //Beewars.Client.synchronizeBeehive(bee.pollen);
-    //Beewars.Client.synchronizeFlower(flower);
+    Beewars.Client.synchronizeBee(bee.getSendableBee());
+    Beewars.Client.synchronizeFlower(flower.getSendableFlower());
     Game.printBee();
   };
 
@@ -295,7 +296,7 @@ Beewars.Game = new function() {
 
   Game.updateGameObject = (updateObject) => {
     if(updateObject.type == "bee") {
-      console.log('game.js - updateBee');
+      console.log('game.js - updateBee - bee.id: ', updateObject.content.id);
       var beeToBeUpdated = Game.beeForId(updateObject.content.id);
       beeToBeUpdated.age = updateObject.content.age;
       beeToBeUpdated.status = updateObject.content.status;
@@ -311,17 +312,23 @@ Beewars.Game = new function() {
       Game.beehive.pollen = updatedBeehive.pollen;
       Game.beehive.honey = updatedBeehive.honey;
       Game.beehive.honeycombs = updatedBeehive.honeycombs;
-    } else if (updateObject.type == "flower") {
-      console.log('game.js - updateFlower');
-      const updatedFlower = updateObject.content;
       
+    } else if (updateObject.type == "flower") {
+      console.log('game.js - updateFlower - flower.id: ', updateObject.content.id);
+      var flowerToBeUpdated = Game.flowerForId(updateObject.content.id);
+      flowerToBeUpdated.pollen = updateObject.content.pollen;
+      flowerToBeUpdated.nectar = updateObject.content.nectar;
+
     } else {
       console.log('wrong type', updateObject);
     }
   }
 
   Game.beeForId = id => {
-    console.log(id)
     return Game.bees.find(bee => {return bee.id === id;});
+  }
+
+  Game.flowerForId = id => {
+    return Game.flowers.find(flower => {return flower.id === id;});
   }
 };
