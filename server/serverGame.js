@@ -32,7 +32,7 @@ Game.update = () => {
 };
 
 Game.newPlayer = () => {
-  var player = new Player(Game.lastPlayderID);
+  var player = new Player(Game.lastPlayerID);
   Game.lastPlayerID++;
   Game.players.push(player);
   return player;

@@ -14,7 +14,7 @@ Beewars.Client = new function(){
     Beewars.Game.addNewPlayer(data);
   });
 
-  Client.addRessource = ressourcesData => Client.socket.emit('addRessource',ressourcesData);
+  Client.addRessource = ressourcesData => Client.socket.emit('addRessource', ressourcesData);
 
   Client.socket.on('gameObjects', data => {
     Beewars.Game.addProperties(data);

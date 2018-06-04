@@ -26,7 +26,7 @@ Bee.prototype.states = {
 Bee.prototype.increaseAge = () => {
   this.age += 1;
   if (this.age >= 45) {
-    this.satus = this.states.DEAD;
+    this.status = this.states.DEAD;
   }
 }
 
