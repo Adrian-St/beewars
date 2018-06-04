@@ -19,7 +19,7 @@ Connection.start = (param) => {
       socket.broadcast.emit('newplayer', socket.player);
 
       socket.on('goTo', moveData => {
-        io.emit('move', game.performActionForBee(moveData));
+        io.emit('move', game.performActionForBee(socket.player.id, moveData));
       });
 
       socket.on('synchronizeBeehive', updatedBeehive => {
@@ -32,6 +32,10 @@ Connection.start = (param) => {
 
       socket.on('synchronizeFlower', updatedFlower => {
         Connection.updateGameObject(game.handleSynchronizeFlower(updatedFlower));
+      });
+
+      socket.on('emptyActions', beeId => {
+        Connection.updateGameObject(game.emptyActionLogOfBee(beeId));
       });
 
       socket.on('disconnect', () => {
