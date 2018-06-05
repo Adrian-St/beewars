@@ -1,5 +1,5 @@
 var Beewars = Beewars || {};
-Beewars.Bee = function(serverBee, sprite2) {
+Beewars.Bee = function(serverBee, sprite) {
   this.id = serverBee.id;
   this.age = serverBee.age;
   this.status = serverBee.status;
@@ -8,10 +8,11 @@ Beewars.Bee = function(serverBee, sprite2) {
   this.pollen = serverBee.pollen;
   this.nectar = serverBee.nectar;
   this.capacity = serverBee.capacity;
-  this.sprite = sprite2;
+  this.sprite = sprite;
   this.tween = null;
   this.shadow = null;
   this.shadowTween = null;
+  this.playerActions = [];
 }
 
 Beewars.Bee.prototype.activateShadow = function (){
@@ -62,8 +63,30 @@ Beewars.Bee.prototype.startShadowTween = function (destination){
 }
 
 Beewars.Bee.prototype.stopShadowTween = function (){
-	if(this.shadowTween){
-    	this.shadowTween.stop();
-    	this.shadowTween = null;
-	}
+  if(this.shadowTween){
+      this.shadowTween.stop();
+      this.shadowTween = null;
+  }
 }
+
+Beewars.Bee.prototype.getSendableBee = function (){
+  return {
+    id: this.id,
+    x: this.sprite.x,
+    y: this.sprite.y,
+    age: this.age,
+    status: this.status,
+    health: this.health,
+    energy: this.energy,
+    pollen: this.pollen,
+    nectar: this.nectar,
+    capacity: this.capacity
+  }
+}
+
+Beewars.Bee.prototype.getActions = function (){ //this gets all of the playerActions from one Bee and removes the "stop" Actions
+  return this.playerActions.map(action => {
+  	if(!action.stop) 
+  		return {x: action.target.x, y: action.target.y}}).filter(el => el)
+}
+
