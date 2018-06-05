@@ -36,9 +36,7 @@ Beewars.Game = new function() {
     Game.printRessource();
 
     Game.graphics = Beewars.game.add.graphics(0,0);
-    Game.graphics.inputEnabled = true;
 
-    //just for testing purposes. delete later on
     Game.beeLabel = Beewars.game.add.text(5, 30, '');
     Game.printBee(0);
     Beewars.Client.askNewPlayer({flowers: Game.flowerSprites.length});
@@ -266,11 +264,7 @@ Beewars.Game = new function() {
         var curBee = Game.getSelectedBee();
         var actions = curBee.getActions();
         Game.graphics.clear();
-        actions.forEach(action => {
-          Game.graphics.lineStyle(10, 0xffd900, 1);
-          Game.graphics.moveTo(curBee.tween.target.x, curBee.tween.target.y);
-          Game.graphics.lineTo(action.x, action.y);
-        });
+        Game.showAllActions(curBee);
     } else {
        Game.graphics.clear(); 
     }
