@@ -103,7 +103,6 @@ Beewars.Game = new function() {
   };
 
   Game.getCoordinates = (object,pointer) => {
-
     if(!Game.isBeeSelected) return;
     if(object.name == 'beehive'){
       Game.goToHive();
@@ -149,7 +148,7 @@ Beewars.Game = new function() {
   Game.returnNectar = (bee) => {
     Game.beehive.pollen += bee.pollen;
     Game.beehive.honey += bee.pollen;
-    Beewars.Client.synchronizeBeehive(Game.beehive.getSendableBeehive());//Game.beehive); // as soon as I send an object it fails
+    Beewars.Client.synchronizeBeehive(Game.beehive.getSendableBeehive());
     bee.pollen = 0;
     Game.printBee();
   };
@@ -258,7 +257,7 @@ Beewars.Game = new function() {
     }
     if (clickedBee.tween && clickedBee.tween.isRunning) { // in case the 'new' bee is (already) flying
          clickedBee.startShadowTween({x: clickedBee.tween.properties.x, y: clickedBee.tween.properties.y});
-    } 
+    }
   };
 
   Game.onTweenRunning = () => {

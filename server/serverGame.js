@@ -13,9 +13,7 @@ Game.bees = [];
 Game.players = [];
 
 Game.setConnection = (newConnection) => {
-  console.log("newConnection", newConnection);
   connection = newConnection;
-  console.log("newConnection2", connection);
 }
 
 Game.start = (gameObjects) => {
