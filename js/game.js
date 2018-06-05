@@ -254,7 +254,7 @@ Beewars.Game = new function() {
         Game.printBee();
     }
     if (clickedBee.shadowTween) { // the bee was selected but moving to another (or the same) flower
-        clickedBee.startShadowTween(sprite);
+        clickedBee.startShadowTween({x: sprite.x, y: sprite.y});
     }
     if (clickedBee.tween && clickedBee.tween.isRunning) { // in case the 'new' bee is (already) flying
          clickedBee.startShadowTween({x: clickedBee.tween.properties.x, y: clickedBee.tween.properties.y});
@@ -291,7 +291,7 @@ Beewars.Game = new function() {
   Game.stopAllOtherShadowTweens = (bee) => {
     for(i = 0; i<Game.bees.length; i++){
         const b = Game.bees[i]
-        if(b != bee){
+        if(b.id !== bee.id){
             b.stopShadowTween();
         }
     }
@@ -300,7 +300,7 @@ Beewars.Game = new function() {
   Game.deactivateAllOtherShadows = (bee) => {
     for(i = 0, b = Game.bees[i]; i<Game.bees.length; i++){
         const b = Game.bees[i]
-        if(b != bee){
+        if(b.id !== bee.id){
             b.deactivateShadow();
         }
     }
@@ -321,7 +321,7 @@ Beewars.Game = new function() {
 
   Game.updateGameObject = (updateObject) => {
     if(updateObject.type == "bee") {
-      console.log('game.js - updateBee - bee.id: ', updateObject.content.id);
+      //console.log('game.js - updateBee - bee.id: ', updateObject.content.id);
       var beeToBeUpdated = Game.beeForId(updateObject.content.id);
       beeToBeUpdated.age = updateObject.content.age;
       beeToBeUpdated.status = updateObject.content.status;
