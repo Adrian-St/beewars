@@ -26,7 +26,7 @@ Beewars.Client = new function(){
   Client.socket.on('gameObjects', data => {
     Beewars.Game.addProperties(data);
 
-    Client.socket.on('move', (playerActions) => {
+    Client.socket.on('move', playerActions => {
         Beewars.Game.playerActions(playerActions);
         Beewars.Game.moveBee(playerActions[0]);
     });

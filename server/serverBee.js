@@ -44,12 +44,21 @@ Bee.prototype.performAction = function(playerAction) {
   //current Implementation always accepts newest action
   const weight = Game.players.find(player => player.id == playerAction.playerID).experience;
   const indexOfExistingAction = this.playerActions.findIndex(action => action.target.x === playerAction.target.x && action.target.y === playerAction.target.y)
+  const indexOfOldPlayerAction = this.playerActions.findIndex(action => action.playerIDs.includes(playerAction.playerID));
   if(indexOfExistingAction != -1){
-    this.playerActions[indexOfExistingAction].weight += weight;
-    this.playerActions[indexOfExistingAction].timestamp = playerAction.timestamp;
+    if(indexOfOldPlayerAction != indexOfExistingAction){
+      this.playerActions[indexOfExistingAction].weight += weight;
+      this.playerActions[indexOfExistingAction].timestamp = playerAction.timestamp;
+      this.removeOldPlayerAction(weight, playerAction.playerID, indexOfOldPlayerAction);
+    }
   } else {
+    if(indexOfOldPlayerAction != -1){
+      this.removeOldPlayerAction(weight, playerAction.playerID, indexOfOldPlayerAction);
+    }
+    
     playerAction.id = Game.lastActionId;
     playerAction.weight = weight;
+    playerAction.playerIDs = [playerAction.playerID];
     this.playerActions.push(playerAction);
     Game.lastActionId++;
   }
@@ -65,6 +74,13 @@ Bee.prototype.performAction = function(playerAction) {
   }
   return this.playerActions;
 }
+
+Bee.prototype.removeOldPlayerAction = function(weight, playerID, indexOfOldPlayerAction) {
+  this.playerActions[indexOfOldPlayerAction].weight -= weight;
+  this.playerActions[indexOfOldPlayerAction].playerIDs.splice(this.playerActions[indexOfOldPlayerAction].playerIDs.indexOf(playerID), 1);
+  if(this.playerActions[indexOfOldPlayerAction].weight <= 0)
+    this.playerActions.splice(indexOfOldPlayerAction, 1);
+}
 module.exports = Bee;
 
 /*
@@ -73,7 +89,7 @@ playerAction {
   timestamp: long,
   target: position,
   beeID: int,
-  playerID: int,
+  playerIDs: [int],
   weight: int,
   stop: boolean // gets always overridden from server
 }
