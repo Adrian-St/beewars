@@ -24,14 +24,14 @@ Bee.prototype.states = {
   DEAD: 2
 };
 
-Bee.prototype.increaseAge = () => {
+Bee.prototype.increaseAge = function(){
   this.age += 1;
   if (this.age >= 45) {
     this.status = this.states.DEAD;
   }
 }
 
-Bee.prototype.reduceHealth = (amount) => {
+Bee.prototype.reduceHealth = function(amount){
   this.health -= amount;
   if (this.health <= 0) {
     this.health = 0;

@@ -32,8 +32,7 @@ Game.start = (gameObjects) => {
 Game.update = () => {
   for(i = 0; i < Game.bees.length; i++) {
     Game.bees[i].increaseAge();
-    console.log(connection);
-    //connection.updateGameObject({type: 'bee', content: Game.bees[i]});
+    connection.updateGameObject({type: 'bee', content: Game.bees[i]});
   }
 };
 
@@ -73,11 +72,10 @@ Game.handleSynchronizeBeehive = (updatedBeehive) => {
 }
 
 Game.handleSynchronizeBee = (updatedBee) => {
-  var beeToBeUpdated;
-  for(i = 0; i < Game.bees.length; i++) {
-    if(Gane.bees[i].id == updatedBee.id) beeToBeUpdated = Game.bees[i];
-  }
+  var beeToBeUpdated = Game.beeForId(updatedBee.id);
   beeToBeUpdated.age = updatedBee.age;
+  beeToBeUpdated.x = updatedBee.x;
+  beeToBeUpdated.y = updatedBee.y;  
   beeToBeUpdated.status = updatedBee.status;
   beeToBeUpdated.health = updatedBee.health;
   beeToBeUpdated.energy = updatedBee.energy;
@@ -85,10 +83,23 @@ Game.handleSynchronizeBee = (updatedBee) => {
   beeToBeUpdated.nectar = updatedBee.nectar;
   beeToBeUpdated.capazity = updatedBee.capazity;
 
-  Game.beehive.pollen = updatedBeehive.pollen;
-  Game.beehive.honey = updatedBeehive.honey;
-  Game.beehive.honeycombs = updatedBeehive.honeycombs;
   return {type: 'bee', content: beeToBeUpdated};
+}
+
+Game.handleSynchronizeFlower = (updatedFlower) => {
+  var flowerToBeUpdated = Game.flowerForId(updatedFlower.id);
+  flowerToBeUpdated.pollen = updatedFlower.pollen;
+  flowerToBeUpdated.nectar = updatedFlower.nectar;
+
+  return {type: 'flower', content: flowerToBeUpdated};
+}
+
+Game.beeForId = id => {
+  return Game.bees.find(bee => {return bee.id === id;});
+}
+
+Game.flowerForId = id => {
+  return Game.flowers.find(flower => {return flower.id === id;});
 }
 
 module.exports = Game;
