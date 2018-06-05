@@ -53,7 +53,7 @@ Bee.prototype.performAction = function(playerAction) {
     this.playerActions.push(playerAction);
     Game.lastActionId++;
   }
-  this.playerActions.sort((a,b) => {return b.timestamp - a.timestamp});
+  this.playerActions.sort((a,b) => {return b.weight - a.weight});
 
   if(this.playerActions.length > 1) {
     if(this.playerActions[0].weight - this.playerActions[1].weight < 0.2) {

@@ -59,8 +59,8 @@ Game.performActionForBee = (playerID, playerAction) => {
 };
 
 Game.emptyActionLogOfBee = beeID => {
-  Game.bees[beeID].playerActions = [];
-  return {type: 'bee', content: Game.bees[beeID]}
+  Game.beeForId(beeID).playerActions = [];
+  return {type: 'bee', content: Game.beeForId(beeID)}
 }
 
 
@@ -81,7 +81,7 @@ Game.handleSynchronizeBee = (updatedBee) => {
   beeToBeUpdated.energy = updatedBee.energy;
   beeToBeUpdated.pollen = updatedBee.pollen;
   beeToBeUpdated.nectar = updatedBee.nectar;
-  beeToBeUpdated.capazity = updatedBee.capazity;
+  beeToBeUpdated.capacity = updatedBee.capacity;
 
   return {type: 'bee', content: beeToBeUpdated};
 }
