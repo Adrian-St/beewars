@@ -330,16 +330,17 @@ Beewars.Game = new function() {
       beeToBeUpdated.pollen = updateObject.content.pollen;
       beeToBeUpdated.nectar = updateObject.content.nectar;
       beeToBeUpdated.capacity = updateObject.content.capacity;
+      beeToBeUpdated.playerActions = updateObject.content.playerActions;
 
     } else if (updateObject.type == "beehive") {
-      console.log('game.js - updateBeehive');
+      //console.log('game.js - updateBeehive');
       const updatedBeehive = updateObject.content;
       Game.beehive.pollen = updatedBeehive.pollen;
       Game.beehive.honey = updatedBeehive.honey;
       Game.beehive.honeycombs = updatedBeehive.honeycombs;
       
     } else if (updateObject.type == "flower") {
-      console.log('game.js - updateFlower - flower.id: ', updateObject.content.id);
+      //console.log('game.js - updateFlower - flower.id: ', updateObject.content.id);
       var flowerToBeUpdated = Game.flowerForId(updateObject.content.id);
       flowerToBeUpdated.pollen = updateObject.content.pollen;
       flowerToBeUpdated.nectar = updateObject.content.nectar;
