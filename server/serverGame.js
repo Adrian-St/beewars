@@ -59,10 +59,22 @@ Game.performActionForBee = (playerID, playerAction) => {
 };
 
 Game.emptyActionLogOfBee = beeID => {
+  if(Game.beeForId(beeID).playerActions.length > 0) Game.calculatePlayerExperienceAfterBeeArrived(beeID);
   Game.beeForId(beeID).playerActions = [];
   return {type: 'bee', content: Game.beeForId(beeID)}
 }
 
+Game.calculatePlayerExperienceAfterBeeArrived = beeID => {
+  let playerActions = Game.beeForId(beeID).playerActions;
+  let positiveContributer = playerActions[0].playerIDs;
+  console.log("size", positiveContributer.length);
+  positiveContributer.forEach(playerID => Game.raiseExperienceForPlayer(playerID, 5));
+}
+
+Game.raiseExperienceForPlayer = (playerID, value) => {
+  Game.players.find(player => player.id == playerID).experience += value;
+  console.log("new Exp")
+}
 
 Game.handleSynchronizeBeehive = (updatedBeehive) => {
   Game.beehive.pollen = updatedBeehive.pollen;
@@ -82,7 +94,6 @@ Game.handleSynchronizeBee = (updatedBee) => {
   beeToBeUpdated.pollen = updatedBee.pollen;
   beeToBeUpdated.nectar = updatedBee.nectar;
   beeToBeUpdated.capacity = updatedBee.capacity;
-
   return {type: 'bee', content: beeToBeUpdated};
 }
 
