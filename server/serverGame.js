@@ -67,13 +67,11 @@ Game.emptyActionLogOfBee = beeID => {
 Game.calculatePlayerExperienceAfterBeeArrived = beeID => {
   let playerActions = Game.beeForId(beeID).playerActions;
   let positiveContributer = playerActions[0].playerIDs;
-  console.log("size", positiveContributer.length);
-  positiveContributer.forEach(playerID => Game.raiseExperienceForPlayer(playerID, 5));
+  positiveContributer.forEach(playerID => Game.raiseExperienceForPlayer(playerID, 0.1));
 }
 
 Game.raiseExperienceForPlayer = (playerID, value) => {
   Game.players.find(player => player.id == playerID).experience += value;
-  console.log("new Exp")
 }
 
 Game.handleSynchronizeBeehive = (updatedBeehive) => {
