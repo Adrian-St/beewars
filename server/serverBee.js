@@ -21,7 +21,8 @@ function randomInt (low, high) {
 Bee.prototype.states = {
   IDLE: 0,
   WORKING: 1,
-  DEAD: 2
+  DEAD: 2,
+  INACTIVE: 3
 };
 
 Bee.prototype.increaseAge = function(){

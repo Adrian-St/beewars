@@ -19,7 +19,11 @@ Connection.start = (param) => {
       socket.broadcast.emit('newplayer', socket.player);
 
       socket.on('goTo', moveData => {
-        io.emit('move', game.performActionForBee(socket.player.id, moveData));
+        console.log(game.bees[moveData.beeID]);
+        if (game.bees[moveData.beeID].status != 3) {
+            io.emit('move', game.performActionForBee(socket.player.id, moveData));
+        }
+        else console.log("Bee is beesy");
       });
 
       socket.on('synchronizeBeehive', updatedBeehive => {
