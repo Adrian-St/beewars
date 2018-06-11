@@ -1,0 +1,20 @@
+#game {
+}
+
+#menu {
+  padding: 4px 8px;
+  height: 80px;
+  width: 960px;
+  background-color: lightgray;
+  border: darkgray 2px solid;
+  box-sizing: border-box;
+}
+.heading {
+  margin: 0;
+}
+
+.label-container > p {
+  margin-right: 30px;
+  float: left;
+  display: inline;
+}

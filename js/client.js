@@ -15,11 +15,26 @@ Beewars.Client = new function(){
     Beewars.Game.addNewPlayer(data);
   });
 
-  Client.synchronizeBeehive = beehive => Client.socket.emit('synchronizeBeehive',beehive);
+  Client.synchronizeBeehive = beehive => {
+    Client.socket.emit('synchronizeBeehive',beehive);
+    if (document.getElementById('menu').firstChild.id == "hiveMenu") {
+      createHiveMenu(beehive, Beewars.Game.bees.length);
+    }
+  }
 
-  Client.synchronizeFlower = flower => Client.socket.emit('synchronizeFlower', flower);
+  Client.synchronizeFlower = flower => {
+    Client.socket.emit('synchronizeFlower', flower);
+    if (document.getElementById('menu').firstChild.id == ("flowerMenu" + flower.id)) {
+      createFlowerMenu(flower);
+    }
+  }
 
-  Client.synchronizeBee = bee => Client.socket.emit('synchronizeBee', bee);
+  Client.synchronizeBee = bee => {
+    Client.socket.emit('synchronizeBee', bee);
+    if (document.getElementById('menu').firstChild.id == ("beeMenu" + bee.id)) {
+      createBeeMenu(bee);
+    }
+  }
 
   Client.emptyActions = bee => Client.socket.emit('emptyActions', bee.id);
 
@@ -37,7 +52,6 @@ Beewars.Client = new function(){
 
   	Client.socket.on('updateGameObject', updatedObject => {
         Beewars.Game.updateGameObject(updatedObject);
-        Beewars.Game.printRessource();
   	});
   });
 };
