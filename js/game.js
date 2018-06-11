@@ -23,7 +23,8 @@ Beewars.Game = new function() {
     Beewars.game.load.spritesheet('grass', 'assets/map/grass.png',32,32);
     Beewars.game.load.spritesheet('flowers', 'assets/map/flowers.png',64,64);
     Beewars.game.load.spritesheet('beehive', 'assets/map/beehive.png',128,160);
-    Beewars.game.load.image('sprite','assets/sprites/bees64px-version2.png');
+    Beewars.game.load.image('sprite', 'assets/sprites/bees64px-version2.png');    
+    Beewars.game.load.image('progressbar', 'assets/sprites/bar.png');
   };
 
   Game.create = () => {
@@ -110,10 +111,10 @@ Beewars.Game = new function() {
     }
   };
 
-  Game.goToHive = () => {
+  Game.goToHive = () => {    
     if (Game.isBeeSelected()) {
         Beewars.Client.goTo({beeID: Game.getSelectedBee().id, action: 'goToHive', target: {x: Game.beehivePosition.x, y: Game.beehivePosition.y} });
-    }
+    }    
   }
 
   Game.setBeehivePosition = (x, y) => {
@@ -136,24 +137,45 @@ Beewars.Game = new function() {
   Game.printBee = () => {
     if (Game.isBeeSelected()) Game.beeLabel.setText('Nectar on Bee: ' + Game.getSelectedBee().pollen);
     else Game.beeLabel.setText('');
+  }  
+
+  Game.deactivateBee = (bee, seconds) => {
+    bee.status = 3;
+
+    var barWidth = 50;
+    var progressBar = Game.add.sprite(bee.sprite.x - barWidth/2, bee.sprite.y - barWidth, 'progressbar');
+    progressBar.inputEnabled = false;
+    progressBar.width = barWidth;
+    progressBar.progress = barWidth / seconds;
+
+    Game.time.events.add(Phaser.Timer.SECOND * seconds, function () { Game.activateBee(bee) }, this);    
+    Game.time.events.repeat(Phaser.Timer.SECOND, seconds, function () { Game.updateProgressBar(progressBar) }, this);
   }
 
-  Game.updateTimer = (value, label) => label.setText(value);
 
-  Game.countDown = seconds => {
-      //make a counter so bee wait for some time before it gets the nectar. use callback
-  };
+  Game.updateProgressBar = (progressBar) => {         
+      progressBar.width = progressBar.width - progressBar.progress;     
+  }
+
+  Game.activateBee = (bee) => {
+      console.log(bee);
+      bee.status = 0;
+      console.log(bee);
+      console.log("Dobby is a free bee!");
+      Beewars.Client.synchronizeBee(bee.getSendableBee());
+  }
+
   Game.returnNectar = (bee) => {
     Game.beehive.pollen += bee.pollen;
     Game.beehive.honey += bee.pollen;
+    bee.pollen = 0;
     Beewars.Client.synchronizeBeehive(Game.beehive.getSendableBeehive());
     Beewars.Client.synchronizeBee(bee.getSendableBee());
-    bee.pollen = 0;
     Game.printBee();
   };
 
   Game.addNectarToBee = (bee, flower) => {
-    Game.countDown(10);
+    Game.deactivateBee(bee, 7);
     bee.pollen += 10;
     flower.pollen -=10;
     Beewars.Client.synchronizeBee(bee.getSendableBee());
@@ -162,7 +184,8 @@ Beewars.Game = new function() {
   };
 
   Game.addNewBee = (serverBee) => {
-    var sprite = Beewars.game.add.sprite(serverBee.x,serverBee.y, 'sprite');
+    var sprite = Game.add.sprite(serverBee.x, serverBee.y, 'sprite');
+    console.log(sprite);
     sprite.anchor.setTo(0.5);
     sprite.inputEnabled = true;
     sprite.events.onInputUp.add(Game.onUp, this);
@@ -215,7 +238,7 @@ Beewars.Game = new function() {
         Game.returnNectar(bee);
     }
     else {
-      const flower = Game.getFlowerForPosition({x: beeSprite.x, y: beeSprite.y});
+      const flower = Game.getFlowerForPosition({x: beeSprite.x, y: beeSprite.y});      
       Game.addNectarToBee(bee, flower);
     }
     Beewars.Client.emptyActions(bee);
