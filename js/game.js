@@ -226,14 +226,6 @@ Beewars.Game = new function() {
 
   Game.moveBee = (moveData) => {
     var bee = Game.bees[moveData.beeID];
-    /*if(moveData.target == 'beehive') {
-      var x = Game.beehivePosition.x;
-      var y = Game.beehivePosition.y;
-    }
-    else {
-      var x = Game.flowers[moveData.targetID].sprite.position.x;
-      var y = Game.flowers[moveData.targetID].sprite.position.y;
-    }*/
 
     bee.stopTween(); // In case the bee was flying to another flower (or hive)
     if(bee.shadowTween) {
@@ -327,6 +319,7 @@ Beewars.Game = new function() {
   }
 
   Game.showAllActions = (bee) => {
+    Game.graphics.clear();
     bee.getActions().forEach(action => {
           Game.graphics.lineStyle(10, 0xffd900, 1);
           Game.graphics.moveTo(bee.sprite.x, bee.sprite.y);
