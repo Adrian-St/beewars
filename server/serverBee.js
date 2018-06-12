@@ -50,6 +50,7 @@ Bee.prototype.performAction = function(playerAction) {
     if(indexOfOldPlayerAction != indexOfExistingAction){
       this.playerActions[indexOfExistingAction].weight += weight;
       this.playerActions[indexOfExistingAction].timestamp = playerAction.timestamp;
+      this.playerActions[indexOfExistingAction].playerIDs.push(playerAction.playerID)
       this.removeOldPlayerAction(weight, playerAction.playerID, indexOfOldPlayerAction);
     }
   } else {
