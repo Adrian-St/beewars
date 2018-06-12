@@ -24,7 +24,7 @@ Beewars.Game = new function() {
     Beewars.game.load.spritesheet('flowers', 'assets/map/flowers.png',64,64);
     Beewars.game.load.spritesheet('beehive', 'assets/map/beehive.png',128,160);
     Beewars.game.load.image('sprite', 'assets/sprites/bees64px-version2.png');    
-    Beewars.game.load.image('progressbar', 'assets/sprites/bar.png');
+    Beewars.game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
   };
 
   Game.create = () => {
@@ -152,19 +152,36 @@ Beewars.Game = new function() {
   Game.deactivateBee = (bee, seconds) => {
     bee.status = 3;
 
-    var barWidth = 50;
-    var progressBar = Game.add.sprite(bee.sprite.x - barWidth/2, bee.sprite.y - barWidth, 'progressbar');
-    progressBar.inputEnabled = false;
-    progressBar.width = barWidth;
-    progressBar.progress = barWidth / seconds;
+    Game.createProgressBar(bee.sprite.x, bee.sprite.y, 'progressbar', 50, 10, seconds, 0);
+    Game.time.events.add(Phaser.Timer.SECOND * seconds, function () { Game.activateBee(bee) }, this);
+  }
 
-    Game.time.events.add(Phaser.Timer.SECOND * seconds, function () { Game.activateBee(bee) }, this);    
-    Game.time.events.repeat(Phaser.Timer.SECOND, seconds, function () { Game.updateProgressBar(progressBar) }, this);
+  Game.createProgressBar = (x, y, image, barWidth, barHeight, seconds, type) => {
+      // type: 0 = decreasing | 1 = increasing
+      
+      var innerProgressBar = Game.add.sprite(x - barWidth / 2, y - barWidth, image);
+      innerProgressBar.inputEnabled = false;
+      if (type == 0) {
+          innerProgressBar.width = barWidth;
+      }
+      else if (type == 1) {
+          innerProgressBar.width = 0;
+      }
+      
+      innerProgressBar.height = barHeight;
+      innerProgressBar.progress = barWidth / seconds;
+
+      Game.time.events.repeat(Phaser.Timer.SECOND, seconds, function () { Game.updateProgressBar(innerProgressBar, type) }, this);
   }
 
 
-  Game.updateProgressBar = (progressBar) => {         
-      progressBar.width = progressBar.width - progressBar.progress;     
+  Game.updateProgressBar = (progressBar, type) => {
+      if (type == 0) {
+          progressBar.width = progressBar.width - progressBar.progress;
+      }
+      else if (type == 1) {
+          progressBar.width = progressBar.width + progressBar.progress;
+      }      
   }
 
   Game.activateBee = (bee) => {
