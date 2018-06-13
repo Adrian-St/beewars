@@ -42,28 +42,26 @@ Bee.prototype.reduceHealth = function(amount){
 
 Bee.prototype.performAction = function(playerAction) {
   //calculate here what action to perform
-  //current Implementation always accepts newest action
-  const weight = Game.players.find(player => player.id == playerAction.playerID).experience;
+  //const weight = Game.players.find(player => player.id == playerAction.playerID).experience;
   const indexOfExistingAction = this.playerActions.findIndex(action => action.target.x === playerAction.target.x && action.target.y === playerAction.target.y)
   const indexOfOldPlayerAction = this.playerActions.findIndex(action => action.playerIDs.includes(playerAction.playerID));
   if(indexOfExistingAction != -1){
     if(indexOfOldPlayerAction != indexOfExistingAction){
-      this.playerActions[indexOfExistingAction].weight += weight;
       this.playerActions[indexOfExistingAction].timestamp = playerAction.timestamp;
       this.playerActions[indexOfExistingAction].playerIDs.push(playerAction.playerID)
-      this.removeOldPlayerAction(weight, playerAction.playerID, indexOfOldPlayerAction);
+      this.removeOldPlayerAction(playerAction.playerID, indexOfOldPlayerAction);
     }
   } else {
     if(indexOfOldPlayerAction != -1){
-      this.removeOldPlayerAction(weight, playerAction.playerID, indexOfOldPlayerAction);
-    }
-    
+      this.removeOldPlayerAction(playerAction.playerID, indexOfOldPlayerAction);
+    }    
     playerAction.id = Game.lastActionId;
-    playerAction.weight = weight;
     playerAction.playerIDs = [playerAction.playerID];
     this.playerActions.push(playerAction);
     Game.lastActionId++;
   }
+  this.calculateWeightsForActions();
+
   this.playerActions.sort((a,b) => {return b.weight - a.weight});
 
   if(this.playerActions.length > 1) {
@@ -77,12 +75,21 @@ Bee.prototype.performAction = function(playerAction) {
   return this.playerActions;
 }
 
-Bee.prototype.removeOldPlayerAction = function(weight, playerID, indexOfOldPlayerAction) {
-  this.playerActions[indexOfOldPlayerAction].weight -= weight;
+Bee.prototype.removeOldPlayerAction = function(playerID, indexOfOldPlayerAction) {
   this.playerActions[indexOfOldPlayerAction].playerIDs.splice(this.playerActions[indexOfOldPlayerAction].playerIDs.indexOf(playerID), 1);
-  if(this.playerActions[indexOfOldPlayerAction].weight <= 0)
+  if(this.playerActions[indexOfOldPlayerAction].playerIDs.length === 0)
     this.playerActions.splice(indexOfOldPlayerAction, 1);
 }
+
+Bee.prototype.calculateWeightsForActions = function() {
+  this.playerActions = this.playerActions.map(action => {
+    action.weight = action.playerIDs.reduce((total, playerID) => {
+      return total + Game.players.find(player => player.id == playerID).experience
+    }, 0);
+    return action;
+  });
+}
+
 module.exports = Bee;
 
 /*

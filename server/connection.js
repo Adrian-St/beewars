@@ -19,7 +19,6 @@ Connection.start = (param) => {
       socket.broadcast.emit('newplayer', socket.player);
 
       socket.on('goTo', moveData => {
-        console.log(game.bees[moveData.beeID]);
         if (game.bees[moveData.beeID].status != 3) {
             io.emit('move', game.performActionForBee(socket.player.id, moveData));
         }
