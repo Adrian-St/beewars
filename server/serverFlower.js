@@ -1,7 +1,11 @@
-Flower = function(id) {
+function randomInt(low, high) {
+    return Math.floor(Math.random() * (high - low) + low);
+}
+
+Flower = function (id) {
   this.id = id
-  this.nectar = 200;
-  this.pollen = 200;
+  this.nectar = randomInt(100,200);
+  this.pollen = randomInt(100, 200);
 }
 Flower.prototype.collectPollen = function (amount){
   this.pollen -= amount;

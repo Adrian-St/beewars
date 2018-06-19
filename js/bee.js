@@ -35,8 +35,13 @@ Beewars.Bee.prototype.initializeTween = function (){
 	this.tween = Beewars.game.add.tween(this.sprite);
 }
 
-Beewars.Bee.prototype.startTween = function (destination){
-    var duration = Phaser.Math.distance(this.sprite.position.x, this.sprite.position.y, destination.x, destination.y) * 10;
+Beewars.Bee.prototype.calculateBeeSpeed = (bee) => {
+    return (bee.pollen + bee.nectar) / 100 + 1;
+}
+
+Beewars.Bee.prototype.startTween = function (destination) { 
+    var beeSpeed = Beewars.Bee.prototype.calculateBeeSpeed(this);    
+    var duration = Phaser.Math.distance(this.sprite.position.x, this.sprite.position.y, destination.x, destination.y) * 10 * beeSpeed;
     this.initializeTween();
     this.tween.to(destination, duration);
     this.tween.onComplete.add(Beewars.Game.moveCallback, this);

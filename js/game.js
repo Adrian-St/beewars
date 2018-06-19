@@ -251,6 +251,8 @@ Beewars.Game = new function() {
     if(bee.shadow){
       bee.startShadowTween({x: moveData.target.x, y: moveData.target.y});
     }
+
+    Game.deselectBee(bee);
   };
 
   Game.playerActions = (playerActions) => {
@@ -290,16 +292,60 @@ Beewars.Game = new function() {
     }
   }
 
+  Game.deselectBee = (bee) => {
+      createHiveMenu(Game.beehive.getSendableBeehive(), Game.bees.length);
+      bee.deactivateShadow();
+      Game.graphics.clear();
+  }
+
+  Game.getAllBeesAtPosition = (bee) => {
+      var x = bee.sprite.position.x;
+      var y = bee.sprite.position.y;
+      var radius = 20;
+      var allBees = Game.bees.filter(item => item.sprite.position.x > x-radius && item.sprite.position.x < x+radius && item.sprite.position.y > y-radius && item.sprite.position.y < y+radius);    
+      return allBees;
+  }
+
+  Game.isOdd = (number) => {
+      return number % 2;
+  }
+
+  Game.handleMultipleBees = (allBees) => {      
+      var position = allBees[0].sprite.position;      
+      var length = allBees.length * 40;
+      var leftX = position.x - length / 2;
+      var rightX = position.x + length / 2;
+      
+
+      //only works for two bees currently, fix for all numbers
+      allBees[0].sprite.position.x = leftX;
+      allBees[1].sprite.position.x = rightX;
+
+      multipleBeesSelected.push(allBees);
+      console.log(multipleBeesSelected);
+  }
+
+  var multipleBeesSelected = [];
+
   Game.onUp = (sprite, pointer) => {
     var clickedBee = Game.bees.find(item => item.sprite === sprite);
+    var allBees = Game.getAllBeesAtPosition(clickedBee);
+    console.log(allBees);
+
+    console.log(multipleBeesSelected);
+    if (multipleBeesSelected.length > 0) {
+        console.log("choose");
+        //Game.deselectAllSelectedBees();
+    }
+    if (allBees.length >= 2) {
+        Game.handleMultipleBees(allBees);
+    }
 
     Game.stopAllOtherShadowTweens(clickedBee);
     Game.deactivateAllOtherShadows(clickedBee);
 
-    if (clickedBee.shadow) {    // the bee had already a shadow
-        createHiveMenu(Game.beehive.getSendableBeehive(), Game.bees.length);
-        clickedBee.deactivateShadow();
-        Game.graphics.clear();
+    if (clickedBee.shadow) {    // the bee already had a shadow
+        Game.deselectBee(clickedBee);
         return;
     }
     if (!clickedBee.shadow){ // the bee wasn't selected before
