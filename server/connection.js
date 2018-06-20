@@ -1,3 +1,4 @@
+'use strict';
 
 var Connection = {};
 var io;
@@ -9,7 +10,7 @@ Connection.start = (param) => {
   io.on('connection', socket => {
 
     socket.on('newplayer', (gameObjects) => {
-      if (game.lastPlayerID == 0) {
+      if (game.lastPlayerID === 0) {
         game.start(gameObjects);
         socket.emit('newGame');
       }
@@ -22,7 +23,6 @@ Connection.start = (param) => {
         if (game.bees[moveData.beeID].status != 3) {
             io.emit('move', game.performActionForBee(socket.player.id, moveData));
         }
-        else console.log("Bee is beesy");
       });
 
       socket.on('synchronizeBeehive', updatedBeehive => {
@@ -59,11 +59,11 @@ Connection.updateGameObject = (updatedGameObject) => {
 
 module.exports = Connection;
 
-function getAllPlayers(){
+/*function getAllPlayers(){
   var players = [];
   Object.keys(io.sockets.connected).forEach(socketID => {
     var player = io.sockets.connected[socketID].player;
     if(player) players.push(player);
   });
   return players;
-}
+}*/

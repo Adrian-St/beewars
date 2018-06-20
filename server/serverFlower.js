@@ -1,5 +1,7 @@
-Flower = function(id) {
-  this.id = id
+'use strict';
+
+function Flower(id) {
+  this.id = id;
   this.nectar = 200;
   this.pollen = 200;
 }
@@ -13,7 +15,8 @@ Flower.prototype.collectPollen = function (amount){
   else {
     return amount;
   }
-}
+};
+
 Flower.prototype.collectNectar = function (amount){
   this.pollen -= amount;
   if (this.pollen < 0) {
@@ -24,6 +27,6 @@ Flower.prototype.collectNectar = function (amount){
   else {
     return amount;
   }
-}
+};
 
 module.exports = Flower;

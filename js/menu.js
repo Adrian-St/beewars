@@ -1,7 +1,7 @@
 function createTextField(title, element) {
     var text = document.createElement("P");
     text.style.fontFamily = "Raleway";
-    text.appendChild(document.createTextNode(title))
+    text.appendChild(document.createTextNode(title));
     text.appendChild(document.createTextNode(element));
     return text;
 }
@@ -10,15 +10,15 @@ function createHeading(title,element) {
     var heading = document.createElement("H3");
     heading.style.fontFamily = "Raleway";
     heading.appendChild(document.createTextNode(title));
-    if (typeof element != "undefined") {
-        heading.appendChild(document.createTextNode(element))
+    if (typeof element !== "undefined") {
+        heading.appendChild(document.createTextNode(element));
     }
     heading.classList.add("heading");
     return heading;
 }
 
 function createSubmenu() {
-    var subMenu = document.createElement("DIV")
+    var subMenu = document.createElement("DIV");
     subMenu.classList.add("label-container");
     for (var i = 0, j = arguments.length; i < j; i++) {
         subMenu.appendChild(arguments[i]);

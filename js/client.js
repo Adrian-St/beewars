@@ -1,4 +1,5 @@
 var Beewars = Beewars || {};
+
 Beewars.Client = new function(){
   var Client = this;
   Client.socket = io.connect();
@@ -17,24 +18,24 @@ Beewars.Client = new function(){
 
   Client.synchronizeBeehive = beehive => {
     Client.socket.emit('synchronizeBeehive',beehive);
-    if (document.getElementById('menu').firstChild.id == "hiveMenu") {
+    if (document.getElementById('menu').firstChild.id === "hiveMenu") {
       createHiveMenu(beehive, Beewars.Game.bees.length);
     }
-  }
+  };
 
   Client.synchronizeFlower = flower => {
     Client.socket.emit('synchronizeFlower', flower);
-    if (document.getElementById('menu').firstChild.id == ("flowerMenu" + flower.id)) {
+    if (document.getElementById('menu').firstChild.id === ("flowerMenu" + flower.id)) {
       createFlowerMenu(flower);
     }
-  }
+  };
 
   Client.synchronizeBee = bee => {
     Client.socket.emit('synchronizeBee', bee);
-    if (document.getElementById('menu').firstChild.id == ("beeMenu" + bee.id)) {
+    if (document.getElementById('menu').firstChild.id === ("beeMenu" + bee.id)) {
       createBeeMenu(bee);
     }
-  }
+  };
 
   Client.emptyActions = bee => Client.socket.emit('emptyActions', bee.id);
 

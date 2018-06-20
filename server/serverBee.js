@@ -1,3 +1,5 @@
+'use strict';
+
 function Bee (id)  {
   this.id = id;
   this.x = randomInt(100, 400);
@@ -10,7 +12,7 @@ function Bee (id)  {
   this.nectar = 0;
   this.capacity = 100;
   this.playerActions = [];
-};
+}
 
 Game.lastActionId = 0;
 
@@ -30,7 +32,7 @@ Bee.prototype.increaseAge = function(){
   if (this.age >= 45) {
     this.status = this.states.DEAD;
   }
-}
+};
 
 Bee.prototype.reduceHealth = function(amount){
   this.health -= amount;
@@ -43,12 +45,12 @@ Bee.prototype.reduceHealth = function(amount){
 Bee.prototype.performAction = function(playerAction) {
   //calculate here what action to perform
   //const weight = Game.players.find(player => player.id == playerAction.playerID).experience;
-  const indexOfExistingAction = this.playerActions.findIndex(action => action.target.x === playerAction.target.x && action.target.y === playerAction.target.y)
+  const indexOfExistingAction = this.playerActions.findIndex(action => action.target.x === playerAction.target.x && action.target.y === playerAction.target.y);
   const indexOfOldPlayerAction = this.playerActions.findIndex(action => action.playerIDs.includes(playerAction.playerID));
   if(indexOfExistingAction != -1){
     if(indexOfOldPlayerAction != indexOfExistingAction){
       this.playerActions[indexOfExistingAction].timestamp = playerAction.timestamp;
-      this.playerActions[indexOfExistingAction].playerIDs.push(playerAction.playerID)
+      this.playerActions[indexOfExistingAction].playerIDs.push(playerAction.playerID);
       this.removeOldPlayerAction(playerAction.playerID, indexOfOldPlayerAction);
     }
   } else {
@@ -62,7 +64,7 @@ Bee.prototype.performAction = function(playerAction) {
   }
   this.calculateWeightsForActions();
 
-  this.playerActions.sort((a,b) => {return b.weight - a.weight});
+  this.playerActions.sort((a,b) => {return b.weight - a.weight;});
 
   if(this.playerActions.length > 1) {
     if(this.playerActions[0].weight - this.playerActions[1].weight < 0.2) {
@@ -73,22 +75,22 @@ Bee.prototype.performAction = function(playerAction) {
     }
   }
   return this.playerActions;
-}
+};
 
 Bee.prototype.removeOldPlayerAction = function(playerID, indexOfOldPlayerAction) {
   this.playerActions[indexOfOldPlayerAction].playerIDs.splice(this.playerActions[indexOfOldPlayerAction].playerIDs.indexOf(playerID), 1);
   if(this.playerActions[indexOfOldPlayerAction].playerIDs.length === 0)
     this.playerActions.splice(indexOfOldPlayerAction, 1);
-}
+};
 
 Bee.prototype.calculateWeightsForActions = function() {
   this.playerActions = this.playerActions.map(action => {
     action.weight = action.playerIDs.reduce((total, playerID) => {
-      return total + Game.players.find(player => player.id == playerID).experience
+      return total + Game.players.find(player => player.id == playerID).experience;
     }, 0);
     return action;
   });
-}
+};
 
 module.exports = Bee;
 

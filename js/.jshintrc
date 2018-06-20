@@ -1,0 +1,14 @@
+{
+	"browser": true,
+	"esversion":6,
+	"eqeqeq": true,
+	"nonew": true,
+	"strict": "false",
+  	"undef": true,
+  	"unused": true,
+  	"supernew": true,
+  	"globals": {
+  		"Beewars": true,
+      "io": true
+  	}
+}
