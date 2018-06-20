@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 function Player(id) {
   this.id = id;

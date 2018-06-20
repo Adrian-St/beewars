@@ -7,7 +7,7 @@ Beewars.Beehive = function(serverBeehive, sprite) {
   this.sprite = sprite;
 };
 
-Beewars.Beehive.prototype.getSendableBeehive = function (){
+Beewars.Beehive.prototype.getSendableBeehive = function() {
   return {
     pollen: this.pollen,
     honey: this.honey,

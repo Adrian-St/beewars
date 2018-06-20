@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var Beehive = {};
 Beehive.pollen = 0;

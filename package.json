@@ -7,6 +7,7 @@
     "express": "^4.15.2",
     "phaser": "^3.6.0",
     "socket.io": "^1.7.3",
-    "jshint": "^2.9.5"
+    "jshint": "^2.9.5",
+    "prettier": "^1.13.5"
   }
 }
