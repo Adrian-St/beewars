@@ -124,6 +124,7 @@ Beewars.Game = new function() {
   Game.goToHive = () => {
     if (Game.isBeeSelected()) {
         Beewars.Client.goTo({beeID: Game.getSelectedBee().id, action: 'goToHive', target: {x: Game.beehivePosition.x, y: Game.beehivePosition.y} });
+        Game.getSelectedBee().resetTimer();
     }
   }
 
@@ -228,11 +229,13 @@ Beewars.Game = new function() {
     var bee = Game.bees[moveData.beeID];
 
     bee.stopTween(); // In case the bee was flying to another flower (or hive)
+    bee.resetTimer();
     if(bee.shadowTween) {
         bee.stopShadowTween();
     }
 
     if(moveData.stop) {
+      bee.startTimer();
       if(bee.shadow)
         Game.showAllActions(bee);
       return;
@@ -260,6 +263,7 @@ Beewars.Game = new function() {
       const flower = Game.getFlowerForPosition({x: beeSprite.x, y: beeSprite.y});
       Game.addNectarToBee(bee, flower);
     }
+    bee.startTimer();
     Beewars.Client.emptyActions(bee);
     Game.graphics.clear();
   };
