@@ -14,30 +14,18 @@
     "xo": "^0.21.1"
   },
   "xo": {
-    "ignores": [
-      "js/phaser.min.js"
-    ],
+    "ignores": ["js/phaser.min.js"],
     "prettier": true,
     "overrides": [
       {
         "files": "js/*.js",
-        "env": [
-          "browser"
-        ],
-        "globals": [
-          "Beewars",
-          "io",
-          "Phaser"
-        ]
+        "env": ["browser"],
+        "globals": ["Beewars", "io", "Phaser"]
       },
       {
         "files": "server/*.js",
-        "env": [
-          "node"
-        ],
-        "globals": [
-          "Game"
-        ]
+        "env": ["node"],
+        "globals": ["Game"]
       }
     ],
     "rules": {
@@ -47,12 +35,7 @@
           "case": "camelCase"
         }
       ],
-      "no-use-before-define": [
-        "error",
-        {
-          "variables": false
-        }
-      ]
+      "import/extensions": ["error", "always", {"ignorePackages": true} ]
     }
   }
 }
