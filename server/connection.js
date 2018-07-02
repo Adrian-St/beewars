@@ -1,4 +1,3 @@
-
 var Connection = {};
 var io;
 var game = require('./serverGame.js');
@@ -20,13 +19,12 @@ Connection.start = (param) => {
 
       socket.on('goTo', moveData => {
         if (game.bees[moveData.beeID].status != 3) {
-            io.emit('move', game.performActionForBee(socket.player.id, moveData));
+          io.emit('move', game.performActionForBee(socket.player.id, moveData));
         }
-        else console.log("Bee is beesy");
       });
 
       socket.on('synchronizeBeehive', updatedBeehive => {
-        Connection.updateGameObject(game.handleSynchronizeBeehive(updatedBeehive));//io.emit('updateGameObject', game.handleSynchronizeBeehive(updatedBeehive));
+        Connection.updateGameObject(game.handleSynchronizeBeehive(updatedBeehive)); //io.emit('updateGameObject', game.handleSynchronizeBeehive(updatedBeehive));
       });
 
       socket.on('synchronizeBee', updatedBee => {
@@ -58,17 +56,16 @@ Connection.updateBees = (bees) => {
 };
 
 Connection.updateGameObject = (updatedGameObject) => {
-  console.log(game.players);
   io.emit('updateGameObject', updatedGameObject);
 };
 
 module.exports = Connection;
 
-function getAllPlayers(){
+function getAllPlayers() {
   var players = [];
   Object.keys(io.sockets.connected).forEach(socketID => {
     var player = io.sockets.connected[socketID].player;
-    if(player) players.push(player);
+    if (player) players.push(player);
   });
   return players;
 }

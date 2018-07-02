@@ -1,6 +1,7 @@
 // TODO: fix shadow tween on multiple bee selection
 // TODO: handle situation when multiple bees go to the same flower -> display of time etc.
 // TODO: crop flower sprite so that the black line disappears
+// TODO: find better structure to save multipleBeeSelectionStatus, multipleBeeSelectionPosition and multipleBeeSelectionCollection
 
 var Beewars = Beewars || {};
 Beewars.Game = new function() {
@@ -273,10 +274,7 @@ Beewars.Game = new function() {
   }
 
   Game.activateBee = (bee) => {
-    console.log(bee);
     bee.status = 0;
-    console.log(bee);
-    console.log("Dobby is a free bee!");
     Beewars.Client.synchronizeBee(bee.getSendableBee());
   }
 
@@ -314,16 +312,24 @@ Beewars.Game = new function() {
 
   Game.moveBee = (moveData) => {
     var bee = Game.bees[moveData.beeID];
+    /*if(moveData.target == 'beehive') {
+      var x = Game.beehivePosition.x;
+      var y = Game.beehivePosition.y;
+    }
+    else {
+      var x = Game.flowers[moveData.targetID].sprite.position.x;
+      var y = Game.flowers[moveData.targetID].sprite.position.y;
+    }*/
 
     bee.stopTween(); // In case the bee was flying to another flower (or hive)
     bee.resetTimer();
-    if(bee.shadowTween) {
-        bee.stopShadowTween();
+    if (bee.shadowTween) {
+      bee.stopShadowTween();
     }
 
-    if(moveData.stop) {
+    if (moveData.stop) {
       bee.startTimer();
-      if(bee.shadow)
+      if (bee.shadow)
         Game.showAllActions(bee);
       return;
     }
@@ -360,7 +366,7 @@ Beewars.Game = new function() {
       });
       Game.addNectarToBee(bee, flower);
     }
-    bee.startTimer();
+    bee.startTimer(); 
     Beewars.Client.emptyActions(bee);
     Game.graphics.clear();
   };
@@ -438,7 +444,6 @@ Beewars.Game = new function() {
   }
 
   Game.showAllActions = (bee) => {
-    Game.graphics.clear();
     bee.getActions().forEach(action => {
       Game.graphics.lineStyle(10, 0xffd900, 1);
       Game.graphics.moveTo(bee.sprite.x, bee.sprite.y);
