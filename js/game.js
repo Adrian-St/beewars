@@ -1,8 +1,3 @@
-// TODO: fix shadow tween on multiple bee selection
-// TODO: handle situation when multiple bees go to the same flower -> display of time etc.
-// TODO: crop flower sprite so that the black line disappears
-// TODO: find better structure to save multipleBeeSelectionStatus, multipleBeeSelectionPosition and multipleBeeSelectionCollection
-
 var Beewars = Beewars || {};
 Beewars.Game = new function() {
   var Game = this;
@@ -366,7 +361,7 @@ Beewars.Game = new function() {
       });
       Game.addNectarToBee(bee, flower);
     }
-    bee.startTimer(); 
+    bee.startTimer();
     Beewars.Client.emptyActions(bee);
     Game.graphics.clear();
   };
