@@ -39,8 +39,8 @@ Beewars.Bee.prototype.calculateBeeSpeed = (bee) => {
     return (bee.pollen + bee.nectar) / 100 + 1;
 }
 
-Beewars.Bee.prototype.startTween = function (destination) { 
-    var beeSpeed = Beewars.Bee.prototype.calculateBeeSpeed(this);    
+Beewars.Bee.prototype.startTween = function (destination) {
+    var beeSpeed = Beewars.Bee.prototype.calculateBeeSpeed(this);
     var duration = Phaser.Math.distance(this.sprite.position.x, this.sprite.position.y, destination.x, destination.y) * 10 * beeSpeed;
     this.initializeTween();
     this.tween.to(destination, duration);
@@ -91,7 +91,6 @@ Beewars.Bee.prototype.getSendableBee = function (){
 
 Beewars.Bee.prototype.getActions = function (){ //this gets all of the playerActions from one Bee and removes the "stop" Actions
   return this.playerActions.map(action => {
-  	if(!action.stop) 
+  	if(!action.stop)
   		return {x: action.target.x, y: action.target.y}}).filter(el => el)
 }
-
