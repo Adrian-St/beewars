@@ -38,6 +38,8 @@ Beewars.Client = new function(){
 
   Client.emptyActions = bee => Client.socket.emit('emptyActions', bee.id);
 
+  Client.beeIsIdleForTooLong = bee => Client.socket.emit('beeIsIdleForTooLong', bee.id);
+
   Client.socket.on('gameObjects', data => {
     Beewars.Game.addProperties(data);
 

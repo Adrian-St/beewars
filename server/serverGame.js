@@ -71,7 +71,7 @@ Game.calculatePlayerExperienceAfterBeeArrived = beeID => {
 }
 
 Game.raiseExperienceForPlayer = (playerID, value) => {
-  Game.players.find(player => player.id == playerID).experience += value;
+  Game.players.find(player => player.id == playerID).raiseExpBy(value);
 }
 
 Game.handleSynchronizeBeehive = (updatedBeehive) => {
@@ -109,6 +109,17 @@ Game.beeForId = id => {
 
 Game.flowerForId = id => {
   return Game.flowers.find(flower => {return flower.id === id;});
+}
+
+Game.handleBeeIsIdleForTooLong = beeId => {
+  var bee = Game.beeForId(beeId);
+  var participatingPlayerIds = [];
+  bee.playerActions.map(a => participatingPlayerIds = participatingPlayerIds.concat(a.playerIDs));
+  Game.players.forEach(player => {
+    if(!(player.id in participatingPlayerIds)) player.raiseExpBy(-0.1);
+  })
+  Game.players.forEach(a => console.log(a.experience))
+
 }
 
 module.exports = Game;

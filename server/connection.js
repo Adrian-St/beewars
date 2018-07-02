@@ -19,7 +19,6 @@ Connection.start = (param) => {
       socket.broadcast.emit('newplayer', socket.player);
 
       socket.on('goTo', moveData => {
-        console.log(game.bees[moveData.beeID]);
         if (game.bees[moveData.beeID].status != 3) {
             io.emit('move', game.performActionForBee(socket.player.id, moveData));
         }
@@ -42,6 +41,10 @@ Connection.start = (param) => {
         Connection.updateGameObject(game.emptyActionLogOfBee(beeId));
       });
 
+      socket.on('beeIsIdleForTooLong', beeId => {
+        game.handleBeeIsIdleForTooLong(beeId);
+      });
+
       socket.on('disconnect', () => {
         game.players.splice(socket.player.id, 1);
         io.emit('remove', socket.player.id);
@@ -55,6 +58,7 @@ Connection.updateBees = (bees) => {
 };
 
 Connection.updateGameObject = (updatedGameObject) => {
+  console.log(game.players);
   io.emit('updateGameObject', updatedGameObject);
 };
 

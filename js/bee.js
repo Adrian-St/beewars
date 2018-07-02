@@ -13,6 +13,7 @@ Beewars.Bee = function(serverBee, sprite) {
   this.shadow = null;
   this.shadowTween = null;
   this.playerActions = [];
+  this.timer = null;
 }
 
 Beewars.Bee.prototype.activateShadow = function (){
@@ -91,6 +92,25 @@ Beewars.Bee.prototype.getSendableBee = function (){
 
 Beewars.Bee.prototype.getActions = function (){ //this gets all of the playerActions from one Bee and removes the "stop" Actions
   return this.playerActions.map(action => {
-  	if(!action.stop)
-  		return {x: action.target.x, y: action.target.y}}).filter(el => el)
+    if(!action.stop) 
+      return {x: action.target.x, y: action.target.y}}).filter(el => el)
+}
+
+Beewars.Bee.prototype.resetTimer = function (){ 
+  if(this.timer != null){
+    console.log('reset');
+    Beewars.game.time.events.remove(this.timer);
+    this.timer = null;
+  }
+}
+
+Beewars.Bee.prototype.startTimer = function (){ 
+  this.resetTimer();
+  console.log('start', this.timer);
+  this.timer = Beewars.game.time.events.add(Phaser.Timer.SECOND * 10, onElapsedTime, this)
+}
+
+function onElapsedTime(){ 
+  console.log('timer');
+  Beewars.Client.beeIsIdleForTooLong(this)
 }
