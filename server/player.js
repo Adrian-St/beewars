@@ -1,8 +1,8 @@
-"use strict";
+'use strict';
 
 function Player(id) {
-  this.id = id;
-  this.experience = 1;
+	this.id = id;
+	this.experience = 1;
 }
 
 module.exports = Player;

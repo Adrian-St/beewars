@@ -1,13 +1,58 @@
 {
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "xo"
   },
   "dependencies": {
     "express": "^4.15.2",
     "phaser": "^3.6.0",
-    "socket.io": "^1.7.3",
-    "jshint": "^2.9.5",
-    "prettier": "^1.13.5"
+    "prettier": "^1.13.5",
+    "socket.io": "^1.7.3"
+  },
+  "devDependencies": {
+    "xo": "^0.21.1"
+  },
+  "xo": {
+    "ignores": [
+      "js/phaser.min.js"
+    ],
+    "prettier": true,
+    "overrides": [
+      {
+        "files": "js/*.js",
+        "env": [
+          "browser"
+        ],
+        "globals": [
+          "Beewars",
+          "io",
+          "Phaser"
+        ]
+      },
+      {
+        "files": "server/*.js",
+        "env": [
+          "node"
+        ],
+        "globals": [
+          "Game"
+        ]
+      }
+    ],
+    "rules": {
+      "unicorn/filename-case": [
+        "error",
+        {
+          "case": "camelCase"
+        }
+      ],
+      "no-use-before-define": [
+        "error",
+        {
+          "variables": false
+        }
+      ]
+    }
   }
 }
