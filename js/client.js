@@ -1,62 +1,66 @@
-Beewars = Beewars || {};
+import Menu from './menu.js';
+import Game from './game.js';
 
-Beewars.Client = new function() {
-	const Client = this;
-	Client.socket = io.connect();
+class Beehive {
+	constructor() {
+		this.socket = io.connect();
+		this.socket.on('newplayer', data => {
+			Game.addNewPlayer(data);
+		});
+		this.socket.on('gameObjects', data => {
+			Game.addProperties(data);
 
-	Client.askNewPlayer = gameObjects =>
-		Client.socket.emit('newplayer', gameObjects);
+			this.socket.on('move', playerActions => {
+				Game.playerActions(playerActions);
+				Game.moveBee(playerActions[0]);
+			});
 
-	Client.goTo = moveData => {
-		// MoveData example: {beeID: bee.id, action: 'getPollen', target: 'flower', targetNr(optional):flower.id}
-		moveData.timestamp = Date.now();
-		Client.socket.emit('goTo', moveData);
-	};
+			this.socket.on('remove', id => {
+				Game.removePlayer(id);
+			});
 
-	Client.socket.on('newplayer', data => {
-		Beewars.Game.addNewPlayer(data);
-	});
+			this.socket.on('updateGameObject', updatedObject => {
+				Game.updateGameObject(updatedObject);
+			});
+		});
+	}
 
-	Client.synchronizeBeehive = beehive => {
-		Client.socket.emit('synchronizeBeehive', beehive);
+	askNewPlayer(gameObjects) {
+		this.socket.emit('newplayer', gameObjects);
+	}
+
+	goTo(playerAction) {
+		playerAction.timestamp = Date.now();
+		this.socket.emit('goTo', playerAction);
+	}
+
+	synchronizeBeehive(beehive) {
+		this.socket.emit('synchronizeBeehive', beehive);
 		if (document.getElementById('menu').firstChild.id === 'hiveMenu') {
-			createHiveMenu(beehive, Beewars.Game.bees.length);
+			Menu.createHiveMenu(beehive, Game.bees.length);
 		}
-	};
+	}
 
-	Client.synchronizeFlower = flower => {
-		Client.socket.emit('synchronizeFlower', flower);
+	synchronizeFlower(flower) {
+		this.socket.emit('synchronizeFlower', flower);
 		if (
 			document.getElementById('menu').firstChild.id ===
 			'flowerMenu' + flower.id
 		) {
-			createFlowerMenu(flower);
+			Menu.createFlowerMenu(flower);
 		}
-	};
+	}
 
-	Client.synchronizeBee = bee => {
-		Client.socket.emit('synchronizeBee', bee);
+	synchronizeBee(bee) {
+		this.socket.emit('synchronizeBee', bee);
 		if (document.getElementById('menu').firstChild.id === 'beeMenu' + bee.id) {
-			createBeeMenu(bee);
+			Menu.createBeeMenu(bee);
 		}
-	};
+	}
 
-	Client.emptyActions = bee => Client.socket.emit('emptyActions', bee.id);
+	emptyActions(bee) {
+		this.socket.emit('emptyActions', bee.id);
+	}
+}
 
-	Client.socket.on('gameObjects', data => {
-		Beewars.Game.addProperties(data);
-
-		Client.socket.on('move', playerActions => {
-			Beewars.Game.playerActions(playerActions);
-			Beewars.Game.moveBee(playerActions[0]);
-		});
-
-		Client.socket.on('remove', id => {
-			Beewars.Game.removePlayer(id);
-		});
-
-		Client.socket.on('updateGameObject', updatedObject => {
-			Beewars.Game.updateGameObject(updatedObject);
-		});
-	});
-}();
+export default new Beehive();

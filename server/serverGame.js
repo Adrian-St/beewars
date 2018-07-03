@@ -34,7 +34,7 @@ Game.start = gameObjects => {
 Game.update = () => {
 	for (let i = 0; i < Game.bees.length; i++) {
 		Game.bees[i].increaseAge();
-		connection.updateGameObject({type: 'bee', content: Game.bees[i]});
+		connection.updateGameObject({ type: 'bee', content: Game.bees[i] });
 	}
 };
 
@@ -65,11 +65,11 @@ Game.emptyActionLogOfBee = beeID => {
 		Game.calculatePlayerExperienceAfterBeeArrived(beeID);
 	}
 	Game.beeForId(beeID).playerActions = [];
-	return {type: 'bee', content: Game.beeForId(beeID)};
+	return { type: 'bee', content: Game.beeForId(beeID) };
 };
 
 Game.calculatePlayerExperienceAfterBeeArrived = beeID => {
-	const {playerActions} = Game.beeForId(beeID);
+	const { playerActions } = Game.beeForId(beeID);
 	const positiveContributer = playerActions[0].playerIDs;
 	positiveContributer.forEach(playerID =>
 		Game.raiseExperienceForPlayer(playerID, 0.1)
@@ -84,7 +84,7 @@ Game.handleSynchronizeBeehive = updatedBeehive => {
 	Game.beehive.pollen = updatedBeehive.pollen;
 	Game.beehive.honey = updatedBeehive.honey;
 	Game.beehive.honeycombs = updatedBeehive.honeycombs;
-	return {type: 'beehive', content: Game.beehive};
+	return { type: 'beehive', content: Game.beehive };
 };
 
 Game.handleSynchronizeBee = updatedBee => {
@@ -98,7 +98,7 @@ Game.handleSynchronizeBee = updatedBee => {
 	beeToBeUpdated.pollen = updatedBee.pollen;
 	beeToBeUpdated.nectar = updatedBee.nectar;
 	beeToBeUpdated.capacity = updatedBee.capacity;
-	return {type: 'bee', content: beeToBeUpdated};
+	return { type: 'bee', content: beeToBeUpdated };
 };
 
 Game.handleSynchronizeFlower = updatedFlower => {
@@ -106,7 +106,7 @@ Game.handleSynchronizeFlower = updatedFlower => {
 	flowerToBeUpdated.pollen = updatedFlower.pollen;
 	flowerToBeUpdated.nectar = updatedFlower.nectar;
 
-	return {type: 'flower', content: flowerToBeUpdated};
+	return { type: 'flower', content: flowerToBeUpdated };
 };
 
 Game.beeForId = id => {

@@ -1,10 +1,10 @@
-import {Beewars} from './beewars';
+import Game from './game.js';
 
-Beewars.game = new Phaser.Game(
+export const game = new Phaser.Game(
 	30 * 32,
 	20 * 32,
 	Phaser.AUTO,
 	document.getElementById('game')
 );
-Beewars.game.state.add('Game', Beewars.Game);
-Beewars.game.state.start('Game');
+game.state.add('Game', Game);
+game.state.start('Game');
