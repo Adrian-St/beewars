@@ -18,6 +18,7 @@ Connection.start = (param) => {
 
       socket.broadcast.emit('newplayer', socket.player);
 
+      /*
       socket.on('goTo', moveData => {
         if (game.bees[moveData.beeID].status != 3) {
             io.emit('move', game.performActionForBee(socket.player.id, moveData));
@@ -37,6 +38,7 @@ Connection.start = (param) => {
         Connection.updateGameObject(game.handleSynchronizeFlower(updatedFlower));
       });
 
+
       socket.on('emptyActions', beeId => {
         Connection.updateGameObject(game.emptyActionLogOfBee(beeId));
       });
@@ -44,6 +46,14 @@ Connection.start = (param) => {
       socket.on('beeIsIdleForTooLong', beeId => {
         game.handleBeeIsIdleForTooLong(beeId);
       });
+      */
+      // NEW - Begin --------------------------------------------------------------------------------------
+      socket.on('requestMovement', moveData => {
+        game.handleMovementRequest(socket.player.id, moveData);
+        // the server answers with the (updated) bee
+      });
+
+      // NEW - End --------------------------------------------------------------------------------------
 
       socket.on('disconnect', () => {
         game.players.splice(socket.player.id, 1);
@@ -53,14 +63,23 @@ Connection.start = (param) => {
   });
 };
 
-Connection.updateBees = (bees) => {
-  io.emit('updateBees', bees);
-};
+Connection.updateBee = (updatedBee) => {
+  io.emit('stateOfBee', updatedBee);
+}
 
-Connection.updateGameObject = (updatedGameObject) => {
-  console.log(game.players);
-  io.emit('updateGameObject', updatedGameObject);
-};
+Connection.updateBeehive = (updatedBeehive) => {
+  io.emit('stateOfBeehive', updatedBeehive);
+}
+
+Connection.updateFlower = (updatedFlower) => {
+  io.emit('stateOfFlower', updatedFlower);
+}
+
+//Connection.updateGameObject = (updatedGameObject) => {
+//  console.log(game.players);
+//  io.emit('updateGameObject', updatedGameObject);
+//};
+ 
 
 module.exports = Connection;
 

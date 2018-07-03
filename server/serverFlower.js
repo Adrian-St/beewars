@@ -2,6 +2,8 @@ Flower = function(id) {
   this.id = id
   this.nectar = 200;
   this.pollen = 200;
+  this.x = 0;
+  this. y = 0;
 }
 Flower.prototype.collectPollen = function (amount){
   this.pollen -= amount;
