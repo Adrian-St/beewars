@@ -158,11 +158,11 @@ function onArriveAtDestination(bee){
     if(flower == null) console.log('[WARNING] no flower found for this position')
     Game.addNectarToBee(bee, flower);
   }
-
+  bee.resetFlyTimer();
   Game.calculatePlayerExperienceAfterBeeArrived(bee);
   bee.x = bee.destination.x;
   bee.y = bee.destination.y;
-  bee.destination = null;
+  bee.setDestination(null);
   bee.setInactive();
   bee.startIdleTimer();
   Game.clearPlayerActionsForBee(bee);

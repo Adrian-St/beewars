@@ -130,6 +130,7 @@ Beewars.Game = new function() {
 
 
   Game.updateProgressBar = (progressBar, type) => {
+    console.log('progress')
       if (type == 0)      progressBar.width = progressBar.width - progressBar.progress;
       else if (type == 1) progressBar.width = progressBar.width + progressBar.progress;  
   }

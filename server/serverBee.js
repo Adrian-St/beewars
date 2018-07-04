@@ -90,6 +90,7 @@ Bee.prototype.performAction = function(playerAction) {
       var newPlayerActions = [];
       newPlayerActions.push({beeID: this.id, stop: true});
       this.playerActions.forEach(action => newPlayerActions.push(action));
+      //this.resetFlyTimer();
       //this.setDestination(null); // this is not needed but it would express the behavior. It would fail because we need the destination for a calculation
       this.playerActions = newPlayerActions;
       return
@@ -170,6 +171,7 @@ Bee.prototype.startFlyTimer = function (destination){
   console.log('start flying');
   this.resetFlyTimer();
   this.setDestination(destination);
+  console.log('destination: ', this.destination, ' x: ', this.x, ' y: ', this.y);
   this.flyTimer = setTimeout(this.onArriveAtDestination, this.flyDuration, this); 
 }
 
@@ -190,11 +192,15 @@ Bee.prototype.setDestination = function (destination){
 
 Bee.prototype.calculateFlownDistancePercentage = function (){ 
   var test = (1 - (getTimeLeft(this.flyTimer)/this.flyDuration));
+  //console.log('timer: ', this.flyTimer)
+  console.log('getTimeLeft: ', getTimeLeft(this.flyTimer))
+  console.log('flyDuration: ', this.flyDuration, ' x: ', this.x, ' y: ', this.y);
   console.log('percentage: ', test);
   return test
 }
 
 Bee.prototype.calculateNewPosition = function (){ 
+  console.log('old x: ', this.x, ' destination x: ', this.destination.x, ' percent: ', this.calculateFlownDistancePercentage(), 'new x: ', this.x + (this.destination.x - this.x)*this.calculateFlownDistancePercentage())
   this.x = this.x + (this.destination.x - this.x)*this.calculateFlownDistancePercentage();
   this.y = this.y + (this.destination.y - this.y)*this.calculateFlownDistancePercentage();
 }
