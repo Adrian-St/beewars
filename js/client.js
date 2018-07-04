@@ -1,5 +1,5 @@
 var Beewars = Beewars || {};
-Beewars.Client = new function(){
+Beewars.Client = new function() {
   var Client = this;
   Client.socket = io.connect();
 
@@ -16,7 +16,7 @@ Beewars.Client = new function(){
   });
 
   Client.synchronizeBeehive = beehive => {
-    Client.socket.emit('synchronizeBeehive',beehive);
+    Client.socket.emit('synchronizeBeehive', beehive);
     if (document.getElementById('menu').firstChild.id == "hiveMenu") {
       createHiveMenu(beehive, Beewars.Game.bees.length);
     }
@@ -38,20 +38,22 @@ Beewars.Client = new function(){
 
   Client.emptyActions = bee => Client.socket.emit('emptyActions', bee.id);
 
+  Client.beeIsIdleForTooLong = bee => Client.socket.emit('beeIsIdleForTooLong', bee.id);
+
   Client.socket.on('gameObjects', data => {
     Beewars.Game.addProperties(data);
 
     Client.socket.on('move', playerActions => {
-        Beewars.Game.playerActions(playerActions);
-        Beewars.Game.moveBee(playerActions[0]);
+      Beewars.Game.playerActions(playerActions);
+      Beewars.Game.moveBee(playerActions[0]);
     });
 
-  	Client.socket.on('remove', id => {
-  	    Beewars.Game.removePlayer(id);
-  	});
+    Client.socket.on('remove', id => {
+      Beewars.Game.removePlayer(id);
+    });
 
-  	Client.socket.on('updateGameObject', updatedObject => {
-        Beewars.Game.updateGameObject(updatedObject);
-  	});
+    Client.socket.on('updateGameObject', updatedObject => {
+      Beewars.Game.updateGameObject(updatedObject);
+    });
   });
 };

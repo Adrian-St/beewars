@@ -17,11 +17,11 @@ Game.setConnection = (newConnection) => {
 }
 
 Game.start = (gameObjects) => {
-  for(i = 0; i < gameObjects.flowers; i++) {
+  for (i = 0; i < gameObjects.flowers; i++) {
     Game.flowers.push(new Flower(Game.lastFlowerID));
     Game.lastFlowerID++;
   }
-  for(i = 0; i < 5; i++) {
+  for (i = 0; i < 5; i++) {
     Game.bees.push(new Bee(Game.lastBeeID));
     Game.lastBeeID++;
   }
@@ -30,9 +30,12 @@ Game.start = (gameObjects) => {
 };
 
 Game.update = () => {
-  for(i = 0; i < Game.bees.length; i++) {
+  for (i = 0; i < Game.bees.length; i++) {
     Game.bees[i].increaseAge();
-    connection.updateGameObject({type: 'bee', content: Game.bees[i]});
+    connection.updateGameObject({
+      type: 'bee',
+      content: Game.bees[i]
+    });
   }
 };
 
@@ -59,9 +62,14 @@ Game.performActionForBee = (playerID, playerAction) => {
 };
 
 Game.emptyActionLogOfBee = beeID => {
-  if(Game.beeForId(beeID).playerActions.length > 0) Game.calculatePlayerExperienceAfterBeeArrived(beeID);
+  if (Game.beeForId(beeID).playerActions.length > 0) {
+    Game.calculatePlayerExperienceAfterBeeArrived(beeID);
+  }
   Game.beeForId(beeID).playerActions = [];
-  return {type: 'bee', content: Game.beeForId(beeID)}
+  return {
+    type: 'bee',
+    content: Game.beeForId(beeID)
+  }
 }
 
 Game.calculatePlayerExperienceAfterBeeArrived = beeID => {
@@ -71,28 +79,34 @@ Game.calculatePlayerExperienceAfterBeeArrived = beeID => {
 }
 
 Game.raiseExperienceForPlayer = (playerID, value) => {
-  Game.players.find(player => player.id == playerID).experience += value;
+  Game.players.find(player => player.id == playerID).raiseExpBy(value);
 }
 
 Game.handleSynchronizeBeehive = (updatedBeehive) => {
   Game.beehive.pollen = updatedBeehive.pollen;
   Game.beehive.honey = updatedBeehive.honey;
   Game.beehive.honeycombs = updatedBeehive.honeycombs;
-  return {type: 'beehive', content: Game.beehive};
+  return {
+    type: 'beehive',
+    content: Game.beehive
+  };
 }
 
 Game.handleSynchronizeBee = (updatedBee) => {
   var beeToBeUpdated = Game.beeForId(updatedBee.id);
   beeToBeUpdated.age = updatedBee.age;
   beeToBeUpdated.x = updatedBee.x;
-  beeToBeUpdated.y = updatedBee.y;  
+  beeToBeUpdated.y = updatedBee.y;
   beeToBeUpdated.status = updatedBee.status;
   beeToBeUpdated.health = updatedBee.health;
   beeToBeUpdated.energy = updatedBee.energy;
   beeToBeUpdated.pollen = updatedBee.pollen;
   beeToBeUpdated.nectar = updatedBee.nectar;
   beeToBeUpdated.capacity = updatedBee.capacity;
-  return {type: 'bee', content: beeToBeUpdated};
+  return {
+    type: 'bee',
+    content: beeToBeUpdated
+  };
 }
 
 Game.handleSynchronizeFlower = (updatedFlower) => {
@@ -100,15 +114,33 @@ Game.handleSynchronizeFlower = (updatedFlower) => {
   flowerToBeUpdated.pollen = updatedFlower.pollen;
   flowerToBeUpdated.nectar = updatedFlower.nectar;
 
-  return {type: 'flower', content: flowerToBeUpdated};
+  return {
+    type: 'flower',
+    content: flowerToBeUpdated
+  };
 }
 
 Game.beeForId = id => {
-  return Game.bees.find(bee => {return bee.id === id;});
+  return Game.bees.find(bee => {
+    return bee.id === id;
+  });
 }
 
 Game.flowerForId = id => {
-  return Game.flowers.find(flower => {return flower.id === id;});
+  return Game.flowers.find(flower => {
+    return flower.id === id;
+  });
+}
+
+Game.handleBeeIsIdleForTooLong = beeId => {
+  var bee = Game.beeForId(beeId);
+  var participatingPlayerIds = [];
+  bee.playerActions.map(a => participatingPlayerIds = participatingPlayerIds.concat(a.playerIDs));
+  Game.players.forEach(player => {
+    if (!(player.id in participatingPlayerIds)) player.raiseExpBy(-0.1);
+  })
+  Game.players.forEach(a => console.log(a.experience))
+
 }
 
 module.exports = Game;

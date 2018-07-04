@@ -6,30 +6,28 @@ Beewars.Flower = function(serverFlower, flowerSprite) {
   this.sprite = flowerSprite;
 }
 
-Beewars.Flower.prototype.collectPollen = function (amount){
+Beewars.Flower.prototype.collectPollen = function(amount) {
   this.pollen -= amount;
   if (this.pollen < 0) {
     var actualAmount = amount + this.pollen;
     this.pollen = 0;
     return actualAmount;
-  }
-  else {
+  } else {
     return amount;
   }
 }
-Beewars.Flower.prototype.collectNectar = function (amount){
+Beewars.Flower.prototype.collectNectar = function(amount) {
   this.pollen -= amount;
   if (this.pollen < 0) {
     var actualAmount = amount + this.pollen;
     this.pollen = 0;
     return actualAmount;
-  }
-  else {
+  } else {
     return amount;
   }
 }
 
-Beewars.Flower.prototype.getSendableFlower = function (){
+Beewars.Flower.prototype.getSendableFlower = function() {
   return {
     id: this.id,
     pollen: this.pollen,
