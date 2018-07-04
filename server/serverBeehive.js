@@ -3,7 +3,7 @@ var Beehive = {}
 Beehive.pollen = 0;
 Beehive.honey = 0;
 Beehive.honeycombs = 0;
-Beehive.x = mapJson.layers[1].objects[0].x;
-Beehive.y = mapJson.layers[1].objects[0].y;
+Beehive.x = mapJson.layers[1].objects[0].x + 100;
+Beehive.y = mapJson.layers[1].objects[0].y -32;
 
 module.exports = Beehive;

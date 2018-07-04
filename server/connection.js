@@ -18,42 +18,10 @@ Connection.start = (param) => {
 
       socket.broadcast.emit('newplayer', socket.player);
 
-      /*
-      socket.on('goTo', moveData => {
-        if (game.bees[moveData.beeID].status != 3) {
-            io.emit('move', game.performActionForBee(socket.player.id, moveData));
-        }
-        else console.log("Bee is beesy");
-      });
-
-      socket.on('synchronizeBeehive', updatedBeehive => {
-        Connection.updateGameObject(game.handleSynchronizeBeehive(updatedBeehive));//io.emit('updateGameObject', game.handleSynchronizeBeehive(updatedBeehive));
-      });
-
-      socket.on('synchronizeBee', updatedBee => {
-        Connection.updateGameObject(game.handleSynchronizeBee(updatedBee));
-      });
-
-      socket.on('synchronizeFlower', updatedFlower => {
-        Connection.updateGameObject(game.handleSynchronizeFlower(updatedFlower));
-      });
-
-
-      socket.on('emptyActions', beeId => {
-        Connection.updateGameObject(game.emptyActionLogOfBee(beeId));
-      });
-
-      socket.on('beeIsIdleForTooLong', beeId => {
-        game.handleBeeIsIdleForTooLong(beeId);
-      });
-      */
-      // NEW - Begin --------------------------------------------------------------------------------------
       socket.on('requestMovement', moveData => {
         game.handleMovementRequest(socket.player.id, moveData);
         // the server answers with the (updated) bee
       });
-
-      // NEW - End --------------------------------------------------------------------------------------
 
       socket.on('disconnect', () => {
         game.players.splice(socket.player.id, 1);
@@ -73,21 +41,6 @@ Connection.updateBeehive = (updatedBeehive) => {
 
 Connection.updateFlower = (updatedFlower) => {
   io.emit('stateOfFlower', updatedFlower);
-}
-
-//Connection.updateGameObject = (updatedGameObject) => {
-//  console.log(game.players);
-//  io.emit('updateGameObject', updatedGameObject);
-//};
- 
+} 
 
 module.exports = Connection;
-
-function getAllPlayers(){
-  var players = [];
-  Object.keys(io.sockets.connected).forEach(socketID => {
-    var player = io.sockets.connected[socketID].player;
-    if(player) players.push(player);
-  });
-  return players;
-}

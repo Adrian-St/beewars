@@ -94,6 +94,7 @@ Beewars.Game = new function() {
   Game.setBeehivePosition = (x, y) => {
     Game.beehivePosition.x = x;
     Game.beehivePosition.y = y;
+    console.log(Game.beehivePosition)
   };
 
   Game.addNewBee = (serverBee) => {
@@ -130,7 +131,6 @@ Beewars.Game = new function() {
 
 
   Game.updateProgressBar = (progressBar, type) => {
-    console.log('progress')
       if (type == 0)      progressBar.width = progressBar.width - progressBar.progress;
       else if (type == 1) progressBar.width = progressBar.width + progressBar.progress;  
   }
@@ -139,11 +139,13 @@ Beewars.Game = new function() {
       console.log("Dobby is a free bee!");
   }
 
+  /*
   Game.getBeeForSprite = (sprite) => {
     for (var i = 0; i < Game.bees.length; i++) {
       if(Game.bees[i].sprite == sprite) return Game.bees[i];
     }
   }
+  */
 
   Game.getFlowerForSprite = (sprite) => {
     for (var i = 0; i < Game.flowers.length; i++) {
@@ -151,11 +153,13 @@ Beewars.Game = new function() {
     }
   }
 
+  /*
   Game.getFlowerForPosition = (position) => {
     for (var i = 0; i < Game.flowers.length; i++) {
       if(Game.flowers[i].sprite.position.x == position.x && Game.flowers[i].sprite.position.y == position.y) return Game.flowers[i];
     }
   }
+  */
 
   Game.onUp = (sprite, pointer) => {
     var clickedBee = Game.bees.find(item => item.sprite === sprite);
@@ -241,12 +245,11 @@ Beewars.Game = new function() {
     return Game.flowers.find(flower => {return flower.id === id;});
   }
 
-  // NEW -------------------------------------------------------------------------------------
   Game.updateBee = bee => {
     var beeToBeUpdated = Game.beeForId(bee.id);
     if(beeToBeUpdated.status === 3){ // bee was blocked
       if(bee.status === 0) Game.activateBee(beeToBeUpdated); // bee is free now
-    }else if(bee.status === 3) Game.deactivateBee(beeToBeUpdated); // bee is now blocked
+    }else if(bee.status === 3) Game.deactivateBee(beeToBeUpdated, 4); // bee is now blocked
     beeToBeUpdated.age = bee.age;
     beeToBeUpdated.status = bee.status;
     beeToBeUpdated.health = bee.health;

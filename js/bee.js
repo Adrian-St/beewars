@@ -39,7 +39,6 @@ Beewars.Bee.prototype.startTween = function (destination){
     var duration = Phaser.Math.distance(this.sprite.position.x, this.sprite.position.y, destination.x, destination.y) * 10;
     this.initializeTween();
     this.tween.to(destination, duration);
-    //this.tween.onComplete.add(Beewars.Game.moveCallback, this);
     this.tween.start();
     this.tween.onUpdateCallback(Beewars.Game.onTweenRunning, this);
 }

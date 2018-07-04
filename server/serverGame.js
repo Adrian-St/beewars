@@ -46,7 +46,7 @@ Game.newPlayer = () => {
 
 Game.allObjects = () => {
   return {
-    bees: Game.bees,
+    bees: Game.bees.map(bee => bee.getSendableBee()),
     players: Game.players,
     flowers: Game.flowers,
     beehive: Game.beehive
@@ -88,7 +88,6 @@ Game.handleBeeIsIdleForTooLong = beeId => {
 
 Game.handleMovementRequest = (playerId, moveData) => {
   var bee = Game.beeForId(moveData.beeID);
-  console.log(bee.status)
   if (bee.status != bee.states.INACTIVE) {
     Game.performActionForBee(playerId, moveData);
     if(bee.playerActions[0].stop){
@@ -98,7 +97,6 @@ Game.handleMovementRequest = (playerId, moveData) => {
       bee.startFlyTimer(moveData.target);
       bee.resetIdleTimer();
     }
-    //console.log('updatedBee after handleMovementRequest', bee);
     connection.updateBee(bee.getSendableBee());
   }
   else console.log("Bee is beesy");
@@ -141,12 +139,10 @@ Game.clearPlayerActionsForBee = (bee) => {
 }
 
 function onIdleForTooLong(bee){ 
-  console.log('idle for too long');
   Game.handleBeeIsIdleForTooLong(bee.id)
 }
 
 function onArriveAtDestination(bee){ 
-  console.log('arrived at destination');
   bee.calculateFlownDistancePercentage();
   if(bee.destination == null) console.log('[WARNING] destination ist null but it shouldnt');
 
@@ -167,11 +163,10 @@ function onArriveAtDestination(bee){
   bee.startIdleTimer();
   Game.clearPlayerActionsForBee(bee);
   connection.updateBee(bee.getSendableBee());
-  // --------------------------------------------------------------------------------------------------------------------
 }
 
 function onActivateBee(bee){ 
-  console.log('active again');
+
   bee.status = bee.states.IDLE;
   connection.updateBee(bee.getSendableBee());
 }
