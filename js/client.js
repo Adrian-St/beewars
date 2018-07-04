@@ -1,7 +1,7 @@
 import Menu from './menu.js';
 import Game from './game.js';
 
-class Beehive {
+class Client {
 	constructor() {
 		this.socket = io.connect();
 		this.socket.on('newplayer', data => {
@@ -61,6 +61,10 @@ class Beehive {
 	emptyActions(bee) {
 		this.socket.emit('emptyActions', bee.id);
 	}
+
+	beeIsIdleForTooLong(bee) {
+		this.socket.emit('beeIsIdleForTooLong', bee.id);
+	}
 }
 
-export default new Beehive();
+export default new Client();

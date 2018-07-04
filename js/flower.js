@@ -34,5 +34,4 @@ class Flower {
 		};
 	}
 }
-
 export default Flower;

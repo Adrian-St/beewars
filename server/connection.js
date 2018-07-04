@@ -1,5 +1,3 @@
-'use strict';
-
 const Connection = {};
 let io;
 const game = require('./serverGame.js');
@@ -44,6 +42,10 @@ Connection.start = param => {
 				Connection.updateGameObject(game.emptyActionLogOfBee(beeId));
 			});
 
+			socket.on('beeIsIdleForTooLong', beeId => {
+				game.handleBeeIsIdleForTooLong(beeId);
+			});
+
 			socket.on('disconnect', () => {
 				game.players.splice(socket.player.id, 1);
 				io.emit('remove', socket.player.id);
@@ -61,12 +63,3 @@ Connection.updateGameObject = updatedGameObject => {
 };
 
 module.exports = Connection;
-
-/* Function getAllPlayers(){
-  var players = [];
-  Object.keys(io.sockets.connected).forEach(socketID => {
-    var player = io.sockets.connected[socketID].player;
-    if(player) players.push(player);
-  });
-  return players;
-} */

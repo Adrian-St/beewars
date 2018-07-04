@@ -1,5 +1,6 @@
 import { game } from './main.js';
 import Game from './game.js';
+import Client from './client.js';
 
 class Bee {
 	constructor(serverBee, sprite) {
@@ -16,6 +17,7 @@ class Bee {
 		this.shadow = null;
 		this.shadowTween = null;
 		this.playerActions = [];
+		this.timer = null;
 	}
 
 	activateShadow() {
@@ -38,14 +40,22 @@ class Bee {
 		this.tween = game.add.tween(this.sprite);
 	}
 
+	calculateBeeSpeed() {
+		return (this.pollen + this.nectar) / 100 + 1;
+	}
+
 	startTween(destination) {
+		const beeSpeed = this.calculateBeeSpeed();
 		const duration =
 			Phaser.Math.distance(
 				this.sprite.position.x,
 				this.sprite.position.y,
 				destination.x,
 				destination.y
-			) * 10;
+			) *
+			10 *
+			beeSpeed;
+
 		this.initializeTween();
 		this.tween.to(destination, duration);
 		this.tween.onComplete.add(Game.moveCallback, Game);
@@ -65,13 +75,16 @@ class Bee {
 	}
 
 	startShadowTween(destination) {
+		const beeSpeed = this.calculateBeeSpeed();
 		const duration =
 			Phaser.Math.distance(
 				this.sprite.position.x,
 				this.sprite.position.y,
 				destination.x,
 				destination.y
-			) * 10;
+			) *
+			10 *
+			beeSpeed;
 		this.initializeShadowTween();
 		this.shadowTween.to(destination, duration);
 		this.shadowTween.start();
@@ -109,6 +122,26 @@ class Bee {
 				return null;
 			})
 			.filter(el => el);
+	}
+
+	resetTimer() {
+		if (this.timer !== null) {
+			game.time.events.remove(this.timer);
+			this.timer = null;
+		}
+	}
+
+	startTimer() {
+		this.resetTimer();
+		this.timer = game.time.events.add(
+			Phaser.Timer.SECOND * 10,
+			this.onElapsedTime,
+			this
+		);
+	}
+
+	onElapsedTime() {
+		Client.beeIsIdleForTooLong(this);
 	}
 }
 

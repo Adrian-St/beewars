@@ -21,6 +21,12 @@ class Game {
 		};
 		this.line = null;
 		this.graphics = null;
+		this.multipleBeeSelectionStatus = false;
+		this.multipleBeeSelectionPosition = {
+			x: 0,
+			y: 0
+		};
+		this.multipleBeeSelectionCollection = [];
 	}
 
 	init() {
@@ -150,6 +156,61 @@ class Game {
 			this.addNewBee(data.bees[i]);
 		}
 		Menu.createHiveMenu(this.beehive.getSendableBeehive(), this.bees.length);
+		this.setUpUserInput();
+	}
+
+	setUpUserInput() {
+		this.bees.forEach(currentBee => {
+			currentBee.sprite.events.onInputOver.add(() => {
+				this.onBeeInputOver(currentBee);
+			}, this);
+			currentBee.sprite.events.onInputOut.add(() => {
+				this.onBeeInputOut(currentBee);
+			}, this);
+		});
+	}
+
+	onBeeInputOver(currentBee) {
+		const allBees = this.getAllBeesAtPosition(currentBee);
+		const originalPosition = allBees[0].sprite.position.clone();
+
+		if (allBees.length > 1 && !this.multipleBeeSelectionStatus) {
+			this.displayMultipleBees(allBees, originalPosition);
+			this.multipleBeeSelectionPosition.x = originalPosition.x;
+			this.multipleBeeSelectionPosition.y = originalPosition.y;
+			this.multipleBeeSelectionCollection = allBees.slice(0);
+			this.multipleBeeSelectionStatus = true;
+		}
+	}
+
+	onBeeInputOut(currentBee) {
+		if (this.multipleBeeSelectionStatus) {
+			if (this.multipleBeeSelectionCollection.indexOf(currentBee) > -1) {
+				this.displaySingleBeeGroup();
+				this.multipleBeeSelectionStatus = false;
+			}
+		}
+	}
+
+	displayMultipleBees(allBees, originalPosition) {
+		const length = allBees.length * 40;
+		const leftX = originalPosition.x - length / 2;
+
+		for (let i = 0; i < allBees.length; i++) {
+			const temp = leftX + i * allBees[i].sprite.width;
+			allBees[i].sprite.position.x = temp;
+		}
+	}
+
+	displaySingleBeeGroup() {
+		for (let i = 0; i < this.multipleBeeSelectionCollection.length; i++) {
+			this.multipleBeeSelectionCollection[
+				i
+			].sprite.position.x = this.multipleBeeSelectionPosition.x;
+			this.multipleBeeSelectionCollection[
+				i
+			].sprite.position.y = this.multipleBeeSelectionPosition.y;
+		}
 	}
 
 	getCoordinates(object) {
@@ -182,6 +243,7 @@ class Game {
 				action: 'goToHive',
 				target: { x: this.beehivePosition.x, y: this.beehivePosition.y }
 			});
+			this.getSelectedBee().resetTimer();
 		}
 	}
 
@@ -311,11 +373,14 @@ class Game {
 		const bee = this.bees[moveData.beeID];
 
 		bee.stopTween(); // In case the bee was flying to another flower (or hive)
+		bee.resetTimer();
+
 		if (bee.shadowTween) {
 			bee.stopShadowTween();
 		}
 
 		if (moveData.stop) {
+			bee.startTimer();
 			if (bee.shadow) {
 				this.showAllActions(bee);
 			}
@@ -327,6 +392,8 @@ class Game {
 		if (bee.shadow) {
 			bee.startShadowTween({ x: moveData.target.x, y: moveData.target.y });
 		}
+
+		this.deselectBee(bee);
 	}
 
 	playerActions(playerActions) {
@@ -348,6 +415,7 @@ class Game {
 			});
 			this.addNectarToBee(bee, flower);
 		}
+		bee.startTimer();
 		Client.emptyActions(bee);
 		this.graphics.clear();
 	}
@@ -379,6 +447,26 @@ class Game {
 		}
 	}
 
+	deselectBee(bee) {
+		Menu.createHiveMenu(this.beehive.getSendableBeehive(), this.bees.length);
+		bee.deactivateShadow();
+		this.graphics.clear();
+	}
+
+	getAllBeesAtPosition(bee) {
+		const { x } = bee.sprite.position;
+		const { y } = bee.sprite.position;
+		const radius = 20;
+		const allBees = this.bees.filter(
+			item =>
+				item.sprite.position.x > x - radius &&
+				item.sprite.position.x < x + radius &&
+				item.sprite.position.y > y - radius &&
+				item.sprite.position.y < y + radius
+		);
+		return allBees;
+	}
+
 	onUp(sprite) {
 		const clickedBee = this.bees.find(item => item.sprite === sprite);
 
@@ -387,9 +475,7 @@ class Game {
 
 		if (clickedBee.shadow) {
 			// The bee had already a shadow
-			Menu.createHiveMenu(this.beehive.getSendableBeehive(), this.bees.length);
-			clickedBee.deactivateShadow();
-			this.graphics.clear();
+			this.deselectBee(clickedBee);
 			return;
 		}
 		if (!clickedBee.shadow) {
