@@ -16,14 +16,24 @@ Beewars.Game = new function() {
   Game.line;
   Game.graphics;
 
+  // Variables of hive inside view
+  Game.inside_map;
+  Game.inside_button;
+  Game.inside_layers = [];
+  Game.inside_workareas = {};
+  Game.inside_graphics;
+
   Game.init = () => Beewars.game.stage.disableVisibilityChange = true;
 
   Game.preload = () => {
     Beewars.game.load.tilemap('map', 'assets/map/outside_map.json', null, Phaser.Tilemap.TILED_JSON);
+    Beewars.game.load.tilemap('inside_map', 'assets/map/inside_map.json', null, Phaser.Tilemap.TILED_JSON);
     Beewars.game.load.spritesheet('grass', 'assets/map/grass.png',32,32);
     Beewars.game.load.spritesheet('flowers', 'assets/map/flowers.png',64,64);
     Beewars.game.load.spritesheet('beehive', 'assets/map/beehive.png',128,160);
-    Beewars.game.load.image('sprite', 'assets/sprites/bees64px-version2.png');    
+    Beewars.game.load.spritesheet('Honeycomb-Tileset-double' , 'assets/honeycombs/Honeycomb-Tileset-double.png', 32,24);
+    Beewars.game.load.spritesheet('switch', 'assets/sprites/button_sprite_sheet.png', 193, 71);
+    Beewars.game.load.image('sprite', 'assets/sprites/bees64px-version2.png');
     Beewars.game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
   };
 
@@ -39,6 +49,7 @@ Beewars.Game = new function() {
     Game.beeLabel = Beewars.game.add.text(5, 30, '');
     Game.printBee(0);
     */
+    var button = Beewars.game.add.button(20, 20, 'switch', Game.switchToInside, this, 2, 1, 0);
     Game.graphics = Beewars.game.add.graphics(0,0);
     Beewars.Client.askNewPlayer({flowers: Game.flowerSprites.length});
   };
@@ -102,6 +113,56 @@ Beewars.Game = new function() {
     createHiveMenu(Game.beehive.getSendableBeehive(), Game.bees.length);
   };
 
+  Game.switchToInside = () => {
+    Game.inside_map = Beewars.game.add.tilemap('inside_map');
+    Game.addTaskAreas(Game.inside_map);
+    Game.inside_button = Beewars.game.add.button(20, 20, 'switch', Game.switchToOutside, this, 2, 1, 0);
+  };
+
+  Game.switchToOutside = () => {
+    Game.inside_map.destroy();
+    Game.inside_button.destroy();
+    Game.inside_layers.forEach( (layer) => {
+      layer.destroy();
+    });
+    Game.inside_layers = [];
+    Game.inside_garphics.destroy();
+  };
+
+  Game.addTaskAreas = (map) => {
+    map.addTilesetImage('grass');
+    Game.inside_layers.push(map.createLayer('Grass'));
+    map.addTilesetImage('Honeycomb-Tileset-double');
+    Game.inside_layers.push(map.createLayer('Honeycombs'));
+    Game.inside_layers[1].resizeWorld();
+    Game.inside_layers[1].inputEnabled = true;
+    Game.inside_layers[1].events.onInputUp.add(Game.getWorkarea, this)
+    Game.inside_garphics = Beewars.game.add.graphics(0,0);
+    map.objects["Inner Beehive"].forEach( (object) => {
+      var points = [object.polygon.length];
+      for (i = 0; i < object.polygon.length; i++) {
+        points[i] = { x: (object["x"] + object.polygon[i][0]), y: (object["y"] + object.polygon[i][1]) };
+      }
+      Game.inside_workareas[object.name] = new Phaser.Polygon(points);
+      Game.inside_garphics.lineStyle(10, 0xffd900, 1)
+      Game.inside_garphics.drawPolygon(Game.inside_workareas[object.name].points);
+    });
+  };
+
+  Game.getWorkarea = (layer, pointer) => {
+    Object.keys(Game.inside_workareas).forEach( (key) => {
+        var area = Game.inside_workareas[key];
+        if(area.contains(pointer.worldX, pointer.worldY)) {
+          Game.sendClick(key);
+        }
+    })
+  };
+
+  Game.sendClick = (key) => {
+    // Logic of Clicking on an Area inside the hive
+    console.log(key)
+  };
+
   Game.getCoordinates = (object,pointer) => {
     if(object.name == 'beehive'){
       if(Game.isBeeSelected()) {
@@ -147,7 +208,7 @@ Beewars.Game = new function() {
   Game.printBee = () => {
     if (Game.isBeeSelected()) Game.beeLabel.setText('Nectar on Bee: ' + Game.getSelectedBee().pollen);
     else Game.beeLabel.setText('');
-  }  
+  }
 
   Game.deactivateBee = (bee, seconds) => {
     bee.status = 3;
@@ -158,7 +219,7 @@ Beewars.Game = new function() {
 
   Game.createProgressBar = (x, y, image, barWidth, barHeight, seconds, type) => {
       // type: 0 = decreasing | 1 = increasing
-      
+
       var innerProgressBar = Game.add.sprite(x - barWidth / 2, y - barWidth, image);
       innerProgressBar.inputEnabled = false;
       if (type == 0) {
@@ -167,7 +228,7 @@ Beewars.Game = new function() {
       else if (type == 1) {
           innerProgressBar.width = 0;
       }
-      
+
       innerProgressBar.height = barHeight;
       innerProgressBar.progress = barWidth / seconds;
 
@@ -181,7 +242,7 @@ Beewars.Game = new function() {
       }
       else if (type == 1) {
           progressBar.width = progressBar.width + progressBar.progress;
-      }      
+      }
   }
 
   Game.activateBee = (bee) => {
