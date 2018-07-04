@@ -17,8 +17,8 @@ Game.setConnection = (newConnection) => {
   connection = newConnection;
 }
 
-Game.start = (gameObjects) => {
-  for(i = 0; i < gameObjects.flowers; i++) {
+Game.start = () => {
+  for(i = 0; i < mapJson.layers[2].objects.length; i++) {
     tmpFlower = new Flower(Game.lastFlowerID);
     tmpFlower.x = mapJson.layers[2].objects[i].x;
     tmpFlower.y = mapJson.layers[2].objects[i].y;
@@ -29,20 +29,13 @@ Game.start = (gameObjects) => {
     var tmpBee = new Bee(Game.lastBeeID);
     tmpBee.onArriveAtDestination = onArriveAtDestination;
     tmpBee.onIdleForTooLong = onIdleForTooLong;
+    tmpBee.onActivateBee = onActivateBee;
     Game.bees.push(tmpBee);
     Game.lastBeeID++;
   }
   Game.startTime = new Date()
-  setInterval(Game.update, 5000);
+  setInterval(Game.updateAge, 5000);
 };
-/*
-Game.update = () => {
-  for(i = 0; i < Game.bees.length; i++) {
-    Game.bees[i].increaseAge();
-    connection.updateGameObject({type: 'bee', content: Game.bees[i]});
-  }
-};
-*/
 
 Game.newPlayer = () => {
   var player = new Player(Game.lastPlayerID);
@@ -64,16 +57,8 @@ Game.performActionForBee = (playerID, playerAction) => {
   var bee = Game.bees[playerAction.beeID];
   playerAction.playerID = playerID;
   playerAction.stop = false;
-  return bee.performAction(playerAction);
+  bee.performAction(playerAction);
 };
-
-/*
-Game.emptyActionLogOfBee = beeID => {
-  if(Game.beeForId(beeID).playerActions.length > 0) Game.calculatePlayerExperienceAfterBeeArrived(beeID);
-  Game.beeForId(beeID).playerActions = [];
-  return {type: 'bee', content: Game.beeForId(beeID)}
-}
-*/
 
 Game.calculatePlayerExperienceAfterBeeArrived = bee => {
   let positiveContributer = bee.playerActions[0].playerIDs;
@@ -83,38 +68,6 @@ Game.calculatePlayerExperienceAfterBeeArrived = bee => {
 Game.raiseExperienceForPlayer = (playerID, value) => {
   Game.players.find(player => player.id == playerID).raiseExpBy(value);
 }
-
-/*
-Game.handleSynchronizeBeehive = (updatedBeehive) => {
-  Game.beehive.pollen = updatedBeehive.pollen;
-  Game.beehive.honey = updatedBeehive.honey;
-  Game.beehive.honeycombs = updatedBeehive.honeycombs;
-  return {type: 'beehive', content: Game.beehive};
-}
-
-
-Game.handleSynchronizeBee = (updatedBee) => {
-  var beeToBeUpdated = Game.beeForId(updatedBee.id);
-  beeToBeUpdated.age = updatedBee.age;
-  beeToBeUpdated.x = updatedBee.x;
-  beeToBeUpdated.y = updatedBee.y;  
-  beeToBeUpdated.status = updatedBee.status;
-  beeToBeUpdated.health = updatedBee.health;
-  beeToBeUpdated.energy = updatedBee.energy;
-  beeToBeUpdated.pollen = updatedBee.pollen;
-  beeToBeUpdated.nectar = updatedBee.nectar;
-  beeToBeUpdated.capacity = updatedBee.capacity;
-  return {type: 'bee', content: beeToBeUpdated};
-}
-
-Game.handleSynchronizeFlower = (updatedFlower) => {
-  var flowerToBeUpdated = Game.flowerForId(updatedFlower.id);
-  flowerToBeUpdated.pollen = updatedFlower.pollen;
-  flowerToBeUpdated.nectar = updatedFlower.nectar;
-
-  return {type: 'flower', content: flowerToBeUpdated};
-}
-*/
 
 Game.beeForId = id => {
   return Game.bees.find(bee => {return bee.id === id;});
@@ -133,10 +86,10 @@ Game.handleBeeIsIdleForTooLong = beeId => {
   })
 }
 
-// NEW -------------------------------------------------------------------------------------------------------------------------
 Game.handleMovementRequest = (playerId, moveData) => {
   var bee = Game.beeForId(moveData.beeID);
-  if (bee.status != 3) {
+  console.log(bee.status)
+  if (bee.status != bee.states.INACTIVE) {
     Game.performActionForBee(playerId, moveData);
     if(bee.playerActions[0].stop){
       bee.resetFlyTimer();
@@ -151,7 +104,7 @@ Game.handleMovementRequest = (playerId, moveData) => {
   else console.log("Bee is beesy");
 }
 
-Game.update = () => {
+Game.updateAge = () => {
   for(i = 0; i < Game.bees.length; i++) {
     Game.bees[i].increaseAge();
     connection.updateBee(Game.bees[i].getSendableBee());
@@ -176,7 +129,25 @@ Game.returnNectar = (bee) => {
     connection.updateBee(bee.getSendableBee());
   };
 
+Game.getFlowerForPosition = (position) => {
+  for (var i = 0; i < Game.flowers.length; i++) {
+    if(Game.flowers[i].x == position.x && Game.flowers[i].y == position.y + 64) return Game.flowers[i]; //investigate why we need to add 64
+  }
+}
+
+Game.clearPlayerActionsForBee = (bee) => {
+  bee.playerActions = [];
+  connection.updateBee(bee.getSendableBee());
+}
+
+function onIdleForTooLong(bee){ 
+  console.log('idle for too long');
+  Game.handleBeeIsIdleForTooLong(bee.id)
+}
+
 function onArriveAtDestination(bee){ 
+  console.log('arrived at destination');
+  bee.calculateFlownDistancePercentage();
   if(bee.destination == null) console.log('[WARNING] destination ist null but it shouldnt');
 
   if (bee.destination.x == Game.beehive.x && bee.destination.y == Game.beehive.y) {
@@ -192,24 +163,17 @@ function onArriveAtDestination(bee){
   bee.x = bee.destination.x;
   bee.y = bee.destination.y;
   bee.destination = null;
+  bee.setInactive();
   bee.startIdleTimer();
   Game.clearPlayerActionsForBee(bee);
+  connection.updateBee(bee.getSendableBee());
   // --------------------------------------------------------------------------------------------------------------------
 }
 
-Game.getFlowerForPosition = (position) => {
-  for (var i = 0; i < Game.flowers.length; i++) {
-    if(Game.flowers[i].x == position.x && Game.flowers[i].y == position.y + 64) return Game.flowers[i]; //investigate why we need to add 64
-  }
-}
-
-Game.clearPlayerActionsForBee = (bee) => {
-  bee.playerActions = [];
+function onActivateBee(bee){ 
+  console.log('active again');
+  bee.status = bee.states.IDLE;
   connection.updateBee(bee.getSendableBee());
-}
-
-function onIdleForTooLong(bee){ 
-  Game.handleBeeIsIdleForTooLong(bee.id)
 }
 
 module.exports = Game;

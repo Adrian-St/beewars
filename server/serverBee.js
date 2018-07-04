@@ -10,12 +10,27 @@ function Bee (id)  {
   this.nectar = 0;
   this.capacity = 100;
   this.playerActions = [];
-  this.idleTimer = null;
-  this.flyTimer = null;
+  this.idleTimer = null; // meassures the time since the bee performed the last action
+  this.flyTimer = null; 
+  this.inactiveTimer = null; // blocks the bee for a while after an action is performed 
   this.onIdleForTooLong = null
   this.onArriveAtDestination = null;
+  this.onActivateBee = null;
   this.destination = null;
+  this.flyDuration = 0;
 };
+
+/* Schema of a playerAction
+playerAction {
+  id: int,
+  timestamp: long,
+  target: position,
+  beeID: int,
+  playerIDs: [int],
+  weight: int,
+  stop: boolean // gets always overridden from server
+}
+*/
 
 Game.lastActionId = 0;
 
@@ -47,7 +62,6 @@ Bee.prototype.reduceHealth = function(amount){
 
 Bee.prototype.performAction = function(playerAction) {
   //calculate here what action to perform
-  //const weight = Game.players.find(player => player.id == playerAction.playerID).experience;
   this.removeStopActions();
 
   const indexOfExistingAction = this.playerActions.findIndex(action => action.target.x === playerAction.target.x && action.target.y === playerAction.target.y)
@@ -72,25 +86,20 @@ Bee.prototype.performAction = function(playerAction) {
   this.playerActions.sort((a,b) => {return b.weight - a.weight});
 
   if(this.playerActions.length > 1) {
-    console.log('weight diff', this.playerActions[0].weight - this.playerActions[1].weight)
     if(this.playerActions[0].weight - this.playerActions[1].weight < 0.2) {
       var newPlayerActions = [];
       newPlayerActions.push({beeID: this.id, stop: true});
       this.playerActions.forEach(action => newPlayerActions.push(action));
-      this.destination = null;
+      //this.setDestination(null); // this is not needed but it would express the behavior. It would fail because we need the destination for a calculation
       this.playerActions = newPlayerActions;
-      console.log('server Actions: ', this.playerActions)
-      return newPlayerActions;
+      return
     }
   }
-  if(this.playerActions.length > 0) this.destination = this.playerActions[0].target;
-
-  return this.playerActions;
+  if(this.playerActions.length > 0) this.setDestination(this.playerActions[0].target);
 }
 
 Bee.prototype.removeStopActions = function() {
   this.playerActions = this.playerActions.filter(action => !action.stop)
-  console.log(this.playerActions)
 }
 
 Bee.prototype.removeOldPlayerAction = function(playerID, indexOfOldPlayerAction) {
@@ -108,41 +117,11 @@ Bee.prototype.calculateWeightsForActions = function() {
   });
 }
 
-module.exports = Bee;
-
-/*
-playerAction {
-  id: int,
-  timestamp: long,
-  target: position,
-  beeID: int,
-  playerIDs: [int],
-  weight: int,
-  stop: boolean // gets always overridden from server
+Bee.prototype.setInactive = function (){
+  console.log('setInactive')
+  this.status = this.states.INACTIVE;
+  this.startInactiveTimer();
 }
-*/
-
-// NEW -------------------------------------------------------------------------------
-Bee.prototype.initializeTween = function (){
-  this.tween = Beewars.game.add.tween(this.sprite);
-}
-
-Bee.prototype.startTween = function (destination){
-    var duration = Phaser.Math.distance(this.sprite.position.x, this.sprite.position.y, destination.x, destination.y) * 10;
-    this.initializeTween();
-    this.tween.to(destination, duration);
-    this.tween.onComplete.add(Beewars.Game.moveCallback, this);
-    this.tween.start();
-    this.tween.onUpdateCallback(Beewars.Game.onTweenRunning, this);
-}
-
-Bee.prototype.stopTween = function (){
-  if(this.tween){
-        this.tween.stop();
-        this.tween = null;
-    }
-}
-
 
 Bee.prototype.getSendableBee = function (){
   return {
@@ -170,37 +149,62 @@ Bee.prototype.resetIdleTimer = function (){
 Bee.prototype.startIdleTimer = function (){
   this.resetIdleTimer();
   this.idleTimer = setTimeout(this.onIdleForTooLong, 10000, this); // 10ces
-  //this.timer = Beewars.game.time.events.add(Phaser.Timer.SECOND * 10, onElapsedTime, this)
 }
 
-/*
-function onIdleForTooLong(){ 
-  console.log('idleTimer');
-  Game.handleBeeIsIdleForTooLong(this.id)
+Bee.prototype.resetInactiveTimer = function (){ 
+  // this method is not needed because the inactiveTimer can not be called again before the timer runs out
+  // but this makes it more safe to operate with the timer
+  if(this.inactiveTimer != null){
+    clearTimeout(this.inactiveTimer);
+    this.inactiveTimer = null;
+  }
 }
-*/
+
+Bee.prototype.startInactiveTimer = function (){
+  console.log('is inactive');
+  this.resetInactiveTimer();
+  this.inactiveTimer = setTimeout(this.onActivateBee, 4000, this); // 4sec
+}
+
+Bee.prototype.startFlyTimer = function (destination){ 
+  console.log('start flying');
+  this.resetFlyTimer();
+  this.setDestination(destination);
+  this.flyTimer = setTimeout(this.onArriveAtDestination, this.flyDuration, this); 
+}
 
 Bee.prototype.resetFlyTimer = function (){ 
   if(this.flyTimer != null){
-    console.log('cancle flyTimer', this.flyTimer)
+    // everytime the timer resets we calculate the new x and y
+    this.calculateNewPosition();
     clearTimeout(this.flyTimer);
-    console.log('test');
-    //Beewars.game.time.events.remove(this.timer);
     this.flyTimer = null;
   }
 }
 
-Bee.prototype.startFlyTimer = function (destination){ 
-  console.log('start')
-  this.resetFlyTimer();
-  var distance = Math.sqrt((this.x - destination.x) * (this.x - destination.x) + (this.y - destination.y) * (this.y - destination.y));
-  var duration = distance * 10;
-  this.flyTimer = setTimeout(this.onArriveAtDestination, duration, this); 
-  //this.flyTimer = {test: 'test'};
+Bee.prototype.setDestination = function (destination){ 
+  this.destination = destination
+  if(destination == null) this.flyDuration = 0;
+  else this.flyDuration = this.calculateDistance(destination)*10;
 }
-/*
-Bee.prototype.onArriveAtDestination = function (){ 
-  console.log('arrived at destination');
-  // --------------------------------------------------------------------------------------------------------------------
+
+Bee.prototype.calculateFlownDistancePercentage = function (){ 
+  var test = (1 - (getTimeLeft(this.flyTimer)/this.flyDuration));
+  console.log('percentage: ', test);
+  return test
 }
-*/
+
+Bee.prototype.calculateNewPosition = function (){ 
+  this.x = this.x + (this.destination.x - this.x)*this.calculateFlownDistancePercentage();
+  this.y = this.y + (this.destination.y - this.y)*this.calculateFlownDistancePercentage();
+}
+
+Bee.prototype.calculateDistance = function (destination){ 
+  return Math.sqrt((this.x - destination.x) * (this.x - destination.x) + (this.y - destination.y) * (this.y - destination.y));
+}
+
+function getTimeLeft(timeout) {
+    return Math.ceil((timeout._idleStart + timeout._idleTimeout - (process.uptime()*1000)));
+}
+
+module.exports = Bee;

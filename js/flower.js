@@ -24,9 +24,7 @@ Beewars.Flower.prototype.collectNectar = function (amount){
     this.pollen = 0;
     return actualAmount;
   }
-  else {
-    return amount;
-  }
+  else return amount;
 }
 
 Beewars.Flower.prototype.getSendableFlower = function (){

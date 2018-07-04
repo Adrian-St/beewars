@@ -32,11 +32,11 @@ Beewars.Game = new function() {
     Game.addFlowers(map);
     Game.addBeehive(map);
     Game.graphics = Beewars.game.add.graphics(0,0);
-    Beewars.Client.askNewPlayer({flowers: Game.flowerSprites.length}); // this is kind of weird
+    Beewars.Client.registerNewPlayer();
   };
 
   Game.addBackground = map => {
-    map.addTilesetImage('grass'); // tilesheet is the key of the tileset in map's JSON file
+    map.addTilesetImage('grass'); // grass is the key of the tileset in map's JSON file
     var layer = map.createLayer('Background');
     layer.resizeWorld();
     layer.inputEnabled = true;
@@ -105,46 +105,7 @@ Beewars.Game = new function() {
     Game.bees.push(bee);
   }
 
-  /*
-  Game.getCoordinates = (object,pointer) => {
-    if(object.name == 'beehive'){
-      if(Game.isBeeSelected()) {
-        Game.goToHive(); 
-      }
-      else {
-        createHiveMenu(Game.beehive, Game.bees.length);
-      }
-    } else if (['flower-white','flower-red','flower-purple','flower-yellow'].includes(object.name) ){
-      if(Game.isBeeSelected()) {
-        var flower = Game.flowers.find( (flower) => {return (flower.sprite === object);});
-        Game.getNectar(flower);
-      }
-      else {
-        createFlowerMenu(Game.getFlowerForSprite(object));
-      }
-    }
-  };
-  */
-
-  /*
-  Game.goToHive = () => {// ---------------------------------------------------------------------------------------------------------------
-    if (Game.isBeeSelected()) {
-        Beewars.Client.goTo({beeID: Game.getSelectedBee().id, action: 'goToHive', target: {x: Game.beehivePosition.x, y: Game.beehivePosition.y} });
-        Game.getSelectedBee().resetTimer();
-    }
-  }
-
-  Game.getNectar = flower => { // ---------------------------------------------------------------------------------------------------------------
-    if (Game.isBeeSelected()) {
-        var moveData = {beeID: Game.getSelectedBee().id, action: 'getNectar', target: {x: flower.sprite.position.x, y: flower.sprite.position.y}, targetID: flower.id }
-        Beewars.Client.goTo(moveData);
-    }
-  };
-  */
-
   Game.deactivateBee = (bee, seconds) => {
-    bee.status = 3;
-
     Game.createProgressBar(bee.sprite.x, bee.sprite.y, 'progressbar', 50, 10, seconds, 0);
     Game.time.events.add(Phaser.Timer.SECOND * seconds, function () { Game.activateBee(bee) }, this);
   }
@@ -169,87 +130,13 @@ Beewars.Game = new function() {
 
 
   Game.updateProgressBar = (progressBar, type) => {
-      if (type == 0) {
-          progressBar.width = progressBar.width - progressBar.progress;
-      }
-      else if (type == 1) {
-          progressBar.width = progressBar.width + progressBar.progress;
-      }      
+      if (type == 0)      progressBar.width = progressBar.width - progressBar.progress;
+      else if (type == 1) progressBar.width = progressBar.width + progressBar.progress;  
   }
 
   Game.activateBee = (bee) => {
-      console.log(bee);
-      bee.status = 0;
-      console.log(bee);
       console.log("Dobby is a free bee!");
-      Beewars.Client.synchronizeBee(bee.getSendableBee());
   }
-  /*
-  Game.returnNectar = (bee) => { // this should be on the server ---------------------------------------------------------------------------------------------------------------
-    Game.beehive.pollen += bee.pollen;
-    Game.beehive.honey += bee.nectar;
-    bee.pollen = 0;
-    bee.nectar = 0;
-    Beewars.Client.synchronizeBeehive(Game.beehive.getSendableBeehive());
-    Beewars.Client.synchronizeBee(bee.getSendableBee());
-  };
-
-  Game.addNectarToBee = (bee, flower) => { // this should be on the server ---------------------------------------------------------------------------------------------------------------
-    Game.deactivateBee(bee, 7);
-    bee.pollen += 10;
-    flower.pollen -= 10;
-    bee.nectar += 10;
-    flower.nectar -= 10;
-    Beewars.Client.synchronizeBee(bee.getSendableBee());
-    Beewars.Client.synchronizeFlower(flower.getSendableFlower());
-  };
-  */
-
-  /*
-  Game.moveBee = (bee) => { // ---------------------------------------------------------------------------------------------------------------
-
-    bee.stopTween(); // In case the bee was flying to another flower (or hive)
-    bee.resetTimer();
-    if(bee.shadowTween) {
-        bee.stopShadowTween();
-    }
-
-    if(moveData.stop) {
-      bee.startTimer();
-      if(bee.shadow)
-        Game.showAllActions(bee);
-      return;
-    }
-
-    bee.startTween({x: moveData.target.x, y: moveData.target.y});
-
-    if(bee.shadow){
-      bee.startShadowTween({x: moveData.target.x, y: moveData.target.y});
-    }
-  };
-  */
-
-  /*  // I think this is no longer needed because we update the playerAction by updating the bee
-  Game.playerActions = (playerActions) => {
-    var bee = Game.bees[playerActions[0].beeID];
-    bee.playerActions = playerActions;
-  }
-  */
-  /*
-  Game.moveCallback = beeSprite => {  // ---------------------------------------------------------------------------------------------------------------
-    const bee = Game.getBeeForSprite(beeSprite);
-    if (beeSprite.x == Game.beehivePosition.x && beeSprite.y == Game.beehivePosition.y) {
-        Game.returnNectar(bee);
-    }
-    else {
-      const flower = Game.getFlowerForPosition({x: beeSprite.x, y: beeSprite.y});
-      Game.addNectarToBee(bee, flower);
-    }
-    bee.startTimer();
-    Beewars.Client.emptyActions(bee);
-    Game.graphics.clear();
-  };
-  */
 
   Game.getBeeForSprite = (sprite) => {
     for (var i = 0; i < Game.bees.length; i++) {
@@ -345,51 +232,6 @@ Beewars.Game = new function() {
     }
   }
 
-  /*
-  Game.updateGameObject = (updateObject) => {
-    if(updateObject.type == "bee") {
-      //console.log('game.js - updateBee - bee.id: ', updateObject.content.id);
-      var beeToBeUpdated = Game.beeForId(updateObject.content.id);
-      beeToBeUpdated.age = updateObject.content.age;
-      beeToBeUpdated.status = updateObject.content.status;
-      beeToBeUpdated.health = updateObject.content.health;
-      beeToBeUpdated.energy = updateObject.content.energy;
-      beeToBeUpdated.pollen = updateObject.content.pollen;
-      beeToBeUpdated.nectar = updateObject.content.nectar;
-      beeToBeUpdated.capacity = updateObject.content.capacity;
-      beeToBeUpdated.playerActions = updateObject.content.playerActions;
-      if (document.getElementById('menu').firstChild.id == ("beeMenu-" + beeToBeUpdated.id)) {
-        createBeeMenu(beeToBeUpdated);
-      }
-
-    } else if (updateObject.type == "beehive") {
-      //console.log('game.js - updateBeehive');
-
-      const updatedBeehive = updateObject.content;
-      Game.beehive.pollen = updatedBeehive.pollen;
-      Game.beehive.honey = updatedBeehive.honey;
-      Game.beehive.honeycombs = updatedBeehive.honeycombs;
-
-      if (document.getElementById('menu').firstChild.id == "hiveMenu") {
-        createHiveMenu(Game.beehive, Game.bees.length);
-      }
-
-    } else if (updateObject.type == "flower") {
-      //console.log('game.js - updateFlower - flower.id: ', updateObject.content.id);
-      var flowerToBeUpdated = Game.flowerForId(updateObject.content.id);
-      flowerToBeUpdated.pollen = updateObject.content.pollen;
-      flowerToBeUpdated.nectar = updateObject.content.nectar;
-
-      if (document.getElementById('menu').firstChild.id == ("flowerMenu-" + flowerToBeUpdated.id)) {
-        createFlowerMenu(flowerToBeUpdated);
-      }
-
-    } else {
-      console.log('wrong type', updateObject);
-    }
-  }
-  */
-
   Game.beeForId = id => {
     return Game.bees.find(bee => {return bee.id === id;});
   }
@@ -401,6 +243,9 @@ Beewars.Game = new function() {
   // NEW -------------------------------------------------------------------------------------
   Game.updateBee = bee => {
     var beeToBeUpdated = Game.beeForId(bee.id);
+    if(beeToBeUpdated.status === 3){ // bee was blocked
+      if(bee.status === 0) Game.activateBee(beeToBeUpdated); // bee is free now
+    }else if(bee.status === 3) Game.deactivateBee(beeToBeUpdated); // bee is now blocked
     beeToBeUpdated.age = bee.age;
     beeToBeUpdated.status = bee.status;
     beeToBeUpdated.health = bee.health;
