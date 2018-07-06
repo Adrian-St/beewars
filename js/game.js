@@ -27,6 +27,11 @@ class Game {
 			y: 0
 		};
 		this.multipleBeeSelectionCollection = [];
+		this.insideMap = null;
+		this.insideButton = null;
+		this.insideLayers = [];
+		this.insideWorkareas = {};
+		this.insideGraphics = null;
 	}
 
 	init() {
@@ -40,9 +45,27 @@ class Game {
 			null,
 			Phaser.Tilemap.TILED_JSON
 		);
+		game.load.tilemap(
+			'insideMap',
+			'assets/map/insideMap.json',
+			null,
+			Phaser.Tilemap.TILED_JSON
+		);
 		game.load.spritesheet('grass', 'assets/map/grass.png', 32, 32);
 		game.load.spritesheet('flowers', 'assets/map/flowers.png', 64, 64);
 		game.load.spritesheet('beehive', 'assets/map/beehive.png', 128, 160);
+		game.load.spritesheet(
+			'Honeycomb-Tileset-double',
+			'assets/honeycombs/Honeycomb-Tileset-double.png',
+			32,
+			24
+		);
+		game.load.spritesheet(
+			'switch',
+			'assets/sprites/button_sprite_sheet.png',
+			193,
+			71
+		);
 		game.load.image('sprite', 'assets/sprites/bees64px-version2.png');
 		game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
 	}
@@ -53,6 +76,7 @@ class Game {
 		this.addBackground(map);
 		this.addFlowers(map);
 		this.addBeehive(map);
+		game.add.button(20, 20, 'switch', this.switchToInside, this, 2, 1, 0);
 		this.graphics = game.add.graphics(0, 0);
 		Client.askNewPlayer({ flowers: this.flowerSprites.length });
 	}
@@ -157,6 +181,68 @@ class Game {
 		}
 		Menu.createHiveMenu(this.beehive.getSendableBeehive(), this.bees.length);
 		this.setUpUserInput();
+	}
+
+	switchToInside() {
+		this.insideMap = game.add.tilemap('insideMap');
+		this.addTaskAreas(this.insideMap);
+		this.insideButton = game.add.button(
+			20,
+			20,
+			'switch',
+			this.switchToOutside,
+			this,
+			2,
+			1,
+			0
+		);
+	}
+
+	switchToOutside() {
+		this.insideMap.destroy();
+		this.insideButton.destroy();
+		this.insideLayers.forEach(layer => {
+			layer.destroy();
+		});
+		this.insideLayers = [];
+		this.insideGraphics.destroy();
+	}
+
+	addTaskAreas(map) {
+		map.addTilesetImage('grass');
+		this.insideLayers.push(map.createLayer('Grass'));
+		map.addTilesetImage('Honeycomb-Tileset-double');
+		this.insideLayers.push(map.createLayer('Honeycombs'));
+		this.insideLayers[1].resizeWorld();
+		this.insideLayers[1].inputEnabled = true;
+		this.insideLayers[1].events.onInputUp.add(this.getWorkarea, this);
+		this.insideGraphics = game.add.graphics(0, 0);
+		map.objects['Inner Beehive'].forEach(object => {
+			const points = [object.polygon.length];
+			for (let i = 0; i < object.polygon.length; i++) {
+				points[i] = {
+					x: object.x + object.polygon[i][0],
+					y: object.y + object.polygon[i][1]
+				};
+			}
+			this.insideWorkareas[object.name] = new Phaser.Polygon(points);
+			this.insideGraphics.lineStyle(10, 0xffd900, 1);
+			this.insideGraphics.drawPolygon(this.insideWorkareas[object.name].points);
+		});
+	}
+
+	getWorkarea(layer, pointer) {
+		Object.keys(this.insideWorkareas).forEach(key => {
+			const area = this.insideWorkareas[key];
+			if (area.contains(pointer.worldX, pointer.worldY)) {
+				this.sendClick(key);
+			}
+		});
+	}
+
+	sendClick(key) {
+		// Logic of Clicking on an Area inside the hive
+		console.log(key);
 	}
 
 	setUpUserInput() {
