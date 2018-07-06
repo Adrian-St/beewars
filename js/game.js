@@ -46,8 +46,8 @@ class Game {
 			Phaser.Tilemap.TILED_JSON
 		);
 		game.load.tilemap(
-			'insideMap',
-			'assets/map/insideMap.json',
+			'inside_map',
+			'assets/map/inside_map.json',
 			null,
 			Phaser.Tilemap.TILED_JSON
 		);
@@ -184,7 +184,7 @@ class Game {
 	}
 
 	switchToInside() {
-		this.insideMap = game.add.tilemap('insideMap');
+		this.insideMap = game.add.tilemap('inside_map');
 		this.addTaskAreas(this.insideMap);
 		this.insideButton = game.add.button(
 			20,
