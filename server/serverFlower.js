@@ -1,31 +1,33 @@
-function randomInt(low, high) {
-  return Math.floor(Math.random() * (high - low) + low);
-}
+class Flower {
+	constructor(id) {
+		this.id = id;
+		this.nectar = this.randomInt(100, 200);
+		this.pollen = this.randomInt(100, 200);
+	}
 
-Flower = function(id) {
-  this.id = id
-  this.nectar = randomInt(100, 200);
-  this.pollen = randomInt(100, 200);
-}
-Flower.prototype.collectPollen = function(amount) {
-  this.pollen -= amount;
-  if (this.pollen < 0) {
-    var actualAmount = amount + this.pollen;
-    this.pollen = 0;
-    return actualAmount;
-  } else {
-    return amount;
-  }
-}
-Flower.prototype.collectNectar = function(amount) {
-  this.pollen -= amount;
-  if (this.pollen < 0) {
-    var actualAmount = amount + this.pollen;
-    this.pollen = 0;
-    return actualAmount;
-  } else {
-    return amount;
-  }
+	randomInt(low, high) {
+		return Math.floor(Math.random() * (high - low) + low);
+	}
+
+	collectPollen(amount) {
+		this.pollen -= amount;
+		if (this.pollen < 0) {
+			const actualAmount = amount + this.pollen;
+			this.pollen = 0;
+			return actualAmount;
+		}
+		return amount;
+	}
+
+	collectNectar(amount) {
+		this.pollen -= amount;
+		if (this.pollen < 0) {
+			const actualAmount = amount + this.pollen;
+			this.pollen = 0;
+			return actualAmount;
+		}
+		return amount;
+	}
 }
 
 module.exports = Flower;

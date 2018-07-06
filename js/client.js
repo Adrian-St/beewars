@@ -1,59 +1,70 @@
-var Beewars = Beewars || {};
-Beewars.Client = new function() {
-  var Client = this;
-  Client.socket = io.connect();
+import Menu from './menu.js';
+import Game from './game.js';
 
-  Client.askNewPlayer = (gameObjects) => Client.socket.emit('newplayer', gameObjects);
+class Client {
+	constructor() {
+		this.socket = io.connect();
+		this.socket.on('newplayer', data => {
+			Game.addNewPlayer(data);
+		});
+		this.socket.on('gameObjects', data => {
+			Game.addProperties(data);
 
-  Client.goTo = (moveData) => {
-    //moveData example: {beeID: bee.id, action: 'getPollen', target: 'flower', targetNr(optional):flower.id}
-    moveData.timestamp = Date.now();
-    Client.socket.emit('goTo', moveData);
-  };
+			this.socket.on('move', playerActions => {
+				Game.playerActions(playerActions);
+				Game.moveBee(playerActions[0]);
+			});
 
-  Client.socket.on('newplayer', (data) => {
-    Beewars.Game.addNewPlayer(data);
-  });
+			this.socket.on('remove', id => {
+				Game.removePlayer(id);
+			});
 
-  Client.synchronizeBeehive = beehive => {
-    Client.socket.emit('synchronizeBeehive', beehive);
-    if (document.getElementById('menu').firstChild.id == "hiveMenu") {
-      createHiveMenu(beehive, Beewars.Game.bees.length);
-    }
-  }
+			this.socket.on('updateGameObject', updatedObject => {
+				Game.updateGameObject(updatedObject);
+			});
+		});
+	}
 
-  Client.synchronizeFlower = flower => {
-    Client.socket.emit('synchronizeFlower', flower);
-    if (document.getElementById('menu').firstChild.id == ("flowerMenu" + flower.id)) {
-      createFlowerMenu(flower);
-    }
-  }
+	askNewPlayer(gameObjects) {
+		this.socket.emit('newplayer', gameObjects);
+	}
 
-  Client.synchronizeBee = bee => {
-    Client.socket.emit('synchronizeBee', bee);
-    if (document.getElementById('menu').firstChild.id == ("beeMenu" + bee.id)) {
-      createBeeMenu(bee);
-    }
-  }
+	goTo(playerAction) {
+		playerAction.timestamp = Date.now();
+		this.socket.emit('goTo', playerAction);
+	}
 
-  Client.emptyActions = bee => Client.socket.emit('emptyActions', bee.id);
+	synchronizeBeehive(beehive) {
+		this.socket.emit('synchronizeBeehive', beehive);
+		if (document.getElementById('menu').firstChild.id === 'hiveMenu') {
+			Menu.createHiveMenu(beehive, Game.bees.length);
+		}
+	}
 
-  Client.beeIsIdleForTooLong = bee => Client.socket.emit('beeIsIdleForTooLong', bee.id);
+	synchronizeFlower(flower) {
+		this.socket.emit('synchronizeFlower', flower);
+		if (
+			document.getElementById('menu').firstChild.id ===
+			'flowerMenu' + flower.id
+		) {
+			Menu.createFlowerMenu(flower);
+		}
+	}
 
-  Client.socket.on('gameObjects', data => {
-    Beewars.Game.addProperties(data);
+	synchronizeBee(bee) {
+		this.socket.emit('synchronizeBee', bee);
+		if (document.getElementById('menu').firstChild.id === 'beeMenu' + bee.id) {
+			Menu.createBeeMenu(bee);
+		}
+	}
 
-    Client.socket.on('move', playerActions => {
-      Beewars.Game.playerActions(playerActions);
-      Beewars.Game.moveBee(playerActions[0]);
-    });
+	emptyActions(bee) {
+		this.socket.emit('emptyActions', bee.id);
+	}
 
-    Client.socket.on('remove', id => {
-      Beewars.Game.removePlayer(id);
-    });
+	beeIsIdleForTooLong(bee) {
+		this.socket.emit('beeIsIdleForTooLong', bee.id);
+	}
+}
 
-    Client.socket.on('updateGameObject', updatedObject => {
-      Beewars.Game.updateGameObject(updatedObject);
-    });
-  });
-};
+export default new Client();
