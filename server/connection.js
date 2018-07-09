@@ -17,8 +17,15 @@ Connection.start = param => {
 			socket.broadcast.emit('newplayer', socket.player);
 
 			socket.on('goTo', moveData => {
-				if (game.bees[moveData.beeID].status !== 3) {
-					io.emit('move', game.performActionForBee(socket.player.id, moveData));
+				const currentBee = Connection.getBeeFromId(moveData.beeID);				
+				if (moveData.type === 1) {
+					if (currentBee.status !== 3) {
+						io.emit('move', game.performActionForBee(socket.player.id, moveData));
+					}
+				} else {
+					if (currentBee.status !== 3) {
+						io.emit('move', game.performActionForBee(socket.player.id, moveData));
+					}
 				}
 			});
 
@@ -53,6 +60,14 @@ Connection.start = param => {
 		});
 	});
 };
+
+Connection.getBeeFromId = id => {
+	let bee = game.bees.find(item => item.id === id);
+	if (bee === undefined) {
+			bee = game.hiveBees.find(item => item.id === id);
+	}
+	return bee;
+}
 
 Connection.updateBees = bees => {
 	io.emit('updateBees', bees);

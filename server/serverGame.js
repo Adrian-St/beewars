@@ -12,6 +12,7 @@ Game.lastBeeID = 0;
 Game.lastFlowerID = 0;
 Game.flowers = [];
 Game.bees = [];
+Game.hiveBees = [];
 Game.players = [];
 
 Game.setConnection = newConnection => {
@@ -25,6 +26,10 @@ Game.start = gameObjects => {
 	}
 	for (let j = 0; j < 5; j++) {
 		Game.bees.push(new Bee(Game.lastBeeID));
+		Game.lastBeeID++;
+	}
+	for (let j = 0; j < 5; j++) {
+		Game.hiveBees.push(new Bee(Game.lastBeeID));
 		Game.lastBeeID++;
 	}
 	Game.startTime = new Date();
@@ -48,14 +53,23 @@ Game.newPlayer = () => {
 Game.allObjects = () => {
 	return {
 		bees: Game.bees,
+		hiveBees: Game.hiveBees,
 		players: Game.players,
 		flowers: Game.flowers,
 		beehive: Game.beehive
 	};
 };
 
+Game.getBeeFromId = id => {
+	let bee = Game.bees.find(item => item.id === id);
+	if (bee === undefined) {
+			bee = Game.hiveBees.find(item => item.id === id);
+	}
+	return bee;
+}
+
 Game.performActionForBee = (playerID, playerAction) => {
-	const bee = Game.bees[playerAction.beeID];
+	const bee = Game.getBeeFromId(playerAction.beeID);	
 	playerAction.playerID = playerID;
 	return bee.performAction(playerAction);
 };

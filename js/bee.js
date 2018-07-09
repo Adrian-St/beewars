@@ -18,6 +18,10 @@ class Bee {
 		this.shadowTween = null;
 		this.playerActions = [];
 		this.timer = null;
+		this.type = {
+			OUTSIDEBEE: 0,
+			HIVEBEE: 1,
+		};
 	}
 
 	activateShadow() {
@@ -58,7 +62,9 @@ class Bee {
 
 		this.initializeTween();
 		this.tween.to(destination, duration);
-		this.tween.onComplete.add(Game.moveCallback, Game);
+		if (this.type != 1) {
+				this.tween.onComplete.add(Game.moveCallback, Game);
+		}
 		this.tween.start();
 		this.tween.onUpdateCallback(Game.onTweenRunning, Game);
 	}
