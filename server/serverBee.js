@@ -23,9 +23,12 @@ class Bee {
 		return Math.floor(Math.random() * (high - low) + low);
 	}
 
-	increaseAge() {
+	increaseAge(bee, type) {
 		this.age += 1;
-		if (this.age >= 45) {
+		if (this.age === 3 && type === 1) {
+			Game.switchHiveBeesOutside(bee);
+		}
+		if (this.age === 45) {
 			this.status = this.states.DEAD;
 		}
 	}

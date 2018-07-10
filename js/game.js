@@ -33,6 +33,7 @@ class Game {
 		this.insideLayers = [];
 		this.insideWorkareas = {};
 		this.insideGraphics = null;
+		this.currentLayer = 'outside';
 	}
 
 	init() {
@@ -188,6 +189,7 @@ class Game {
 	}
 
 	switchToInside() {
+		this.currentLayer = 'inside';
 		this.insideMap = game.add.tilemap('inside_map');
 		this.addTaskAreas(this.insideMap);
 		this.insideButton = game.add.button(
@@ -201,7 +203,7 @@ class Game {
 			0
 		);
 		this.hiveBees.forEach(bee => {
-			const sprite = game.add.sprite(200, 400, 'sprite');
+			const sprite = game.add.sprite(bee.x, bee.y, 'sprite');
 			sprite.anchor.setTo(1);
 			sprite.inputEnabled = true;
 			bee.sprite = sprite;
@@ -213,6 +215,7 @@ class Game {
 	}
 
 	switchToOutside() {
+		this.currentLayer = 'outside';
 		this.hiveBees.forEach(bee => {
 			bee.sprite.destroy();
 		});
@@ -223,6 +226,41 @@ class Game {
 		});
 		this.insideLayers = [];
 		this.insideGraphics.destroy();
+		this.bees.forEach(bee => {
+			if (bee.sprite === null) {
+				const sprite = game.add.sprite(bee.x, bee.y, 'sprite');
+				sprite.anchor.setTo(1);
+				sprite.inputEnabled = true;
+				bee.sprite = sprite;
+				const gameParent = this;
+				sprite.events.onInputUp.add(function() {
+					gameParent.onUp(bee);
+				});
+			}
+		});
+	}
+
+	switchHiveBeesOutside(serverBee) {
+		const gameBee = this.getBeeFromId(serverBee.id);
+		if (this.currentLayer === 'inside') {
+			gameBee.sprite.destroy();
+			gameBee.sprite = null;
+			console.log(gameBee.sprite);
+			console.log(this);
+		}
+		this.hiveBees.splice( this.hiveBees.indexOf(gameBee), 1 );
+		this.bees.push(gameBee);
+		gameBee.type = 0;
+		if (this.currentLayer === 'outside') {
+			const sprite = game.add.sprite(gameBee.x, gameBee.y, 'sprite');
+			sprite.anchor.setTo(1);
+			sprite.inputEnabled = true;
+			gameBee.sprite = sprite;
+			const gameParent = this;
+			sprite.events.onInputUp.add(function() {
+				gameParent.onUp(gameBee);
+			});
+		}
 	}
 
 	addTaskAreas(map) {
@@ -565,18 +603,29 @@ class Game {
 
 	moveCallback(beeSprite) {
 		const bee = this.getBeeForSprite(beeSprite);
+		bee.x = beeSprite.position.x;
+		bee.y = beeSprite.position.y;
 		if (
-			beeSprite.x === this.beehivePosition.x &&
-			beeSprite.y === this.beehivePosition.y
+			bee.x === this.beehivePosition.x &&
+			bee.y === this.beehivePosition.y
 		) {
 			this.returnNectar(bee);
 		} else {
 			const flower = this.getFlowerForPosition({
-				x: beeSprite.x,
-				y: beeSprite.y,
+				x: bee.x,
+				y: bee.y,
 			});
 			this.addNectarToBee(bee, flower);
 		}
+		bee.startTimer();
+		Client.emptyActions(bee);
+		this.graphics.clear();
+	}
+
+	moveCallbackHiveBees(beeSprite) {
+		const bee = this.getBeeForSprite(beeSprite);
+		bee.x = beeSprite.position.x;
+		bee.y = beeSprite.position.y;
 		bee.startTimer();
 		Client.emptyActions(bee);
 		this.graphics.clear();
@@ -660,7 +709,7 @@ class Game {
 		}
 		if (clickedBee.shadowTween) {
 			// The bee was selected but moving to another (or the same) flower
-			clickedBee.startShadowTween({ x: sprite.x, y: sprite.y });
+			clickedBee.startShadowTween({ x: bee.x, y: bee.y });
 		}
 		if (clickedBee.tween && clickedBee.tween.isRunning) {
 			// In case the 'new' bee is (already) flying
@@ -689,7 +738,7 @@ class Game {
 		this.graphics.clear();
 		bee.getActions().forEach(action => {
 			this.graphics.lineStyle(10, 0xffd900, 1);
-			this.graphics.moveTo(bee.sprite.x, bee.sprite.y);
+			this.graphics.moveTo(bee.x, bee.y);
 			this.graphics.lineTo(action.x, action.y);
 		});
 	}
@@ -754,6 +803,8 @@ class Game {
 			beeToBeUpdated.nectar = updateObject.content.nectar;
 			beeToBeUpdated.capacity = updateObject.content.capacity;
 			beeToBeUpdated.playerActions = updateObject.content.playerActions;
+			beeToBeUpdated.x = updateObject.content.x;
+			beeToBeUpdated.y = updateObject.content.y;
 			if (
 				document.getElementById('menu').firstChild.id ===
 				'beeMenu-' + beeToBeUpdated.id

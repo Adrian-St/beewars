@@ -36,10 +36,28 @@ Game.start = gameObjects => {
 	setInterval(Game.update, 5000);
 };
 
+Game.switchHiveBeesOutside = bee => {
+	//delete bee from hiveBees
+	//put bee in bees
+	connection.switchHiveBeesOutside(bee);
+	Game.hiveBees.splice( Game.hiveBees.indexOf(bee), 1 );
+	Game.bees.push(bee);
+}
+
 Game.update = () => {
 	for (let i = 0; i < Game.bees.length; i++) {
-		Game.bees[i].increaseAge();
-		connection.updateGameObject({ type: 'bee', content: Game.bees[i] });
+		connection.updateGameObject({ type: 'bee', content: Game.bees[i]});
+		Game.bees[i].increaseAge(Game.bees[i],0);
+		if (Game.hiveBees[i] != undefined) {
+			connection.updateGameObject({ type: 'bee', content: Game.bees[i] });
+		}
+	}
+	for (let i = 0; i < Game.hiveBees.length; i++) {
+		connection.updateGameObject({ type: 'bee', content: Game.hiveBees[i]})
+		Game.hiveBees[i].increaseAge(Game.hiveBees[i],1);
+		if (Game.hiveBees[i] != undefined) {
+			connection.updateGameObject({ type: 'bee', content: Game.hiveBees[i] });
+		}
 	}
 };
 
@@ -69,21 +87,21 @@ Game.getBeeFromId = id => {
 }
 
 Game.performActionForBee = (playerID, playerAction) => {
-	const bee = Game.getBeeFromId(playerAction.beeID);	
+	const bee = Game.getBeeFromId(playerAction.beeID);
 	playerAction.playerID = playerID;
 	return bee.performAction(playerAction);
 };
 
 Game.emptyActionLogOfBee = beeID => {
-	if (Game.beeForId(beeID).playerActions.length > 0) {
+	if (Game.getBeeFromId(beeID).playerActions.length > 0) {
 		Game.calculatePlayerExperienceAfterBeeArrived(beeID);
 	}
-	Game.beeForId(beeID).playerActions = [];
-	return { type: 'bee', content: Game.beeForId(beeID) };
+	Game.getBeeFromId(beeID).playerActions = [];
+	return { type: 'bee', content: Game.getBeeFromId(beeID) };
 };
 
 Game.calculatePlayerExperienceAfterBeeArrived = beeID => {
-	const { playerActions } = Game.beeForId(beeID);
+	const { playerActions } = Game.getBeeFromId(beeID);
 	const positiveContributer = playerActions[0].playerIDs;
 	positiveContributer.forEach(playerID =>
 		Game.raiseExperienceForPlayer(playerID, 0.1)
@@ -105,7 +123,7 @@ Game.handleSynchronizeBeehive = updatedBeehive => {
 };
 
 Game.handleSynchronizeBee = updatedBee => {
-	const beeToBeUpdated = Game.beeForId(updatedBee.id);
+	const beeToBeUpdated = Game.getBeeFromId(updatedBee.id);
 	beeToBeUpdated.age = updatedBee.age;
 	beeToBeUpdated.x = updatedBee.x;
 	beeToBeUpdated.y = updatedBee.y;
@@ -132,12 +150,6 @@ Game.handleSynchronizeFlower = updatedFlower => {
 	};
 };
 
-Game.beeForId = id => {
-	return Game.bees.find(bee => {
-		return bee.id === id;
-	});
-};
-
 Game.flowerForId = id => {
 	return Game.flowers.find(flower => {
 		return flower.id === id;
@@ -145,7 +157,7 @@ Game.flowerForId = id => {
 };
 
 Game.handleBeeIsIdleForTooLong = beeId => {
-	const bee = Game.beeForId(beeId);
+	const bee = Game.getBeeFromId(beeId);
 	let participatingPlayerIds = [];
 	bee.playerActions.forEach(a => {
 		participatingPlayerIds = participatingPlayerIds.concat(a.playerIDs);

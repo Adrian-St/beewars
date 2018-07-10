@@ -22,10 +22,12 @@ class Bee {
 			OUTSIDEBEE: 0,
 			HIVEBEE: 1,
 		};
+		this.x = serverBee.x;
+		this.y = serverBee.y;
 	}
 
 	activateShadow() {
-		this.shadow = game.add.sprite(this.sprite.x, this.sprite.y, 'sprite');
+		this.shadow = game.add.sprite(this.x, this.y, 'sprite');
 		this.shadow.anchor.set(0.5);
 		this.shadow.tint = 0x000000;
 		this.shadow.alpha = 0.6;
@@ -52,8 +54,8 @@ class Bee {
 		const beeSpeed = this.calculateBeeSpeed();
 		const duration =
 			Phaser.Math.distance(
-				this.sprite.position.x,
-				this.sprite.position.y,
+				this.x,
+				this.y,
 				destination.x,
 				destination.y
 			) *
@@ -62,8 +64,10 @@ class Bee {
 
 		this.initializeTween();
 		this.tween.to(destination, duration);
-		if (this.type != 1) {
-				this.tween.onComplete.add(Game.moveCallback, Game);
+		if (this.type === 1) {
+			this.tween.onComplete.add(Game.moveCallbackHiveBees, Game);
+		} else {
+			this.tween.onComplete.add(Game.moveCallback, Game);
 		}
 		this.tween.start();
 		this.tween.onUpdateCallback(Game.onTweenRunning, Game);
@@ -84,8 +88,8 @@ class Bee {
 		const beeSpeed = this.calculateBeeSpeed();
 		const duration =
 			Phaser.Math.distance(
-				this.sprite.position.x,
-				this.sprite.position.y,
+				this.x,
+				this.y,
 				destination.x,
 				destination.y
 			) *
@@ -106,8 +110,8 @@ class Bee {
 	getSendableBee() {
 		return {
 			id: this.id,
-			x: this.sprite.x,
-			y: this.sprite.y,
+			x: this.x,
+			y: this.y,
 			age: this.age,
 			status: this.status,
 			health: this.health,

@@ -17,7 +17,7 @@ Connection.start = param => {
 			socket.broadcast.emit('newplayer', socket.player);
 
 			socket.on('goTo', moveData => {
-				const currentBee = Connection.getBeeFromId(moveData.beeID);				
+				const currentBee = Connection.getBeeFromId(moveData.beeID);
 				if (moveData.type === 1) {
 					if (currentBee.status !== 3) {
 						io.emit('move', game.performActionForBee(socket.player.id, moveData));
@@ -76,5 +76,9 @@ Connection.updateBees = bees => {
 Connection.updateGameObject = updatedGameObject => {
 	io.emit('updateGameObject', updatedGameObject);
 };
+
+Connection.switchHiveBeesOutside = bee => {
+	io.emit('switchHiveBeesOutside', bee);
+}
 
 module.exports = Connection;

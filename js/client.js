@@ -22,6 +22,10 @@ class Client {
 			this.socket.on('updateGameObject', updatedObject => {
 				Game.updateGameObject(updatedObject);
 			});
+
+			this.socket.on('switchHiveBeesOutside', bee => {
+				Game.switchHiveBeesOutside(bee);
+			});
 		});
 	}
 
