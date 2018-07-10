@@ -1,4 +1,3 @@
-import Menu from './menu.js';
 import Game from './game.js';
 
 class Client {
@@ -10,60 +9,29 @@ class Client {
 		this.socket.on('gameObjects', data => {
 			Game.addProperties(data);
 
-			this.socket.on('move', playerActions => {
-				Game.playerActions(playerActions);
-				Game.moveBee(playerActions[0]);
+			this.socket.on('stateOfBee', bee => {
+				// This includes updating the player actions
+				const updatedBee = Game.updateBee(bee);
+				if (bee.playerActions.length > 0) Game.moveBee(updatedBee);
 			});
 
-			this.socket.on('remove', id => {
-				Game.removePlayer(id);
+			this.socket.on('stateOfFlower', flower => {
+				Game.updateFlower(flower);
 			});
 
-			this.socket.on('updateGameObject', updatedObject => {
-				Game.updateGameObject(updatedObject);
+			this.socket.on('stateOfBeehive', beehive => {
+				Game.updateBeehive(beehive);
 			});
 		});
 	}
 
-	askNewPlayer(gameObjects) {
-		this.socket.emit('newplayer', gameObjects);
+	registerNewPlayer() {
+		this.socket.emit('newplayer');
 	}
 
-	goTo(playerAction) {
-		playerAction.timestamp = Date.now();
-		this.socket.emit('goTo', playerAction);
-	}
-
-	synchronizeBeehive(beehive) {
-		this.socket.emit('synchronizeBeehive', beehive);
-		if (document.getElementById('menu').firstChild.id === 'hiveMenu') {
-			Menu.createHiveMenu(beehive, Game.bees.length);
-		}
-	}
-
-	synchronizeFlower(flower) {
-		this.socket.emit('synchronizeFlower', flower);
-		if (
-			document.getElementById('menu').firstChild.id ===
-			'flowerMenu' + flower.id
-		) {
-			Menu.createFlowerMenu(flower);
-		}
-	}
-
-	synchronizeBee(bee) {
-		this.socket.emit('synchronizeBee', bee);
-		if (document.getElementById('menu').firstChild.id === 'beeMenu' + bee.id) {
-			Menu.createBeeMenu(bee);
-		}
-	}
-
-	emptyActions(bee) {
-		this.socket.emit('emptyActions', bee.id);
-	}
-
-	beeIsIdleForTooLong(bee) {
-		this.socket.emit('beeIsIdleForTooLong', bee.id);
+	requestMovement(moveData) {
+		moveData.timestamp = Date.now();
+		this.socket.emit('requestMovement', moveData); // Movedata is a light version of playerAction and it must have 'target', 'timespan' and 'beeId'
 	}
 }
 

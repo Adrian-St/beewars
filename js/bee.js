@@ -1,6 +1,5 @@
 import { game } from './main.js';
 import Game from './game.js';
-import Client from './client.js';
 
 class Bee {
 	constructor(serverBee, sprite) {
@@ -17,7 +16,6 @@ class Bee {
 		this.shadow = null;
 		this.shadowTween = null;
 		this.playerActions = [];
-		this.timer = null;
 	}
 
 	activateShadow() {
@@ -58,7 +56,6 @@ class Bee {
 
 		this.initializeTween();
 		this.tween.to(destination, duration);
-		this.tween.onComplete.add(Game.moveCallback, Game);
 		this.tween.start();
 		this.tween.onUpdateCallback(Game.onTweenRunning, Game);
 	}
@@ -122,26 +119,6 @@ class Bee {
 				return null;
 			})
 			.filter(el => el);
-	}
-
-	resetTimer() {
-		if (this.timer !== null) {
-			game.time.events.remove(this.timer);
-			this.timer = null;
-		}
-	}
-
-	startTimer() {
-		this.resetTimer();
-		this.timer = game.time.events.add(
-			Phaser.Timer.SECOND * 10,
-			this.onElapsedTime,
-			this
-		);
-	}
-
-	onElapsedTime() {
-		Client.beeIsIdleForTooLong(this);
 	}
 }
 

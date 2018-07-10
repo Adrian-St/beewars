@@ -3,6 +3,8 @@ class Flower {
 		this.id = id;
 		this.nectar = this.randomInt(100, 200);
 		this.pollen = this.randomInt(100, 200);
+		this.x = 0;
+		this.y = 0;
 	}
 
 	randomInt(low, high) {

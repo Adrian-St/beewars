@@ -20,12 +20,11 @@
       {
         "files": "js/*.js",
         "env": ["browser"],
-        "globals": ["Beewars", "io", "Phaser"]
+        "globals": ["io", "Phaser"]
       },
       {
         "files": "server/*.js",
-        "env": ["node"],
-        "globals": ["Game"]
+        "env": ["node"]
       }
     ],
     "rules": {

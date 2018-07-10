@@ -1,3 +1,5 @@
+const Game = require('./serverGame.js');
+
 class Bee {
 	constructor(id) {
 		this.states = {
@@ -17,7 +19,27 @@ class Bee {
 		this.nectar = 0;
 		this.capacity = 100;
 		this.playerActions = [];
+		this.idleTimer = null; // Meassures the time since the bee performed the last action
+		this.flyTimer = null;
+		this.inactiveTimer = null; // Blocks the bee for a while after an action is performed
+		this.onIdleForTooLong = null;
+		this.onArriveAtDestination = null;
+		this.onActivateBee = null;
+		this.destination = null;
+		this.flyDuration = 0;
 	}
+
+	/* Schema of a playerAction
+playerAction {
+  id: int,
+  timestamp: long,
+  target: position,
+  beeID: int,
+  playerIDs: [int],
+  weight: int,
+  stop: boolean // gets always overridden from server
+}
+*/
 
 	randomInt(low, high) {
 		return Math.floor(Math.random() * (high - low) + low);
@@ -40,7 +62,8 @@ class Bee {
 
 	performAction(playerAction) {
 		// Calculate here what action to perform
-		// const weight = Game.players.find(player => player.id == playerAction.playerID).experience;
+		this.removeStopActions();
+
 		const indexOfExistingAction = this.playerActions.findIndex(
 			action =>
 				action.target.x === playerAction.target.x &&
@@ -82,7 +105,8 @@ class Bee {
 				return newPlayerActions;
 			}
 		}
-		return this.playerActions;
+		if (this.playerActions.length > 0)
+			this.setDestination(this.playerActions[0].target);
 	}
 
 	removeOldPlayerAction(playerID, indexOfOldPlayerAction) {
@@ -95,6 +119,10 @@ class Bee {
 		}
 	}
 
+	removeStopActions() {
+		this.playerActions = this.playerActions.filter(action => !action.stop);
+	}
+
 	calculateWeightsForActions() {
 		this.playerActions = this.playerActions.map(action => {
 			action.weight = action.playerIDs.reduce((total, playerID) => {
@@ -105,20 +133,105 @@ class Bee {
 			return action;
 		});
 	}
-}
 
-Game.lastActionId = 0;
+	setInactive() {
+		this.status = this.states.INACTIVE;
+		this.startInactiveTimer();
+	}
+
+	startIdleTimer() {
+		this.resetIdleTimer();
+		this.idleTimer = setTimeout(this.onIdleForTooLong, 10000, this); // 10ces
+	}
+
+	resetIdleTimer() {
+		if (this.idleTimer !== null) {
+			clearTimeout(this.idleTimer);
+			this.idleTimer = null;
+		}
+	}
+
+	startInactiveTimer() {
+		this.resetInactiveTimer();
+		this.inactiveTimer = setTimeout(this.onActivateBee, 4000, this); // 4sec
+	}
+
+	resetInactiveTimer() {
+		// This method is not needed because the inactiveTimer can not be called again before the timer runs out
+		// but this makes it more safe to operate with the timer
+		if (this.inactiveTimer !== null) {
+			clearTimeout(this.inactiveTimer);
+			this.inactiveTimer = null;
+		}
+	}
+
+	startFlyTimer(destination) {
+		this.resetFlyTimer();
+		this.setDestination(destination);
+		this.flyTimer = setTimeout(
+			this.onArriveAtDestination,
+			this.flyDuration,
+			this
+		);
+	}
+
+	resetFlyTimer() {
+		if (this.flyTimer !== null) {
+			// Everytime the timer resets we calculate the new x and y
+			// this is the case when there is a conflict
+			this.calculateNewPosition();
+			clearTimeout(this.flyTimer);
+			this.flyTimer = null;
+		}
+	}
+
+	setDestination(destination) {
+		this.destination = destination;
+		if (destination === null) this.flyDuration = 0;
+		else this.flyDuration = this.calculateDistance(destination) * 10;
+	}
+
+	calculateFlownDistancePercentage() {
+		return 1 - this.getTimeLeft(this.flyTimer) / this.flyDuration;
+	}
+
+	calculateNewPosition() {
+		this.x =
+			this.x +
+			(this.destination.x - this.x) * this.calculateFlownDistancePercentage();
+		this.y =
+			this.y +
+			(this.destination.y - this.y) * this.calculateFlownDistancePercentage();
+	}
+
+	calculateDistance(destination) {
+		return Math.sqrt(
+			(this.x - destination.x) * (this.x - destination.x) +
+				(this.y - destination.y) * (this.y - destination.y)
+		);
+	}
+
+	getTimeLeft(timeout) {
+		return Math.ceil(
+			timeout._idleStart + timeout._idleTimeout - process.uptime() * 1000
+		);
+	}
+
+	getSendableBee() {
+		return {
+			id: this.id,
+			x: this.x,
+			y: this.y,
+			age: this.age,
+			status: this.status,
+			health: this.health,
+			energy: this.energy,
+			pollen: this.pollen,
+			nectar: this.nectar,
+			capacity: this.capacity,
+			playerActions: this.playerActions
+		};
+	}
+}
 
 module.exports = Bee;
-
-/*
-PlayerAction {
-  id: int,
-  timestamp: long,
-  target: position,
-  beeID: int,
-  playerIDs: [int],
-  weight: int,
-  stop: boolean // gets always overridden from server
-}
-*/

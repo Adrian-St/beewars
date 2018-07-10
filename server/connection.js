@@ -4,6 +4,7 @@ const game = require('./serverGame.js');
 
 Connection.start = param => {
 	io = param;
+	console.log(game)
 	game.setConnection(Connection);
 	io.on('connection', socket => {
 		socket.on('newplayer', gameObjects => {
@@ -11,39 +12,15 @@ Connection.start = param => {
 				game.start(gameObjects);
 				socket.emit('newGame');
 			}
+
 			socket.player = game.newPlayer();
 			socket.emit('gameObjects', game.allObjects());
 
 			socket.broadcast.emit('newplayer', socket.player);
 
-			socket.on('goTo', moveData => {
-				if (game.bees[moveData.beeID].status !== 3) {
-					io.emit('move', game.performActionForBee(socket.player.id, moveData));
-				}
-			});
-
-			socket.on('synchronizeBeehive', updatedBeehive => {
-				Connection.updateGameObject(
-					game.handleSynchronizeBeehive(updatedBeehive)
-				); // Io.emit('updateGameObject', game.handleSynchronizeBeehive(updatedBeehive));
-			});
-
-			socket.on('synchronizeBee', updatedBee => {
-				Connection.updateGameObject(game.handleSynchronizeBee(updatedBee));
-			});
-
-			socket.on('synchronizeFlower', updatedFlower => {
-				Connection.updateGameObject(
-					game.handleSynchronizeFlower(updatedFlower)
-				);
-			});
-
-			socket.on('emptyActions', beeId => {
-				Connection.updateGameObject(game.emptyActionLogOfBee(beeId));
-			});
-
-			socket.on('beeIsIdleForTooLong', beeId => {
-				game.handleBeeIsIdleForTooLong(beeId);
+			socket.on('requestMovement', moveData => {
+				game.handleMovementRequest(socket.player.id, moveData);
+				// The server answers with the (updated) bee
 			});
 
 			socket.on('disconnect', () => {
@@ -54,12 +31,16 @@ Connection.start = param => {
 	});
 };
 
-Connection.updateBees = bees => {
-	io.emit('updateBees', bees);
+Connection.updateBee = updatedBee => {
+	io.emit('stateOfBee', updatedBee);
 };
 
-Connection.updateGameObject = updatedGameObject => {
-	io.emit('updateGameObject', updatedGameObject);
+Connection.updateBeehive = updatedBeehive => {
+	io.emit('stateOfBeehive', updatedBeehive);
+};
+
+Connection.updateFlower = updatedFlower => {
+	io.emit('stateOfFlower', updatedFlower);
 };
 
 module.exports = Connection;
