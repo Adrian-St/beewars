@@ -1,29 +1,38 @@
-var Beewars = Beewars || {};
-Beewars.Client = new function(){
-  var Client = this;
-  Client.socket = io.connect();
+import Game from './game.js';
 
-  Client.registerNewPlayer = () => Client.socket.emit('newplayer');
+class Client {
+	constructor() {
+		this.socket = io.connect();
+		this.socket.on('newplayer', data => {
+			Game.addNewPlayer(data);
+		});
+		this.socket.on('gameObjects', data => {
+			Game.addProperties(data);
 
-  Client.requestMovement = (moveData) => { 
-    moveData.timestamp = Date.now();
-    Client.socket.emit('requestMovement', moveData) // movedata is a light version of playerAction and it must have 'target', 'timespan' and 'beeId'
-  }
+			this.socket.on('stateOfBee', bee => {
+				// This includes updating the player actions
+				const updatedBee = Game.updateBee(bee);
+				if (bee.playerActions.length > 0) Game.moveBee(updatedBee);
+			});
 
-  Client.socket.on('gameObjects', data => {
-    Beewars.Game.addProperties(data);
+			this.socket.on('stateOfFlower', flower => {
+				Game.updateFlower(flower);
+			});
 
-    Client.socket.on('stateOfBee', bee => { // this includes updating the player actions
-        var updatedBee = Beewars.Game.updateBee(bee);
-        if(bee.playerActions.length > 0) Beewars.Game.moveBee(updatedBee);
-    });
+			this.socket.on('stateOfBeehive', beehive => {
+				Game.updateBeehive(beehive);
+			});
+		});
+	}
 
-    Client.socket.on('stateOfFlower', flower => {
-        Beewars.Game.updateFlower(flower);
-    });
+	registerNewPlayer() {
+		this.socket.emit('newplayer');
+	}
 
-    Client.socket.on('stateOfBeehive', beehive => {
-        Beewars.Game.updateBeehive(beehive);
-    });
-  });
-};
+	requestMovement(moveData) {
+		moveData.timestamp = Date.now();
+		this.socket.emit('requestMovement', moveData); // Movedata is a light version of playerAction and it must have 'target', 'timespan' and 'beeId'
+	}
+}
+
+export default new Client();

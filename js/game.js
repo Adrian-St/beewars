@@ -1,347 +1,625 @@
-var Beewars = Beewars || {};
-Beewars.Game = new function() {
-  var Game = this;
-  Game.beehiveSprite; //A Sprite
-  Game.flowerSprites; //A Group of sprites
-  Game.beehive;
-  Game.flowers = [];
-  Game.bees = [];
-  Game.ressourceLabel;
-  Game.beeLabel;
-  Game.beehivePosition = {
-    x: 0,
-    y: 0
-  }
-  Game.line;
-  Game.graphics;
+import { game } from './main.js';
+import Menu from './menu.js';
+import Client from './client.js';
+import Beehive from './beehive.js';
+import Flower from './flower.js';
+import Bee from './bee.js';
 
-  Game.init = () => Beewars.game.stage.disableVisibilityChange = true;
+class Game {
+	constructor() {
+		this.beehiveSprite = {}; // A Sprite
+		this.flowerSprites = {}; // A Group of sprites
+		this.beehive = {};
+		this.flowers = [];
+		this.bees = [];
+		this.ressourceLabel = '';
+		this.beeLabel = '';
+		this.beehivePosition = {
+			x: 0,
+			y: 0
+		};
+		this.line = null;
+		this.graphics = null;
+		this.multipleBeeSelectionStatus = false;
+		this.multipleBeeSelectionPosition = {
+			x: 0,
+			y: 0
+		};
+		this.multipleBeeSelectionCollection = [];
+		this.insideMap = null;
+		this.insideButton = null;
+		this.insideLayers = [];
+		this.insideWorkareas = {};
+		this.insideGraphics = null;
+	}
 
-  Game.preload = () => {
-    Beewars.game.load.tilemap('map', 'assets/map/outside_map.json', null, Phaser.Tilemap.TILED_JSON);
-    Beewars.game.load.spritesheet('grass', 'assets/map/grass.png',32,32);
-    Beewars.game.load.spritesheet('flowers', 'assets/map/flowers.png',64,64);
-    Beewars.game.load.spritesheet('beehive', 'assets/map/beehive.png',128,160);
-    Beewars.game.load.image('sprite', 'assets/sprites/bees64px-version2.png');    
-    Beewars.game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
-  };
+	init() {
+		game.stage.disableVisibilityChange = true;
+	}
 
-  Game.create = () => {
-    var map = Beewars.game.add.tilemap('map');
-    Game.addBackground(map);
-    Game.addFlowers(map);
-    Game.addBeehive(map);
-    Game.graphics = Beewars.game.add.graphics(0,0);
-    Beewars.Client.registerNewPlayer();
-  };
+	preload() {
+		game.load.tilemap(
+			'map',
+			'assets/map/outside_map.json',
+			null,
+			Phaser.Tilemap.TILED_JSON
+		);
+		game.load.tilemap(
+			'inside_map',
+			'assets/map/inside_map.json',
+			null,
+			Phaser.Tilemap.TILED_JSON
+		);
+		game.load.spritesheet('grass', 'assets/map/grass.png', 32, 32);
+		game.load.spritesheet('flowers', 'assets/map/flowers.png', 64, 64);
+		game.load.spritesheet('beehive', 'assets/map/beehive.png', 128, 160);
+		game.load.spritesheet(
+			'Honeycomb-Tileset-double',
+			'assets/honeycombs/Honeycomb-Tileset-double.png',
+			32,
+			24
+		);
+		game.load.spritesheet(
+			'switch',
+			'assets/sprites/button_sprite_sheet.png',
+			193,
+			71
+		);
+		game.load.image('sprite', 'assets/sprites/bees64px-version2.png');
+		game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
+	}
 
-  Game.addBackground = map => {
-    map.addTilesetImage('grass'); // grass is the key of the tileset in map's JSON file
-    var layer = map.createLayer('Background');
-    layer.resizeWorld();
-    layer.inputEnabled = true;
-    layer.events.onInputUp.add((object, pointer) => {
-      createHiveMenu(Game.beehive, Game.bees.length);
-      Game.deactivateAllOtherShadows({});
-      Game.stopAllOtherShadowTweens({});
-      Game.graphics.clear();
-    }, this)
-  };
+	create() {
+		const map = game.add.tilemap('map');
+		this.addBackground(map);
+		this.addFlowers(map);
+		this.addBeehive(map);
+		game.add.button(20, 20, 'switch', this.switchToInside, this, 2, 1, 0);
+		this.graphics = game.add.graphics(0, 0);
+		Client.registerNewPlayer();
+	}
 
-  Game.addFlowers = map => {
-    map.addTilesetImage('flowers');
-    Game.flowerSprites = Beewars.game.add.group();
-    map.createFromObjects('Flowers', 'flower-white', 'flowers', 0, true, false, Game.flowerSprites);
-    map.createFromObjects('Flowers', 'flower-purple', 'flowers', 1, true, false, Game.flowerSprites);
-    map.createFromObjects('Flowers', 'flower-red', 'flowers', 2, true, false, Game.flowerSprites);
-    map.createFromObjects('Flowers', 'flower-yellow', 'flowers', 3, true, false, Game.flowerSprites);
-    Game.flowerSprites.children.forEach(object => {
-      object.anchor.setTo(0.5);
-      object.inputEnabled = true;
-      object.events.onInputUp.add(Game.getCoordinates, this);
-    });
-  };
+	addBackground(map) {
+		map.addTilesetImage('grass'); // Tilesheet is the key of the tileset in map's JSON file
+		const layer = map.createLayer('Background');
+		layer.resizeWorld();
+		layer.inputEnabled = true;
+		layer.events.onInputUp.add(() => {
+			Menu.createHiveMenu(this.beehive, this.bees.length);
+			this.deactivateAllOtherShadows({});
+			this.stopAllOtherShadowTweens({});
+			this.graphics.clear();
+		}, this);
+	}
 
-  Game.addBeehive = (map) => {
-    map.addTilesetImage('beehive');
-    var beehiveGroup = Beewars.game.add.group();
-    map.createFromObjects('Beehive', 'beehive', 'beehive', 0, true, false, beehiveGroup);
-    Game.beehiveSprite = beehiveGroup.getAt(0);
-    Game.beehiveSprite.inputEnabled = true;
-    Game.beehiveSprite.events.onInputUp.add(Game.getCoordinates, this);
-  };
+	addFlowers(map) {
+		map.addTilesetImage('flowers');
+		this.flowerSprites = game.add.group();
+		map.createFromObjects(
+			'Flowers',
+			'flower-white',
+			'flowers',
+			0,
+			true,
+			false,
+			this.flowerSprites
+		);
+		map.createFromObjects(
+			'Flowers',
+			'flower-purple',
+			'flowers',
+			1,
+			true,
+			false,
+			this.flowerSprites
+		);
+		map.createFromObjects(
+			'Flowers',
+			'flower-red',
+			'flowers',
+			2,
+			true,
+			false,
+			this.flowerSprites
+		);
+		map.createFromObjects(
+			'Flowers',
+			'flower-yellow',
+			'flowers',
+			3,
+			true,
+			false,
+			this.flowerSprites
+		);
+		this.flowerSprites.children.forEach(object => {
+			object.anchor.setTo(0.5);
+			object.inputEnabled = true;
+			object.events.onInputUp.add(this.getCoordinates, this);
+		});
+	}
 
-  Game.addBeehiveObject = (beehive) => {
-    Game.beehive = new Beewars.Beehive(beehive, Game.beehiveSprite);
-    Game.setBeehivePosition(beehive.x, beehive.y)
-  };
+	addBeehive(map) {
+		map.addTilesetImage('beehive');
+		const beehiveGroup = game.add.group();
+		map.createFromObjects(
+			'Beehive',
+			'beehive',
+			'beehive',
+			0,
+			true,
+			false,
+			beehiveGroup
+		);
+		this.beehiveSprite = beehiveGroup.getAt(0);
+		this.beehiveSprite.inputEnabled = true;
+		this.beehiveSprite.events.onInputUp.add(this.getCoordinates, this);
 
-  Game.addFlowerObjects = (flowers) => {
-    for(i = 0; i < flowers.length ; i++) {
-      Game.flowers.push(new Beewars.Flower(flowers[i], Game.flowerSprites.children[i]));
-    }
-  };
+		this.beehivePosition.x = this.beehiveSprite.centerX + 30;
+		this.beehivePosition.y = this.beehiveSprite.centerY + 50;
+	}
 
-  Game.addProperties = (data) => {
-    Game.addFlowerObjects(data.flowers);
-    Game.addBeehiveObject(data.beehive);
-    for(var i = 0; i < data.bees.length; i++) {
-      Game.addNewBee(data.bees[i]);
-    }
-    createHiveMenu(Game.beehive.getSendableBeehive(), Game.bees.length);
-  };
+	addBeehiveObject(beehive) {
+		this.beehive = new Beehive(beehive, this.beehiveSprite);
+	}
 
-  Game.setBeehivePosition = (x, y) => {
-    Game.beehivePosition.x = x;
-    Game.beehivePosition.y = y;
-    console.log(Game.beehivePosition)
-  };
+	addFlowerObjects(flowers) {
+		for (let i = 0; i < flowers.length; i++) {
+			this.flowers.push(new Flower(flowers[i], this.flowerSprites.children[i]));
+		}
+	}
 
-  Game.addNewBee = (serverBee) => {
-    var sprite = Beewars.game.add.sprite(serverBee.x,serverBee.y, 'sprite');
-    sprite.anchor.setTo(0.5);
-    sprite.inputEnabled = true;
-    sprite.events.onInputUp.add(Game.onUp, this);
-    var bee = new Beewars.Bee(serverBee, sprite);
-    Game.bees.push(bee);
-  }
+	addProperties(data) {
+		this.addFlowerObjects(data.flowers);
+		this.addBeehiveObject(data.beehive);
+		for (let i = 0; i < data.bees.length; i++) {
+			this.addNewBee(data.bees[i]);
+		}
+		Menu.createHiveMenu(this.beehive.getSendableBeehive(), this.bees.length);
+		this.setUpUserInput();
+	}
 
-  Game.deactivateBee = (bee, seconds) => {
-    Game.createProgressBar(bee.sprite.x, bee.sprite.y, 'progressbar', 50, 10, seconds, 0);
-    Game.time.events.add(Phaser.Timer.SECOND * seconds, function () { Game.activateBee(bee) }, this);
-  }
+	addNewBee(serverBee) {
+		const sprite = game.add.sprite(serverBee.x, serverBee.y, 'sprite');
+		sprite.anchor.setTo(0.5);
+		sprite.inputEnabled = true;
+		sprite.events.onInputUp.add(this.onUp, this);
+		const bee = new Bee(serverBee, sprite);
+		this.bees.push(bee);
+	}
 
-  Game.createProgressBar = (x, y, image, barWidth, barHeight, seconds, type) => {
-      // type: 0 = decreasing | 1 = increasing
-      
-      var innerProgressBar = Game.add.sprite(x - barWidth / 2, y - barWidth, image);
-      innerProgressBar.inputEnabled = false;
-      if (type == 0) {
-          innerProgressBar.width = barWidth;
-      }
-      else if (type == 1) {
-          innerProgressBar.width = 0;
-      }
-      
-      innerProgressBar.height = barHeight;
-      innerProgressBar.progress = barWidth / seconds;
+	switchToInside() {
+		this.insideMap = game.add.tilemap('inside_map');
+		this.addTaskAreas(this.insideMap);
+		this.insideButton = game.add.button(
+			20,
+			20,
+			'switch',
+			this.switchToOutside,
+			this,
+			2,
+			1,
+			0
+		);
+	}
 
-      Game.time.events.repeat(Phaser.Timer.SECOND, seconds, function () { Game.updateProgressBar(innerProgressBar, type) }, this);
-  }
+	switchToOutside() {
+		this.insideMap.destroy();
+		this.insideButton.destroy();
+		this.insideLayers.forEach(layer => {
+			layer.destroy();
+		});
+		this.insideLayers = [];
+		this.insideGraphics.destroy();
+	}
 
+	addTaskAreas(map) {
+		map.addTilesetImage('grass');
+		this.insideLayers.push(map.createLayer('Grass'));
+		map.addTilesetImage('Honeycomb-Tileset-double');
+		this.insideLayers.push(map.createLayer('Honeycombs'));
+		this.insideLayers[1].resizeWorld();
+		this.insideLayers[1].inputEnabled = true;
+		this.insideLayers[1].events.onInputUp.add(this.getWorkarea, this);
+		this.insideGraphics = game.add.graphics(0, 0);
+		map.objects['Inner Beehive'].forEach(object => {
+			const points = [object.polygon.length];
+			for (let i = 0; i < object.polygon.length; i++) {
+				points[i] = {
+					x: object.x + object.polygon[i][0],
+					y: object.y + object.polygon[i][1]
+				};
+			}
+			this.insideWorkareas[object.name] = new Phaser.Polygon(points);
+			this.insideGraphics.lineStyle(10, 0xffd900, 1);
+			this.insideGraphics.drawPolygon(this.insideWorkareas[object.name].points);
+		});
+	}
 
-  Game.updateProgressBar = (progressBar, type) => {
-      if (type == 0)      progressBar.width = progressBar.width - progressBar.progress;
-      else if (type == 1) progressBar.width = progressBar.width + progressBar.progress;  
-  }
+	getWorkarea(layer, pointer) {
+		Object.keys(this.insideWorkareas).forEach(key => {
+			const area = this.insideWorkareas[key];
+			if (area.contains(pointer.worldX, pointer.worldY)) {
+				this.sendClick(key);
+			}
+		});
+	}
 
-  Game.activateBee = (bee) => {
-      console.log("Dobby is a free bee!");
-  }
+	sendClick(key) {
+		// Logic of Clicking on an Area inside the hive
+		console.log(key);
+	}
 
-  /*
-  Game.getBeeForSprite = (sprite) => {
-    for (var i = 0; i < Game.bees.length; i++) {
-      if(Game.bees[i].sprite == sprite) return Game.bees[i];
-    }
-  }
-  */
+	setUpUserInput() {
+		this.bees.forEach(currentBee => {
+			currentBee.sprite.events.onInputOver.add(() => {
+				this.onBeeInputOver(currentBee);
+			}, this);
+			currentBee.sprite.events.onInputOut.add(() => {
+				this.onBeeInputOut(currentBee);
+			}, this);
+		});
+	}
 
-  Game.getFlowerForSprite = (sprite) => {
-    for (var i = 0; i < Game.flowers.length; i++) {
-      if(Game.flowers[i].sprite == sprite) return Game.flowers[i];
-    }
-  }
+	onBeeInputOver(currentBee) {
+		const allBees = this.getAllBeesAtPosition(currentBee);
+		const originalPosition = allBees[0].sprite.position.clone();
 
-  /*
-  Game.getFlowerForPosition = (position) => {
-    for (var i = 0; i < Game.flowers.length; i++) {
-      if(Game.flowers[i].sprite.position.x == position.x && Game.flowers[i].sprite.position.y == position.y) return Game.flowers[i];
-    }
-  }
-  */
+		if (allBees.length > 1 && !this.multipleBeeSelectionStatus) {
+			this.displayMultipleBees(allBees, originalPosition);
+			this.multipleBeeSelectionPosition.x = originalPosition.x;
+			this.multipleBeeSelectionPosition.y = originalPosition.y;
+			this.multipleBeeSelectionCollection = allBees.slice(0);
+			this.multipleBeeSelectionStatus = true;
+		}
+	}
 
-  Game.onUp = (sprite, pointer) => {
-    var clickedBee = Game.bees.find(item => item.sprite === sprite);
+	onBeeInputOut(currentBee) {
+		if (this.multipleBeeSelectionStatus) {
+			if (this.multipleBeeSelectionCollection.indexOf(currentBee) > -1) {
+				this.displaySingleBeeGroup();
+				this.multipleBeeSelectionStatus = false;
+			}
+		}
+	}
 
-    Game.stopAllOtherShadowTweens(clickedBee);
-    Game.deactivateAllOtherShadows(clickedBee);
+	displayMultipleBees(allBees, originalPosition) {
+		const length = allBees.length * 40;
+		const leftX = originalPosition.x - length / 2;
 
-    if (clickedBee.shadow) {    // the bee had already a shadow
-        createHiveMenu(Game.beehive.getSendableBeehive(), Game.bees.length);
-        clickedBee.deactivateShadow();
-        Game.graphics.clear();
-        return;
-    }
-    if (!clickedBee.shadow){ // the bee wasn't selected before
-        createBeeMenu(clickedBee.getSendableBee());
-        clickedBee.activateShadow();
-        Game.showAllActions(clickedBee);
-    }
-    if (clickedBee.shadowTween) { // the bee was selected but moving to another (or the same) flower
-        clickedBee.startShadowTween({x: sprite.x, y: sprite.y});
-    }
-    if (clickedBee.tween && clickedBee.tween.isRunning) { // in case the 'new' bee is (already) flying
-         clickedBee.startShadowTween({x: clickedBee.tween.properties.x, y: clickedBee.tween.properties.y});
-    }
-  };
+		for (let i = 0; i < allBees.length; i++) {
+			const temp = leftX + i * allBees[i].sprite.width;
+			allBees[i].sprite.position.x = temp;
+		}
+	}
 
-  Game.onTweenRunning = () => {
-    if(Game.isBeeSelected() && Game.getSelectedBee().shadow && Game.getSelectedBee().tween){
-        var curBee = Game.getSelectedBee();
-        var actions = curBee.getActions();
-        Game.graphics.clear();
-        Game.showAllActions(curBee);
-    } else {
-       Game.graphics.clear();
-    }
-  }
+	displaySingleBeeGroup() {
+		for (let i = 0; i < this.multipleBeeSelectionCollection.length; i++) {
+			this.multipleBeeSelectionCollection[
+				i
+			].sprite.position.x = this.multipleBeeSelectionPosition.x;
+			this.multipleBeeSelectionCollection[
+				i
+			].sprite.position.y = this.multipleBeeSelectionPosition.y;
+		}
+	}
 
-  Game.showAllActions = (bee) => {
-    Game.graphics.clear();
-    bee.getActions().forEach(action => {
-          Game.graphics.lineStyle(10, 0xffd900, 1);
-          Game.graphics.moveTo(bee.sprite.x, bee.sprite.y);
-          Game.graphics.lineTo(action.x, action.y);
-    });
-  }
+	createProgressBar(x, y, image, barWidth, barHeight, seconds, type) {
+		// Type: 0 = decreasing | 1 = increasing
 
-  Game.stopAllOtherShadowTweens = (bee) => {
-    for(i = 0; i<Game.bees.length; i++){
-        const b = Game.bees[i]
-        if(b.id !== bee.id){
-            b.stopShadowTween();
-        }
-    }
-  }
+		const innerProgressBar = this.add.sprite(
+			x - barWidth / 2,
+			y - barWidth,
+			image
+		);
+		innerProgressBar.inputEnabled = false;
+		if (type === 0) {
+			innerProgressBar.width = barWidth;
+		} else if (type === 1) {
+			innerProgressBar.width = 0;
+		}
 
-  Game.deactivateAllOtherShadows = (bee) => {
-    for(i = 0, b = Game.bees[i]; i<Game.bees.length; i++){
-        const b = Game.bees[i]
-        if(b.id !== bee.id){
-            b.deactivateShadow();
-        }
-    }
-  }
+		innerProgressBar.height = barHeight;
+		innerProgressBar.progress = barWidth / seconds;
 
-  Game.isBeeSelected = () => {
-    for (var i = 0; i < Game.bees.length; i++) {
-        if(Game.bees[i].shadow) return true;
-    }
-    return false;
-  }
+		this.time.events.repeat(
+			Phaser.Timer.SECOND,
+			seconds,
+			() => {
+				this.updateProgressBar(innerProgressBar, type);
+			},
+			this
+		);
+	}
 
-  Game.getSelectedBee = () => {
-    for (var i = 0; i < Game.bees.length; i++) {
-        if(Game.bees[i].shadow) return Game.bees[i];
-    }
-  }
+	updateProgressBar(progressBar, type) {
+		if (type === 0) {
+			progressBar.width -= progressBar.progress;
+		} else if (type === 1) {
+			progressBar.width += progressBar.progress;
+		}
+	}
 
-  Game.beeForId = id => {
-    return Game.bees.find(bee => {return bee.id === id;});
-  }
+	activateBee(bee) {
+		return bee;
+		//bee.status = 0;
+		//Client.synchronizeBee(bee.getSendableBee());
+	}
 
-  Game.flowerForId = id => {
-    return Game.flowers.find(flower => {return flower.id === id;});
-  }
+	deactivateBee(bee, seconds) {
+		bee.status = 3;
 
-  Game.updateBee = bee => {
-    var beeToBeUpdated = Game.beeForId(bee.id);
-    if(beeToBeUpdated.status === 3){ // bee was blocked
-      if(bee.status === 0) Game.activateBee(beeToBeUpdated); // bee is free now
-    }else if(bee.status === 3) Game.deactivateBee(beeToBeUpdated, 4); // bee is now blocked
-    beeToBeUpdated.age = bee.age;
-    beeToBeUpdated.status = bee.status;
-    beeToBeUpdated.health = bee.health;
-    beeToBeUpdated.energy = bee.energy;
-    beeToBeUpdated.pollen = bee.pollen;
-    beeToBeUpdated.nectar = bee.nectar;
-    beeToBeUpdated.capacity = bee.capacity;
-    beeToBeUpdated.playerActions = bee.playerActions;
-    if (document.getElementById('menu').firstChild.id == ("beeMenu-" + beeToBeUpdated.id)) {
-      createBeeMenu(beeToBeUpdated);
-    }
-    return beeToBeUpdated;
-  }
+		this.createProgressBar(
+			bee.sprite.x,
+			bee.sprite.y,
+			'progressbar',
+			50,
+			10,
+			seconds,
+			0
+		);
+		this.time.events.add(
+			Phaser.Timer.SECOND * seconds,
+			() => {
+				this.activateBee(bee);
+			},
+			this
+		);
+	}
 
-  Game.updateFlower = flower => {
-    var flowerToBeUpdated = Game.flowerForId(flower.id);
-    flowerToBeUpdated.pollen = flower.pollen;
-    flowerToBeUpdated.nectar = flower.nectar;
+	getBeeForSprite(sprite) {
+		for (let i = 0; i < this.bees.length; i++) {
+			if (this.bees[i].sprite === sprite) {
+				return this.bees[i];
+			}
+		}
+	}
 
-    if (document.getElementById('menu').firstChild.id == ("flowerMenu-" + flowerToBeUpdated.id)) {
-      createFlowerMenu(flowerToBeUpdated);
-    }
-  }
+	getFlowerForSprite(sprite) {
+		for (let i = 0; i < this.flowers.length; i++) {
+			if (this.flowers[i].sprite === sprite) {
+				return this.flowers[i];
+			}
+		}
+	}
 
-  Game.updateBeehive = beehive => {
-    Game.beehive.pollen = beehive.pollen;
-    Game.beehive.honey = beehive.honey;
-    Game.beehive.honeycombs = beehive.honeycombs;
+	getFlowerForPosition(position) {
+		for (let i = 0; i < this.flowers.length; i++) {
+			if (
+				this.flowers[i].sprite.position.x === position.x &&
+				this.flowers[i].sprite.position.y === position.y
+			) {
+				return this.flowers[i];
+			}
+		}
+	}
 
-    if (document.getElementById('menu').firstChild.id == "hiveMenu") {
-      createHiveMenu(Game.beehive, Game.bees.length);
-    }
-  }
+	deselectBee(bee) {
+		Menu.createHiveMenu(this.beehive.getSendableBeehive(), this.bees.length);
+		bee.deactivateShadow();
+		this.graphics.clear();
+	}
 
-  Game.getCoordinates = (object,pointer) => {
-    if(object.name == 'beehive'){
-      if(Game.isBeeSelected()) {
-        Game.requestGoToHive(); 
-      }
-      else {
-        createHiveMenu(Game.beehive, Game.bees.length);
-      }
-    } else if (['flower-white','flower-red','flower-purple','flower-yellow'].includes(object.name) ){
-      if(Game.isBeeSelected()) {
-        var flower = Game.flowers.find( (flower) => {return (flower.sprite === object);});
-        Game.requestGoToFlower(flower);
-      }
-      else {
-        createFlowerMenu(Game.getFlowerForSprite(object));
-      }
-    }
-  };
+	getAllBeesAtPosition(bee) {
+		const { x } = bee.sprite.position;
+		const { y } = bee.sprite.position;
+		const radius = 20;
+		const allBees = this.bees.filter(
+			item =>
+				item.sprite.position.x > x - radius &&
+				item.sprite.position.x < x + radius &&
+				item.sprite.position.y > y - radius &&
+				item.sprite.position.y < y + radius
+		);
+		return allBees;
+	}
 
-  Game.requestGoToHive = () => {
-    if (Game.isBeeSelected()) {
-        var x = Game.beehivePosition.x;
-        var y = Game.beehivePosition.y;
-        Beewars.Client.requestMovement(Game.createMoveData(x, y));
-        //Game.getSelectedBee().resetTimer();
-    }
-  }
+	onUp(sprite) {
+		const clickedBee = this.bees.find(item => item.sprite === sprite);
 
-  Game.requestGoToFlower = flower => { 
-    if (Game.isBeeSelected()) {
-        var x = flower.sprite.position.x;
-        var y = flower.sprite.position.y;
-        Beewars.Client.requestMovement(Game.createMoveData(x, y));
-    }
-  };
+		this.stopAllOtherShadowTweens(clickedBee);
+		this.deactivateAllOtherShadows(clickedBee);
 
-  Game.createMoveData = (x,y) => {
-    return {beeID: Game.getSelectedBee().id, target: {x: x, y: y}}
-  }
+		if (clickedBee.shadow) {
+			// The bee had already a shadow
+			this.deselectBee(clickedBee);
+			return;
+		}
+		if (!clickedBee.shadow) {
+			// The bee wasn't selected before
+			Menu.createBeeMenu(clickedBee.getSendableBee());
+			clickedBee.activateShadow();
+			this.showAllActions(clickedBee);
+		}
+		if (clickedBee.shadowTween) {
+			// The bee was selected but moving to another (or the same) flower
+			clickedBee.startShadowTween({ x: sprite.x, y: sprite.y });
+		}
+		if (clickedBee.tween && clickedBee.tween.isRunning) {
+			// In case the 'new' bee is (already) flying
+			clickedBee.startShadowTween({
+				x: clickedBee.tween.properties.x,
+				y: clickedBee.tween.properties.y
+			});
+		}
+	}
 
-  Game.moveBee = (bee) => {
-    var action = bee.playerActions[0];
+	onTweenRunning() {
+		if (
+			this.isABeeSelected() &&
+			this.getSelectedBee().shadow &&
+			this.getSelectedBee().tween
+		) {
+			const curBee = this.getSelectedBee();
+			this.showAllActions(curBee);
+		} else {
+			this.graphics.clear(); // This is called way to often...
+		}
+	}
 
-    bee.stopTween(); // In case the bee was flying to another flower (or hive)
-    if(bee.shadowTween) {
-        bee.stopShadowTween();
-    }
+	showAllActions(bee) {
+		this.graphics.clear();
+		bee.getActions().forEach(action => {
+			this.graphics.lineStyle(10, 0xffd900, 1);
+			this.graphics.moveTo(bee.sprite.x, bee.sprite.y);
+			this.graphics.lineTo(action.x, action.y);
+		});
+	}
 
-    if(action.stop) {
-      if(bee.shadow)
-        Game.showAllActions(bee);
-      return;
-    }
+	stopAllOtherShadowTweens(bee) {
+		for (let i = 0; i < this.bees.length; i++) {
+			const b = this.bees[i];
+			if (b.id !== bee.id) {
+				b.stopShadowTween();
+			}
+		}
+	}
 
-    bee.startTween({x: action.target.x, y: action.target.y});
+	deactivateAllOtherShadows(bee) {
+		for (let i = 0; i < this.bees.length; i++) {
+			const b = this.bees[i];
+			if (b.id !== bee.id) {
+				b.deactivateShadow();
+			}
+		}
+	}
 
-    if(bee.shadow){
-      bee.startShadowTween({x: action.target.x, y: action.target.y});
-    }
-  };
-};
+	isABeeSelected() {
+		for (let i = 0; i < this.bees.length; i++) {
+			if (this.bees[i].shadow) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	getSelectedBee() {
+		for (let i = 0; i < this.bees.length; i++) {
+			if (this.bees[i].shadow) {
+				return this.bees[i];
+			}
+		}
+	}
+
+	beeForId(id) {
+		return this.bees.find(bee => {
+			return bee.id === id;
+		});
+	}
+
+	flowerForId(id) {
+		return this.flowers.find(flower => {
+			return flower.id === id;
+		});
+	}
+
+	updateBee(bee) {
+		const beeToBeUpdated = this.beeForId(bee.id);
+		if (beeToBeUpdated.status === 3) {
+			// Bee was blocked
+			if (bee.status === 0) this.activateBee(beeToBeUpdated); // Bee is free now
+		} else if (bee.status === 3) this.deactivateBee(beeToBeUpdated, 4); // Bee is now blocked
+		beeToBeUpdated.age = bee.age;
+		beeToBeUpdated.status = bee.status;
+		beeToBeUpdated.health = bee.health;
+		beeToBeUpdated.energy = bee.energy;
+		beeToBeUpdated.pollen = bee.pollen;
+		beeToBeUpdated.nectar = bee.nectar;
+		beeToBeUpdated.capacity = bee.capacity;
+		beeToBeUpdated.playerActions = bee.playerActions;
+		if (
+			document.getElementById('menu').firstChild.id ===
+			'beeMenu-' + beeToBeUpdated.id
+		) {
+			Menu.createBeeMenu(beeToBeUpdated);
+		}
+		return beeToBeUpdated;
+	}
+
+	updateFlower(flower) {
+		const flowerToBeUpdated = this.flowerForId(flower.id);
+		flowerToBeUpdated.pollen = flower.pollen;
+		flowerToBeUpdated.nectar = flower.nectar;
+
+		if (
+			document.getElementById('menu').firstChild.id ===
+			'flowerMenu-' + flowerToBeUpdated.id
+		) {
+			Menu.createFlowerMenu(flowerToBeUpdated);
+		}
+	}
+
+	updateBeehive(beehive) {
+		this.beehive.pollen = beehive.pollen;
+		this.beehive.honey = beehive.honey;
+		this.beehive.honeycombs = beehive.honeycombs;
+
+		if (document.getElementById('menu').firstChild.id === 'hiveMenu') {
+			Menu.createHiveMenu(this.beehive, this.bees.length);
+		}
+	}
+
+	getCoordinates(object) {
+		if (object.name === 'beehive') {
+			if (this.isABeeSelected()) {
+				this.requestGoToHive();
+			} else {
+				Menu.createHiveMenu(this.beehive, this.bees.length);
+			}
+		} else if (
+			['flower-white', 'flower-red', 'flower-purple', 'flower-yellow'].includes(
+				object.name
+			)
+		) {
+			if (this.isABeeSelected()) {
+				const flower = this.getFlowerForSprite(object); // A this.flowers.find( (flower) => {return (flower.sprite === object);});
+				this.requestGoToFlower(flower);
+			} else {
+				Menu.createFlowerMenu(this.getFlowerForSprite(object));
+			}
+		}
+	}
+
+	requestGoToHive() {
+		if (this.isABeeSelected()) {
+			const { x } = this.beehivePosition;
+			const { y } = this.beehivePosition;
+			Client.requestMovement(this.createMoveData(x, y));
+			// Game.getSelectedBee().resetTimer();
+		}
+	}
+
+	requestGoToFlower(flower) {
+		if (this.isABeeSelected()) {
+			const { x } = flower.sprite.position;
+			const { y } = flower.sprite.position;
+			Client.requestMovement(this.createMoveData(x, y));
+		}
+	}
+
+	createMoveData(x, y) {
+		return { beeID: this.getSelectedBee().id, target: { x, y } };
+	}
+
+	moveBee(bee) {
+		const action = bee.playerActions[0];
+
+		bee.stopTween(); // In case the bee was flying to another flower (or hive)
+		if (bee.shadowTween) {
+			bee.stopShadowTween();
+		}
+
+		if (action.stop) {
+			if (bee.shadow) Game.showAllActions(bee);
+			return;
+		}
+
+		bee.startTween({ x: action.target.x, y: action.target.y });
+
+		if (bee.shadow) {
+			bee.startShadowTween({ x: action.target.x, y: action.target.y });
+		}
+	}
+}
+
+export default new Game();
+// Singleton
