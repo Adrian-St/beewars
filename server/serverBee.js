@@ -1,5 +1,5 @@
 class Bee {
-	constructor(id) {
+	constructor(id, type) {
 		this.states = {
 			IDLE: 0,
 			WORKING: 1,
@@ -17,6 +17,11 @@ class Bee {
 		this.nectar = 0;
 		this.capacity = 100;
 		this.playerActions = [];
+		this.types  = {
+			OUTSIDEBEE: 0,
+			INSIDEBEE: 1
+		};
+		this.type = type;
 	}
 
 	randomInt(low, high) {
@@ -25,10 +30,10 @@ class Bee {
 
 	increaseAge(bee, type) {
 		this.age += 1;
-		if (this.age === 3 && type === 1) {
+		if (this.age === 21 && type === 1) {
 			Game.switchHiveBeesOutside(bee);
 		}
-		if (this.age === 45) {
+		if (this.age === 50) {
 			this.status = this.states.DEAD;
 		}
 	}

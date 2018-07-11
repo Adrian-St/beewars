@@ -18,10 +18,7 @@ class Bee {
 		this.shadowTween = null;
 		this.playerActions = [];
 		this.timer = null;
-		this.type = {
-			OUTSIDEBEE: 0,
-			HIVEBEE: 1,
-		};
+		this.type = serverBee.type;		
 		this.x = serverBee.x;
 		this.y = serverBee.y;
 	}
@@ -118,7 +115,8 @@ class Bee {
 			energy: this.energy,
 			pollen: this.pollen,
 			nectar: this.nectar,
-			capacity: this.capacity
+			capacity: this.capacity,
+			type: this.type
 		};
 	}
 

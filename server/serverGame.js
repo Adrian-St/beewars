@@ -25,11 +25,11 @@ Game.start = gameObjects => {
 		Game.lastFlowerID++;
 	}
 	for (let j = 0; j < 5; j++) {
-		Game.bees.push(new Bee(Game.lastBeeID));
+		Game.bees.push(new Bee(Game.lastBeeID, 0));
 		Game.lastBeeID++;
 	}
 	for (let j = 0; j < 5; j++) {
-		Game.hiveBees.push(new Bee(Game.lastBeeID));
+		Game.hiveBees.push(new Bee(Game.lastBeeID, 1));
 		Game.lastBeeID++;
 	}
 	Game.startTime = new Date();
@@ -133,6 +133,7 @@ Game.handleSynchronizeBee = updatedBee => {
 	beeToBeUpdated.pollen = updatedBee.pollen;
 	beeToBeUpdated.nectar = updatedBee.nectar;
 	beeToBeUpdated.capacity = updatedBee.capacity;
+	beeToBeUpdated.type = updatedBee.type;
 	return {
 		type: 'bee',
 		content: beeToBeUpdated

@@ -204,7 +204,7 @@ class Game {
 		);
 		this.hiveBees.forEach(bee => {
 			const sprite = game.add.sprite(bee.x, bee.y, 'sprite');
-			sprite.anchor.setTo(1);
+			sprite.anchor.setTo(0.5);
 			sprite.inputEnabled = true;
 			bee.sprite = sprite;
 			const gameParent = this;
@@ -228,14 +228,22 @@ class Game {
 		this.insideGraphics.destroy();
 		this.bees.forEach(bee => {
 			if (bee.sprite === null) {
+				bee.x = this.beehivePosition.x;
+				bee.y = this.beehivePosition.y;
 				const sprite = game.add.sprite(bee.x, bee.y, 'sprite');
-				sprite.anchor.setTo(1);
+				sprite.anchor.setTo(0.5);
 				sprite.inputEnabled = true;
 				bee.sprite = sprite;
 				const gameParent = this;
 				sprite.events.onInputUp.add(function() {
 					gameParent.onUp(bee);
 				});
+				bee.sprite.events.onInputOver.add(() => {
+					gameParent.onBeeInputOver(bee);
+				}, this);
+				bee.sprite.events.onInputOut.add(() => {
+					gameParent.onBeeInputOut(bee);
+				}, this);
 			}
 		});
 	}
@@ -245,21 +253,28 @@ class Game {
 		if (this.currentLayer === 'inside') {
 			gameBee.sprite.destroy();
 			gameBee.sprite = null;
-			console.log(gameBee.sprite);
-			console.log(this);
 		}
 		this.hiveBees.splice( this.hiveBees.indexOf(gameBee), 1 );
 		this.bees.push(gameBee);
 		gameBee.type = 0;
+		this.updateGameObject(gameBee);
 		if (this.currentLayer === 'outside') {
+			gameBee.x = this.beehivePosition.x;
+			gameBee.y = this.beehivePosition.y;
 			const sprite = game.add.sprite(gameBee.x, gameBee.y, 'sprite');
-			sprite.anchor.setTo(1);
+			sprite.anchor.setTo(0.5);
 			sprite.inputEnabled = true;
 			gameBee.sprite = sprite;
 			const gameParent = this;
 			sprite.events.onInputUp.add(function() {
 				gameParent.onUp(gameBee);
 			});
+			gameBee.sprite.events.onInputOver.add(() => {
+				gameParent.onBeeInputOver(gameBee);
+			}, this);
+			gameBee.sprite.events.onInputOut.add(() => {
+				gameParent.onBeeInputOut(gameBee);
+			}, this);
 		}
 	}
 
@@ -429,6 +444,24 @@ class Game {
 		}
 	}
 
+	feedLarvae(bee) {
+		console.log('Feed');
+		this.deactivateBee(bee, 10);
+		Client.synchronizeBee(bee.getSendableBee());
+	}
+
+	buildCombs(bee) {
+		console.log('Build');
+		this.deactivateBee(bee, 20);
+		Client.synchronizeBee(bee.getSendableBee());
+	}
+
+	cleanHive(bee) {
+		console.log('Clean');
+		this.deactivateBee(bee, 10);
+		Client.synchronizeBee(bee.getSendableBee());
+	}
+
 	getNectar(flower) {
 		if (this.isABeeSelected()) {
 			const moveData = {
@@ -461,8 +494,8 @@ class Game {
 		bee.status = 3;
 
 		this.createProgressBar(
-			bee.sprite.x,
-			bee.sprite.y,
+			bee.x,
+			bee.y,
 			'progressbar',
 			50,
 			10,
@@ -554,6 +587,7 @@ class Game {
 	addNewHiveBee(serverBee) {
 		const bee = new Bee(serverBee, null);
 		bee.type = 1;
+		this.upda
 		this.hiveBees.push(bee);
 	}
 
@@ -629,6 +663,20 @@ class Game {
 		bee.startTimer();
 		Client.emptyActions(bee);
 		this.graphics.clear();
+		var currentArea = null;
+		Object.keys(this.insideWorkareas).forEach(key => {
+			const area = this.insideWorkareas[key];
+			if (area.contains(bee.x, bee.y)) {
+				currentArea = key;
+			}
+		});
+		if (currentArea != null) {
+			switch(currentArea) {
+				case 'Nursing': this.feedLarvae(bee); break;
+				case 'Building': this.buildCombs(bee); break;
+				case 'Cleaning': this.cleanHive(bee); break;
+			}
+		}
 	}
 
 	getBeeForSprite(sprite) {
@@ -670,8 +718,8 @@ class Game {
 	}
 
 	getAllBeesAtPosition(bee) {
-		const { x } = bee.sprite.position;
-		const { y } = bee.sprite.position;
+		const x = bee.x;
+		const y = bee.y;
 		const radius = 20;
 		const allBees = this.bees.filter(
 			item =>
@@ -686,18 +734,15 @@ class Game {
 	onUp(bee) {
 		const sprite = bee.sprite;
 		let clickedBee = null;
-
 		if (bee.type === 0) {
 			clickedBee = this.bees.find(item => item.sprite === sprite);
 		} else if (bee.type === 1) {
 			clickedBee = this.hiveBees.find(item => item.sprite === sprite);
 		}
-
 		this.stopAllOtherShadowTweens(clickedBee);
 		this.deactivateAllOtherShadows(clickedBee);
-
 		if (clickedBee.shadow) {
-			// The bee had already a shadow
+			// The bee already had a shadow
 			this.deselectBee(clickedBee);
 			return;
 		}
@@ -754,11 +799,23 @@ class Game {
 				b.stopShadowTween();
 			}
 		}
+		for (let i = 0; i < this.hiveBees.length; i++) {
+			const b = this.hiveBees[i];
+			if (b.id !== bee.id) {
+				b.stopShadowTween();
+			}
+		}
 	}
 
 	deactivateAllOtherShadows(bee) {
 		for (let i = 0; i < this.bees.length; i++) {
 			const b = this.bees[i];
+			if (b.id !== bee.id) {
+				b.deactivateShadow();
+			}
+		}
+		for (let i = 0; i < this.hiveBees.length; i++) {
+			const b = this.hiveBees[i];
 			if (b.id !== bee.id) {
 				b.deactivateShadow();
 			}
@@ -793,7 +850,10 @@ class Game {
 	}
 
 	updateGameObject(updateObject) {
+		console.log(updateObject.content);
+		console.log(updateObject.type);
 		if (updateObject.type === 'bee') {
+			console.log('im a bee');
 			const beeToBeUpdated = this.getBeeFromId(updateObject.content.id);
 			beeToBeUpdated.age = updateObject.content.age;
 			beeToBeUpdated.status = updateObject.content.status;
@@ -805,6 +865,7 @@ class Game {
 			beeToBeUpdated.playerActions = updateObject.content.playerActions;
 			beeToBeUpdated.x = updateObject.content.x;
 			beeToBeUpdated.y = updateObject.content.y;
+			beeToBeUpdated.type = updateObject.content.type;
 			if (
 				document.getElementById('menu').firstChild.id ===
 				'beeMenu-' + beeToBeUpdated.id
@@ -813,12 +874,10 @@ class Game {
 			}
 		} else if (updateObject.type === 'beehive') {
 			// Console.log('game.js - updateBeehive');
-
 			const updatedBeehive = updateObject.content;
 			this.beehive.pollen = updatedBeehive.pollen;
 			this.beehive.honey = updatedBeehive.honey;
 			this.beehive.honeycombs = updatedBeehive.honeycombs;
-
 			if (document.getElementById('menu').firstChild.id === 'hiveMenu') {
 				Menu.createHiveMenu(this.beehive, this.bees.length);
 			}
@@ -827,7 +886,6 @@ class Game {
 			const flowerToBeUpdated = this.flowerForId(updateObject.content.id);
 			flowerToBeUpdated.pollen = updateObject.content.pollen;
 			flowerToBeUpdated.nectar = updateObject.content.nectar;
-
 			if (
 				document.getElementById('menu').firstChild.id ===
 				'flowerMenu-' + flowerToBeUpdated.id
