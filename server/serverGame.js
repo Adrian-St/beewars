@@ -22,7 +22,7 @@ exports.start = () => {
 	for (let i = 0; i < mapJson.layers[2].objects.length; i++) {
 		const tmpFlower = new Flower(exports.lastFlowerID);
 		tmpFlower.x = mapJson.layers[2].objects[i].x;
-		tmpFlower.y = mapJson.layers[2].objects[i].y;
+		tmpFlower.y = mapJson.layers[2].objects[i].y - mapJson.layers[2].objects[i].height;
 		exports.flowers.push(tmpFlower);
 		exports.lastFlowerID++;
 	}
@@ -141,7 +141,7 @@ exports.getFlowerForPosition = position => {
 	for (let i = 0; i < exports.flowers.length; i++) {
 		if (
 			exports.flowers[i].x === position.x &&
-			exports.flowers[i].y === position.y + 64
+			exports.flowers[i].y === position.y
 		)
 			return exports.flowers[i]; // Investigate why we need to add 64
 	}
