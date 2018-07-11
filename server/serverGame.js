@@ -22,7 +22,8 @@ exports.start = () => {
 	for (let i = 0; i < mapJson.layers[2].objects.length; i++) {
 		const tmpFlower = new Flower(exports.lastFlowerID);
 		tmpFlower.x = mapJson.layers[2].objects[i].x;
-		tmpFlower.y = mapJson.layers[2].objects[i].y - mapJson.layers[2].objects[i].height;
+		tmpFlower.y =
+			mapJson.layers[2].objects[i].y - mapJson.layers[2].objects[i].height;
 		exports.flowers.push(tmpFlower);
 		exports.lastFlowerID++;
 	}

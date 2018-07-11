@@ -192,7 +192,9 @@ playerAction {
 	setDestination(destination) {
 		this.destination = destination;
 		if (destination === null) this.flyDuration = 0;
-		else this.flyDuration = this.calculateDistance(destination) * 10 * this.calculateBeeSpeed();
+		else
+			this.flyDuration =
+				this.calculateDistance(destination) * 10 * this.calculateBeeSpeed();
 	}
 
 	calculateFlownDistancePercentage() {

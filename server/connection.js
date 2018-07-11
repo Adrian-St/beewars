@@ -4,7 +4,7 @@ const game = require('./serverGame.js');
 
 Connection.start = param => {
 	io = param;
-	console.log(game)
+	console.log(game);
 	game.setConnection(Connection);
 	io.on('connection', socket => {
 		socket.on('newplayer', gameObjects => {

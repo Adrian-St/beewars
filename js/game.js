@@ -341,8 +341,8 @@ class Game {
 
 	activateBee(bee) {
 		return bee;
-		//bee.status = 0;
-		//Client.synchronizeBee(bee.getSendableBee());
+		// Bee.status = 0;
+		// Client.synchronizeBee(bee.getSendableBee());
 	}
 
 	deactivateBee(bee, seconds) {
