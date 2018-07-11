@@ -263,6 +263,7 @@ class Game {
 	onBeeInputOver(currentBee) {
 		const allBees = this.getAllBeesAtPosition(currentBee);
 		const originalPosition = allBees[0].sprite.position.clone();
+		console.log(allBees[0].sprite.position);
 
 		if (allBees.length > 1 && !this.multipleBeeSelectionStatus) {
 			this.displayMultipleBees(allBees, originalPosition);
@@ -276,6 +277,7 @@ class Game {
 	onBeeInputOut(currentBee) {
 		if (this.multipleBeeSelectionStatus) {
 			if (this.multipleBeeSelectionCollection.indexOf(currentBee) > -1) {
+				console.log('out');
 				this.displaySingleBeeGroup();
 				this.multipleBeeSelectionStatus = false;
 			}
@@ -289,17 +291,22 @@ class Game {
 		for (let i = 0; i < allBees.length; i++) {
 			const temp = leftX + i * allBees[i].sprite.width;
 			allBees[i].sprite.position.x = temp;
+			if (allBees[i].shadow) allBees[i].shadow.position.x = temp;
 		}
 	}
 
 	displaySingleBeeGroup() {
 		for (let i = 0; i < this.multipleBeeSelectionCollection.length; i++) {
-			this.multipleBeeSelectionCollection[
-				i
-			].sprite.position.x = this.multipleBeeSelectionPosition.x;
-			this.multipleBeeSelectionCollection[
-				i
-			].sprite.position.y = this.multipleBeeSelectionPosition.y;
+			const currBee = this.multipleBeeSelectionCollection[i];
+			currBee.sprite.position = Object.assign(
+				currBee.sprite.position,
+				this.multipleBeeSelectionPosition
+			);
+			if (currBee.shadow)
+				currBee.shadow.position = Object.assign(
+					currBee.sprite.position,
+					this.multipleBeeSelectionPosition
+				);
 		}
 	}
 

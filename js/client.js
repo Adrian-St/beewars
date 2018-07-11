@@ -3,9 +3,6 @@ import Game from './game.js';
 class Client {
 	constructor() {
 		this.socket = io.connect();
-		this.socket.on('newplayer', data => {
-			Game.addNewPlayer(data);
-		});
 		this.socket.on('gameObjects', data => {
 			Game.addProperties(data);
 

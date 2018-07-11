@@ -16,8 +16,6 @@ Connection.start = param => {
 			socket.player = game.newPlayer();
 			socket.emit('gameObjects', game.allObjects());
 
-			socket.broadcast.emit('newplayer', socket.player);
-
 			socket.on('requestMovement', moveData => {
 				game.handleMovementRequest(socket.player.id, moveData);
 				// The server answers with the (updated) bee
