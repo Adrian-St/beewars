@@ -19,6 +19,10 @@ class Client {
 				Game.removePlayer(id);
 			});
 
+			this.socket.on('activateBee', bee => {
+				Game.activateBee(bee);
+			});
+
 			this.socket.on('updateGameObject', updatedObject => {
 				Game.updateGameObject(updatedObject);
 			});
@@ -68,6 +72,10 @@ class Client {
 
 	beeIsIdleForTooLong(bee) {
 		this.socket.emit('beeIsIdleForTooLong', bee.id);
+	}
+
+	setTimerForBee(bee, seconds) {
+		this.socket.emit('setTimerForBee', bee, seconds);
 	}
 }
 

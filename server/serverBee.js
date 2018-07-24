@@ -22,6 +22,7 @@ class Bee {
 			INSIDEBEE: 1
 		};
 		this.type = type;
+		this.timer = null;
 	}
 
 	randomInt(low, high) {

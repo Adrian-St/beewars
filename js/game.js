@@ -490,9 +490,13 @@ class Game {
 		}
 	}
 
+	// TODO: progressbar needs to be saved and only displayed when on that layer
+	// TODO: tween needs to work in the background even when switching between layers
+	// TODO: fix shadows of hivebees
+	// TODO: timer should be on the server side
+
 	deactivateBee(bee, seconds) {
 		bee.status = 3;
-
 		this.createProgressBar(
 			bee.x,
 			bee.y,
@@ -502,13 +506,7 @@ class Game {
 			seconds,
 			0
 		);
-		this.time.events.add(
-			Phaser.Timer.SECOND * seconds,
-			() => {
-				this.activateBee(bee);
-			},
-			this
-		);
+		Client.setTimerForBee(bee,seconds)
 	}
 
 	createProgressBar(x, y, image, barWidth, barHeight, seconds, type) {

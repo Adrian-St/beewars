@@ -44,6 +44,11 @@ Game.switchHiveBeesOutside = bee => {
 	Game.bees.push(bee);
 }
 
+Game.setTimerForBee = ({bee, seconds}}) => {	
+	const timer =  this.time.events.add(Phaser.Timer.SECOND * seconds, () => { connection.activateBee(bee); }, this);
+	console.log(timer);
+}
+
 Game.update = () => {
 	for (let i = 0; i < Game.bees.length; i++) {
 		connection.updateGameObject({ type: 'bee', content: Game.bees[i]});

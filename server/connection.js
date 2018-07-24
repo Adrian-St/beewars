@@ -53,6 +53,10 @@ Connection.start = param => {
 				game.handleBeeIsIdleForTooLong(beeId);
 			});
 
+			socket.on('setTimerForBee', bee, seconds => {
+				game.setTimerForBee(bee, seconds);
+			}
+
 			socket.on('disconnect', () => {
 				game.players.splice(socket.player.id, 1);
 				io.emit('remove', socket.player.id);
@@ -60,6 +64,10 @@ Connection.start = param => {
 		});
 	});
 };
+
+Connection.activateBee = bee => {
+	io.emit('activateBee', bee);
+}
 
 Connection.getBeeFromId = id => {
 	let bee = game.bees.find(item => item.id === id);
