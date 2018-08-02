@@ -9,6 +9,7 @@ exports.beehive = require('./serverBeehive.js');
 exports.lastPlayerID = 0;
 exports.lastBeeID = 0;
 exports.lastFlowerID = 0;
+exports.lastWaspID = 0;
 exports.lastActionId = 0;
 exports.flowers = [];
 exports.bees = [];
@@ -32,21 +33,18 @@ exports.start = () => {
 	}
 	for (let i = 0; i < 5; i++) {
 		const tmpBee = new Bee(exports.lastBeeID);
-		tmpBee.onArriveAtDestination = exports.onArriveAtDestination;
-		tmpBee.onIdleForTooLong = exports.onIdleForTooLong;
-		tmpBee.onActivateBee = exports.onActivateBee;
 		exports.bees.push(tmpBee);
 		exports.lastBeeID++;
 	}
 	exports.startTime = new Date();
 	setInterval(exports.updateAge, 5000);
-	setTimeout(exports.spawnEnemy, 5000);
+	setInterval(exports.spawnEnemy, 30000);
 };
 
 exports.spawnEnemy = () => {
-	var wasp = new Wasp(exports.enemies.length + 1);
+	var wasp = new Wasp(exports.lastWaspID);
 	exports.enemies.push(wasp);
-	console.log('Spawned Wasp');
+	exports.lastWaspID++;
 	connection.createWasp(wasp.getSendableWasp());
 	wasp.flyToNearestFlower();
 }
@@ -110,7 +108,7 @@ exports.handleBeeIsIdleForTooLong = beeId => {
 
 exports.handleMovementRequest = (playerId, moveData) => {
 	const bee = exports.beeForId(moveData.beeID);
-	if (bee.status === bee.states.INACTIVE) {
+	if (bee.status === Bee.STATES.INACTIVE) {
 		console.log('Bee is beesy');
 	} else {
 		exports.performActionForBee(playerId, moveData);
@@ -165,41 +163,6 @@ exports.clearPlayerActionsForBee = bee => {
 	connection.updateBee(bee.getSendableBee());
 };
 
-exports.onIdleForTooLong = bee => {
-	exports.handleBeeIsIdleForTooLong(bee.id);
-};
-
-exports.onArriveAtDestination = bee => {
-	bee.calculateFlownDistancePercentage();
-	if (bee.destination === null)
-		console.log('[WARNING] destination is null but it shouldnt');
-
-	if (
-		bee.destination.x === exports.beehive.x &&
-		bee.destination.y === exports.beehive.y
-	) {
-		exports.returnNectar(bee);
-	} else {
-		const flower = exports.getFlowerForPosition(bee.destination);
-		if (!flower) console.log('[WARNING] no flower found for this position');
-		exports.addNectarToBee(bee, flower);
-	}
-	bee.resetFlyTimer();
-	exports.calculatePlayerExperienceAfterBeeArrived(bee);
-	bee.x = bee.destination.x;
-	bee.y = bee.destination.y;
-	bee.setDestination(null);
-	bee.setInactive();
-	bee.startIdleTimer();
-	exports.clearPlayerActionsForBee(bee);
-	connection.updateBee(bee.getSendableBee());
-};
-
-exports.onActivateBee = bee => {
-	bee.status = bee.states.IDLE;
-	connection.updateBee(bee.getSendableBee());
-};
-
 exports.waspArrivedAtFlower = wasp => {
 	connection.updateWasp(wasp.getSendableWasp());
 };
@@ -212,10 +175,13 @@ exports.removeWasp = (wasp) => {
 	var index = this.enemies.indexOf(wasp);
 	this.enemies.splice(index, 1);
 	wasp.cancelAllTimeEvents();
-	console.log('Wasp died');
 	connection.removeWasp(wasp.getSendableWasp());
 	delete wasp;
 };
+
+exports.updateBee = bee => {
+	connection.updateBee(bee.getSendableBee());
+}
 
 exports.removeBee = (bee) => {
 	var index = this.bees.indexOf(bee);

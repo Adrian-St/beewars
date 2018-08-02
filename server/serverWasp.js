@@ -1,16 +1,12 @@
 const Game = require('./serverGame.js');
+const Insect = require('./serverInsect.js');
 
-class Wasp {
+class Wasp extends Insect {
   constructor(id) {
-    this.id = id;
-    this.x = this.randomInt(100, 400);
-    this.y = this.randomInt(100, 400);
+    super(id);
     this.health = 300;
-    this.flyTimer = null;
     this.attackTimer = null;
-    this.destination = null;
-    this.flyDuration = 0;
-    this.speed = 5;
+    this.speed = 3;
     this.flower = null;
     this.attackPower = 25;
   }
@@ -20,28 +16,15 @@ class Wasp {
 		this.resetAttackTimer();
 	}
 
-  startFlyTimer(destination) {
-		this.resetFlyTimer();
-		this.setDestination(destination);
-		this.flyTimer = setTimeout(
-			this.onArriveAtDestination.bind(this),
-			this.flyDuration);
-	}
+  calculateSpeed() {
+    return this.speed;
+  }
 
   flyToNearestFlower(excludedFlower) {
     var flower = this.findNearestFlower(excludedFlower);
-    console.log('Flower: ' + flower.id);
     this.startFlyTimer(flower);
     Game.waspStartsFlying(this);
   }
-
-  setDestination(destination) {
-		this.destination = destination;
-		if (destination === null) this.flyDuration = 0;
-		else
-			this.flyDuration =
-				this.calculateDistance(destination) * 10 * this.speed;
-	}
 
   findNearestFlower(excludedFlower) {
     var nearestFlower = Game.flowers[0] === excludedFlower ? Game.flowers[1] : Game.flowers[0]
@@ -56,24 +39,6 @@ class Wasp {
     }, this);
     return nearestFlower
   }
-
-  calculateDistance(gameObject) {
-    //Uses Euclidean distance
-    var xDistance = gameObject.x - this.x;
-    var yDistance = gameObject.y - this.y;
-    return Math.sqrt(xDistance*xDistance + yDistance*yDistance);
-  }
-
-  randomInt(low, high) {
-    return Math.floor(Math.random() * (high - low) + low);
-  }
-
-	resetFlyTimer() {
-		if (this.flyTimer !== null) {
-			clearTimeout(this.flyTimer);
-			this.flyTimer = null;
-		}
-	}
 
   startAttackTimer() {
     this.resetAttackTimer();
@@ -99,11 +64,9 @@ class Wasp {
   }
 
   fightBees() {
-      console.log('Fight Bees');
       if(this.flower === null) console.log('[WARNING] cannot fight bees when not on flower')
       var bees = this.findBeesOnFlower();
       if(bees.length == 0) {
-        console.log('No bees anymore')
         this.resetAttackTimer();
         this.flyToNearestFlower(this.flower);
         return;
@@ -115,7 +78,6 @@ class Wasp {
   }
 
   attack(bee) {
-      console.log('Reduce health by ' + this.attackPower);
       bee.reduceHealth(this.attackPower);
   }
 
@@ -135,11 +97,8 @@ class Wasp {
   }
 
   onArriveAtDestination() {
-    console.log(this.destination);
-    console.log('Arrived at Flower' + this.destination.id);
   	if (this.destination === null)
   		console.log('[WARNING] destination is null but it shouldnt');
-
   	this.resetFlyTimer();
   	this.x = this.destination.x;
   	this.y = this.destination.y;

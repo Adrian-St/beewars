@@ -1,17 +1,16 @@
 const Game = require('./serverGame.js');
+const Insect = require('./serverInsect.js');
+const STATES = {
+	IDLE: 0,
+	WORKING: 1,
+	INACTIVE: 2
+};
 
-class Bee {
+class Bee extends Insect {
 	constructor(id) {
-		this.states = {
-			IDLE: 0,
-			WORKING: 1,
-			INACTIVE: 2
-		};
-		this.id = id;
-		this.x = this.randomInt(100, 400);
-		this.y = this.randomInt(100, 400);
+		super(id);
 		this.age = 0;
-		this.status = this.states.IDLE;
+		this.status = Bee.STATES.IDLE;
 		this.health = 100;
 		this.energy = 100;
 		this.pollen = 0;
@@ -19,14 +18,8 @@ class Bee {
 		this.capacity = 100;
 		this.playerActions = [];
 		this.idleTimer = null; // Meassures the time since the bee performed the last action
-		this.flyTimer = null;
 		this.inactiveTimer = null; // Blocks the bee for a while after an action is performed
-		this.onIdleForTooLong = null;
-		this.onArriveAtDestination = null;
-		this.onActivateBee = null;
-		this.destination = null;
-		this.flyDuration = 0;
-		this.attackPower = 50;
+		this.attackPower = 25;
 	}
 
 	/* Schema of a playerAction
@@ -41,14 +34,14 @@ playerAction {
 }
 */
 
+	static get STATES() {
+		return STATES;
+	}
+
 	cancelAllTimeEvents() {
 		this.resetIdleTimer();
 		this.resetInactiveTimer();
 		this.resetFlyTimer();
-	}
-
-	randomInt(low, high) {
-		return Math.floor(Math.random() * (high - low) + low);
 	}
 
 	increaseAge() {
@@ -73,7 +66,7 @@ playerAction {
 		}
 	}
 
-	calculateBeeSpeed() {
+	calculateSpeed() {
 		return (this.pollen + this.nectar) / 100 + 1;
 	}
 
@@ -152,13 +145,13 @@ playerAction {
 	}
 
 	setInactive() {
-		this.status = this.states.INACTIVE;
+		this.status = Bee.STATES.INACTIVE;
 		this.startInactiveTimer();
 	}
 
 	startIdleTimer() {
 		this.resetIdleTimer();
-		this.idleTimer = setTimeout(this.onIdleForTooLong, 10000, this); // 10ces
+		this.idleTimer = setTimeout(this.onIdleForTooLong.bind(this), 10000); // 10ces
 	}
 
 	resetIdleTimer() {
@@ -170,7 +163,7 @@ playerAction {
 
 	startInactiveTimer() {
 		this.resetInactiveTimer();
-		this.inactiveTimer = setTimeout(this.onActivateBee, 4000, this); // 4sec
+		this.inactiveTimer = setTimeout(this.onActivateBee.bind(this), 4000); // 4sec
 	}
 
 	resetInactiveTimer() {
@@ -182,32 +175,13 @@ playerAction {
 		}
 	}
 
-	startFlyTimer(destination) {
-		this.resetFlyTimer();
-		this.setDestination(destination);
-		this.flyTimer = setTimeout(
-			this.onArriveAtDestination,
-			this.flyDuration,
-			this
-		);
-	}
-
 	resetFlyTimer() {
 		if (this.flyTimer !== null) {
 			// Everytime the timer resets we calculate the new x and y
 			// this is the case when there is a conflict
 			this.calculateNewPosition();
-			clearTimeout(this.flyTimer);
-			this.flyTimer = null;
+			super.resetFlyTimer();
 		}
-	}
-
-	setDestination(destination) {
-		this.destination = destination;
-		if (destination === null) this.flyDuration = 0;
-		else
-			this.flyDuration =
-				this.calculateDistance(destination) * 10 * this.calculateBeeSpeed();
 	}
 
 	calculateFlownDistancePercentage() {
@@ -223,17 +197,45 @@ playerAction {
 			(this.destination.y - this.y) * this.calculateFlownDistancePercentage();
 	}
 
-	calculateDistance(destination) {
-		return Math.sqrt(
-			(this.x - destination.x) * (this.x - destination.x) +
-				(this.y - destination.y) * (this.y - destination.y)
-		);
-	}
-
 	getTimeLeft(timeout) {
 		return Math.ceil(
 			timeout._idleStart + timeout._idleTimeout - process.uptime() * 1000
 		);
+	}
+
+	onIdleForTooLong() {
+		Game.handleBeeIsIdleForTooLong(this.id);
+	}
+
+	onActivateBee() {
+		this.status = Bee.STATES.IDLE;
+		Game.updateBee(this);
+	}
+
+	onArriveAtDestination() {
+		this.calculateFlownDistancePercentage();
+		if (this.destination === null)
+			console.log('[WARNING] destination is null but it shouldnt');
+
+		if (
+			this.destination.x === Game.beehive.x &&
+			this.destination.y === Game.beehive.y
+		) {
+			Game.returnNectar(this);
+		} else {
+			const flower = Game.getFlowerForPosition(this.destination);
+			if (!flower) console.log('[WARNING] no flower found for this position');
+			Game.addNectarToBee(this, flower);
+		}
+		this.resetFlyTimer();
+		Game.calculatePlayerExperienceAfterBeeArrived(this);
+		this.x = this.destination.x;
+		this.y = this.destination.y;
+		this.setDestination(null);
+		this.setInactive();
+		this.startIdleTimer();
+		Game.clearPlayerActionsForBee(this);
+		Game.updateBee(this);
 	}
 
 	getSendableBee() {
