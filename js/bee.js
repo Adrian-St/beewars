@@ -122,4 +122,12 @@ class Bee {
 	}
 }
 
+const STATES = {
+  IDLE: 0,
+  WORKING: 1,
+  INACTIVE: 2
+};
+
+Bee.STATES = STATES;
+
 export default Bee;

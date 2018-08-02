@@ -4,6 +4,7 @@ import Client from './client.js';
 import Beehive from './beehive.js';
 import Flower from './flower.js';
 import Bee from './bee.js';
+import Wasp from './wasp.js';
 
 class Game {
 	constructor() {
@@ -12,6 +13,7 @@ class Game {
 		this.beehive = {};
 		this.flowers = [];
 		this.bees = [];
+		this.wasps = [];
 		this.ressourceLabel = '';
 		this.beeLabel = '';
 		this.beehivePosition = {
@@ -66,6 +68,7 @@ class Game {
 			71
 		);
 		game.load.image('sprite', 'assets/sprites/bees64px-version2.png');
+		game.load.image('wasp', 'assets/sprites/wasp.png')
 		game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
 	}
 
@@ -353,7 +356,7 @@ class Game {
 	}
 
 	deactivateBee(bee, seconds) {
-		bee.status = 3;
+		bee.status = Bee.STATES.INACTIVE;
 
 		this.createProgressBar(
 			bee.sprite.x,
@@ -509,7 +512,7 @@ class Game {
 
 	beeForId(id) {
 		return this.bees.find(bee => {
-			return bee.id === id;
+      return bee.id === id;
 		});
 	}
 
@@ -521,10 +524,10 @@ class Game {
 
 	updateBee(bee) {
 		const beeToBeUpdated = this.beeForId(bee.id);
-		if (beeToBeUpdated.status === 3) {
+		if (beeToBeUpdated.status === Bee.STATES.INACTIVE) {
 			// Bee was blocked
-			if (bee.status === 0) this.activateBee(beeToBeUpdated); // Bee is free now
-		} else if (bee.status === 3) this.deactivateBee(beeToBeUpdated, 4); // Bee is now blocked
+			if (bee.status === Bee.STATES.IDLE) this.activateBee(beeToBeUpdated); // Bee is free now
+		} else if (bee.status === Bee.STATES.INACTIVE) this.deactivateBee(beeToBeUpdated, 4); // Bee is now blocked
 		beeToBeUpdated.age = bee.age;
 		beeToBeUpdated.status = bee.status;
 		beeToBeUpdated.health = bee.health;
@@ -625,6 +628,46 @@ class Game {
 		if (bee.shadow) {
 			bee.startShadowTween({ x: action.target.x, y: action.target.y });
 		}
+	}
+
+	removeBee(bee) {
+		var deletedBee = this.beeForId(bee.id);
+		if (deletedBee.shadow)
+			this.deselectBee(deletedBee);
+		deletedBee.sprite.destroy();
+		var index = this.bees.indexOf(deletedBee);
+		this.bees.splice(index,1);
+		Menu.createHiveMenu(this.beehive.getSendableBeehive(), this.bees.length);
+	}
+
+	waspForId(id) {
+		return this.wasps.find(wasp => {
+			return wasp.id === id;
+		});
+	}
+
+	createWasp(serverWasp) {
+		const sprite = game.add.sprite(serverWasp.x, serverWasp.y, 'wasp');
+		sprite.anchor.setTo(0.5);
+		const wasp = new Wasp(serverWasp, sprite);
+		this.wasps.push(wasp);
+	}
+
+	updateWasp(serverWasp) {
+		const wasp = this.waspForId(serverWasp.id);
+		wasp.health = serverWasp.health;
+		wasp.speed = serverWasp.speed;
+
+		if(serverWasp.moving) {
+			wasp.startTween({ x: serverWasp.target.x, y: serverWasp.target.y });
+		}
+	}
+
+	removeWasp(serverWasp) {
+		var deletedWasp = this.waspForId(serverWasp.id);
+		deletedWasp.sprite.destroy();
+		var index = this.wasps.indexOf(deletedWasp);
+		this.wasps.splice(index,1);
 	}
 }
 

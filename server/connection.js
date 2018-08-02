@@ -41,4 +41,20 @@ Connection.updateFlower = updatedFlower => {
 	io.emit('stateOfFlower', updatedFlower);
 };
 
+Connection.killBee = bee => {
+	io.emit('deadBee', bee );
+};
+
+Connection.createWasp = wasp => {
+	io.emit('createWasp', wasp);
+};
+
+Connection.updateWasp = wasp => {
+	io.emit('updateWasp', wasp);
+};
+
+Connection.removeWasp = wasp => {
+	io.emit('removeWasp', wasp);
+};
+
 module.exports = Connection;

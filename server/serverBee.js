@@ -5,8 +5,7 @@ class Bee {
 		this.states = {
 			IDLE: 0,
 			WORKING: 1,
-			DEAD: 2,
-			INACTIVE: 3
+			INACTIVE: 2
 		};
 		this.id = id;
 		this.x = this.randomInt(100, 400);
@@ -27,6 +26,7 @@ class Bee {
 		this.onActivateBee = null;
 		this.destination = null;
 		this.flyDuration = 0;
+		this.attackPower = 50;
 	}
 
 	/* Schema of a playerAction
@@ -41,6 +41,12 @@ playerAction {
 }
 */
 
+	cancelAllTimeEvents() {
+		this.resetIdleTimer();
+		this.resetInactiveTimer();
+		this.resetFlyTimer();
+	}
+
 	randomInt(low, high) {
 		return Math.floor(Math.random() * (high - low) + low);
 	}
@@ -48,15 +54,22 @@ playerAction {
 	increaseAge() {
 		this.age += 1;
 		if (this.age >= 45) {
-			this.status = this.states.DEAD;
+			this.die();
 		}
+	}
+
+	die() {
+		Game.removeBee(this);
 	}
 
 	reduceHealth(amount) {
 		this.health -= amount;
 		if (this.health <= 0) {
 			this.health = 0;
-			this.status = this.states.DEAD;
+			this.die();
+		}
+		else {
+			Game.reduceHealth(this);
 		}
 	}
 

@@ -19,6 +19,22 @@ class Client {
 			this.socket.on('stateOfBeehive', beehive => {
 				Game.updateBeehive(beehive);
 			});
+
+			this.socket.on('deadBee', bee => {
+				Game.removeBee(bee);
+			});
+
+			this.socket.on('createWasp', wasp => {
+				Game.createWasp(wasp);
+			});
+
+			this.socket.on('updateWasp', wasp => {
+				Game.updateWasp(wasp);
+			});
+
+			this.socket.on('removeWasp', wasp => {
+				Game.removeWasp(wasp);
+			});
 		});
 	}
 

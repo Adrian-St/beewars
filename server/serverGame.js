@@ -1,4 +1,5 @@
 const Bee = require('./serverBee.js');
+const Wasp = require('./serverWasp.js');
 const Flower = require('./serverFlower.js');
 const Player = require('./player.js');
 
@@ -12,6 +13,8 @@ exports.lastActionId = 0;
 exports.flowers = [];
 exports.bees = [];
 exports.players = [];
+exports.enemies = [];
+
 const mapJson = require('./../assets/map/outside_map.json');
 
 exports.setConnection = newConnection => {
@@ -37,7 +40,16 @@ exports.start = () => {
 	}
 	exports.startTime = new Date();
 	setInterval(exports.updateAge, 5000);
+	setTimeout(exports.spawnEnemy, 5000);
 };
+
+exports.spawnEnemy = () => {
+	var wasp = new Wasp(exports.enemies.length + 1);
+	exports.enemies.push(wasp);
+	console.log('Spawned Wasp');
+	connection.createWasp(wasp.getSendableWasp());
+	wasp.flyToNearestFlower();
+}
 
 exports.newPlayer = () => {
 	const player = new Player(exports.lastPlayerID);
@@ -56,7 +68,7 @@ exports.allObjects = () => {
 };
 
 exports.performActionForBee = (playerID, playerAction) => {
-	const bee = exports.bees[playerAction.beeID];
+	const bee = exports.beeForId(playerAction.beeID);
 	playerAction.playerID = playerID;
 	playerAction.stop = false;
 	bee.performAction(playerAction);
@@ -114,10 +126,10 @@ exports.handleMovementRequest = (playerId, moveData) => {
 };
 
 exports.updateAge = () => {
-	for (let i = 0; i < exports.bees.length; i++) {
-		exports.bees[i].increaseAge();
-		connection.updateBee(exports.bees[i].getSendableBee());
-	}
+	exports.bees.forEach((bee) => {
+		bee.increaseAge();
+		connection.updateBee(bee.getSendableBee());
+	});
 };
 
 exports.addNectarToBee = (bee, flower) => {
@@ -185,5 +197,34 @@ exports.onArriveAtDestination = bee => {
 
 exports.onActivateBee = bee => {
 	bee.status = bee.states.IDLE;
+	connection.updateBee(bee.getSendableBee());
+};
+
+exports.waspArrivedAtFlower = wasp => {
+	connection.updateWasp(wasp.getSendableWasp());
+};
+
+exports.waspStartsFlying = wasp => {
+	connection.updateWasp(wasp.getSendableWasp());
+};
+
+exports.removeWasp = (wasp) => {
+	var index = this.enemies.indexOf(wasp);
+	this.enemies.splice(index, 1);
+	wasp.cancelAllTimeEvents();
+	console.log('Wasp died');
+	connection.removeWasp(wasp.getSendableWasp());
+	delete wasp;
+};
+
+exports.removeBee = (bee) => {
+	var index = this.bees.indexOf(bee);
+	this.bees.splice(index, 1);
+	bee.cancelAllTimeEvents();
+	connection.killBee(bee.getSendableBee());
+	delete bee;
+};
+
+exports.reduceHealth = (bee) => {
 	connection.updateBee(bee.getSendableBee());
 };
