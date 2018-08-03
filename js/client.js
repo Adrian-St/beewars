@@ -35,6 +35,10 @@ class Client {
 			this.socket.on('removeWasp', wasp => {
 				Game.removeWasp(wasp);
 			});
+
+			this.socket.on('updateWeather', weather => {
+				Game.updateWeater(weather);
+			});
 		});
 	}
 

@@ -57,4 +57,8 @@ Connection.removeWasp = wasp => {
 	io.emit('removeWasp', wasp);
 };
 
+Connection.updateWeather = weather => {
+	io.emit('updateWeather', weather);
+}
+
 module.exports = Connection;

@@ -22,6 +22,7 @@ class Game {
 		};
 		this.line = null;
 		this.graphics = null;
+		this.rain = null;
 		this.multipleBeeSelectionStatus = false;
 		this.multipleBeeSelectionPosition = {
 			x: 0,
@@ -70,6 +71,7 @@ class Game {
 		game.load.image('sprite', 'assets/sprites/bees64px-version2.png');
 		game.load.image('wasp', 'assets/sprites/wasp.png')
 		game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
+		game.load.spritesheet('rain', 'assets/sprites/rain.png', 17, 17);
 	}
 
 	create() {
@@ -77,6 +79,7 @@ class Game {
 		this.addBackground(map);
 		this.addFlowers(map);
 		this.addBeehive(map);
+		this.addRain();
 		game.add.button(20, 20, 'switch', this.switchToInside, this, 2, 1, 0);
 		this.graphics = game.add.graphics(0, 0);
 		Client.registerNewPlayer();
@@ -93,6 +96,27 @@ class Game {
 			this.stopAllOtherShadowTweens({});
 			this.graphics.clear();
 		}, this);
+	}
+
+	addRain() {
+		this.rain = game.add.emitter(game.world.centerX, 0, 400);
+
+		this.rain.width = game.world.width;
+		// emitter.angle = 30; // uncomment to set an angle for the rain.
+
+		this.rain.makeParticles('rain');
+
+		this.rain.minParticleScale = 0.1;
+		this.rain.maxParticleScale = 0.5;
+
+		this.rain.setYSpeed(300, 500);
+		this.rain.setXSpeed(-5, 5);
+
+		this.rain.minRotation = 0;
+		this.rain.maxRotation = 0;
+
+		this.rain.start(false, 1600, 5, 0);
+		this.rain.on = false;
 	}
 
 	addFlowers(map) {
@@ -266,8 +290,6 @@ class Game {
 	onBeeInputOver(currentBee) {
 		const allBees = this.getAllBeesAtPosition(currentBee);
 		const originalPosition = allBees[0].sprite.position.clone();
-		console.log(allBees[0].sprite.position);
-
 		if (allBees.length > 1 && !this.multipleBeeSelectionStatus) {
 			this.displayMultipleBees(allBees, originalPosition);
 			this.multipleBeeSelectionPosition.x = originalPosition.x;
@@ -280,7 +302,6 @@ class Game {
 	onBeeInputOut(currentBee) {
 		if (this.multipleBeeSelectionStatus) {
 			if (this.multipleBeeSelectionCollection.indexOf(currentBee) > -1) {
-				console.log('out');
 				this.displaySingleBeeGroup();
 				this.multipleBeeSelectionStatus = false;
 			}
@@ -668,6 +689,16 @@ class Game {
 		deletedWasp.sprite.destroy();
 		var index = this.wasps.indexOf(deletedWasp);
 		this.wasps.splice(index,1);
+	}
+
+	updateWeater(weather) {
+		console.log(weather.chanceOfRain);
+		if(weather.raining) {
+			this.rain.on = true;
+		}
+		else {
+			this.rain.on = false;
+		}
 	}
 }
 

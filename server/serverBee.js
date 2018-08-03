@@ -48,6 +48,10 @@ playerAction {
 		this.age += 1;
 		if (this.age >= 45) {
 			this.die();
+			return false;
+		}
+		else {
+			return true;
 		}
 	}
 
@@ -133,6 +137,10 @@ playerAction {
 		this.playerActions = this.playerActions.filter(action => !action.stop);
 	}
 
+	restoreHealth() {
+		this.health = 100;
+	}
+
 	calculateWeightsForActions() {
 		this.playerActions = this.playerActions.map(action => {
 			action.weight = action.playerIDs.reduce((total, playerID) => {
@@ -203,6 +211,9 @@ playerAction {
 		);
 	}
 
+	isInBeehive() {
+		return (this.x === Game.beehive.x)&&(this.y === Game.beehive.y)
+	}
 	onIdleForTooLong() {
 		Game.handleBeeIsIdleForTooLong(this.id);
 	}
@@ -216,11 +227,11 @@ playerAction {
 		this.calculateFlownDistancePercentage();
 		if (this.destination === null)
 			console.log('[WARNING] destination is null but it shouldnt');
-
 		if (
 			this.destination.x === Game.beehive.x &&
 			this.destination.y === Game.beehive.y
-		) {
+    ) {
+			this.restoreHealth();
 			Game.returnNectar(this);
 		} else {
 			const flower = Game.getFlowerForPosition(this.destination);

@@ -2,6 +2,7 @@ const Bee = require('./serverBee.js');
 const Wasp = require('./serverWasp.js');
 const Flower = require('./serverFlower.js');
 const Player = require('./player.js');
+const Weather = require('./weather.js');
 
 let connection; // = require('./connection.js');
 exports.beehive = require('./serverBeehive.js');
@@ -15,6 +16,7 @@ exports.flowers = [];
 exports.bees = [];
 exports.players = [];
 exports.enemies = [];
+exports.weather = {};
 
 const mapJson = require('./../assets/map/outside_map.json');
 
@@ -37,8 +39,10 @@ exports.start = () => {
 		exports.lastBeeID++;
 	}
 	exports.startTime = new Date();
+	exports.weather = new Weather();
+	exports.weather.startSimulation();
 	setInterval(exports.updateAge, 5000);
-	setInterval(exports.spawnEnemy, 30000);
+	setInterval(exports.spawnEnemy, 45000);
 };
 
 exports.spawnEnemy = () => {
@@ -125,8 +129,8 @@ exports.handleMovementRequest = (playerId, moveData) => {
 
 exports.updateAge = () => {
 	exports.bees.forEach((bee) => {
-		bee.increaseAge();
-		connection.updateBee(bee.getSendableBee());
+		var success = bee.increaseAge();
+		if(success) connection.updateBee(bee.getSendableBee());
 	});
 };
 
@@ -181,7 +185,7 @@ exports.removeWasp = (wasp) => {
 
 exports.updateBee = bee => {
 	connection.updateBee(bee.getSendableBee());
-}
+};
 
 exports.removeBee = (bee) => {
 	var index = this.bees.indexOf(bee);
@@ -193,4 +197,8 @@ exports.removeBee = (bee) => {
 
 exports.reduceHealth = (bee) => {
 	connection.updateBee(bee.getSendableBee());
+};
+
+exports.updateWeather = (weather) => {
+	connection.updateWeather(weather.getSendableWeather());
 };
