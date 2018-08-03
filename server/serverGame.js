@@ -42,7 +42,7 @@ exports.start = () => {
 	exports.weather = new Weather();
 	exports.weather.startSimulation();
 	setInterval(exports.updateAge, 5000);
-	setInterval(exports.spawnEnemy, 45000);
+	setInterval(exports.spawnEnemy, 60000);
 };
 
 exports.spawnEnemy = () => {
@@ -131,6 +131,10 @@ exports.updateAge = () => {
 	exports.bees.forEach((bee) => {
 		var success = bee.increaseAge();
 		if(success) connection.updateBee(bee.getSendableBee());
+	});
+	exports.enemies.forEach((wasp) => {
+		var success = wasp.increaseAge();
+		if(success) connection.updateWasp(wasp.getSendableWasp());
 	});
 };
 

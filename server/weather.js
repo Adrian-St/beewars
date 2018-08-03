@@ -58,22 +58,26 @@ class Weather {
 
   updateRain() {
     var previousChance = this.chanceOfRain;
-    if(this.rainTendency == Weather.TENDENCIES.NORMAL) {
+    if(this.rainTendency === Weather.TENDENCIES.NORMAL) {
       this.chanceOfRain += this.randomInt(-8,8);
     }
-    else if(this.rainTencency == Weather.TENDENCIES.DECREASE) {
-      this.chanceOfRain += this.randomInt(-10,6);
+    else if(this.rainTendency === Weather.TENDENCIES.DECREASE) {
+      this.chanceOfRain += this.randomInt(-12,4);
+    }
+    else if(this.rainTendency === Weather.TENDENCIES.INCREASE){
+      this.chanceOfRain += this.randomInt(-4,12);
     }
     else {
-      this.chanceOfRain += this.randomInt(-6,10);
+      console.log('[ERROR] rainTendency has to be in [0,2]');
     }
     if(this.chanceOfRain >= chanceMax) {
       this.chanceOfRain = chanceMax;
-      this.rainTendency = Weather.TENDENCIES.DECREASE
+      this.rainTendency = Weather.TENDENCIES.DECREASE;
+      console.log(this.rainTendency);
     }
     if(this.chanceOfRain <= chanceMin) {
       this.chanceOfRain = chanceMin;
-      this.rainTendency = Weather.TENDENCIES.INCREASE
+      this.rainTendency = Weather.TENDENCIES.INCREASE;
     }
     this.toggleRain(previousChance);
   }
@@ -81,10 +85,12 @@ class Weather {
   toggleRain(previousChance) {
     if(previousChance < 80 && this.chanceOfRain >= 80) {
       this.raining = true;
+      this.rainTendency = Weather.TENDENCIES.INCREASE;
       this.startRainTimer();
     }
     else if (previousChance >= 80 && this.chanceOfRain < 80) {
       this.raining = false;
+      this.rainTendency = Weather.TENDENCIES.DECREASE;
       this.stopRainTimer();
     }
   }

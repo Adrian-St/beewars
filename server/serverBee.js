@@ -9,7 +9,6 @@ const STATES = {
 class Bee extends Insect {
 	constructor(id) {
 		super(id);
-		this.age = 0;
 		this.status = Bee.STATES.IDLE;
 		this.health = 100;
 		this.energy = 100;
@@ -42,17 +41,6 @@ playerAction {
 		this.resetIdleTimer();
 		this.resetInactiveTimer();
 		this.resetFlyTimer();
-	}
-
-	increaseAge() {
-		this.age += 1;
-		if (this.age >= 45) {
-			this.die();
-			return false;
-		}
-		else {
-			return true;
-		}
 	}
 
 	die() {
