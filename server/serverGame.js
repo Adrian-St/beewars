@@ -1,6 +1,7 @@
 const Bee = require('./serverBee.js');
 const Wasp = require('./serverWasp.js');
 const Flower = require('./serverFlower.js');
+const Frog = require('./serverFrog.js')
 const Player = require('./player.js');
 const Weather = require('./weather.js');
 
@@ -10,9 +11,11 @@ exports.beehive = require('./serverBeehive.js');
 exports.lastPlayerID = 0;
 exports.lastBeeID = 0;
 exports.lastFlowerID = 0;
+exports.lastFrogID = 0;
 exports.lastWaspID = 0;
 exports.lastActionId = 0;
 exports.flowers = [];
+exports.frogs = [];
 exports.bees = [];
 exports.players = [];
 exports.enemies = [];
@@ -32,6 +35,14 @@ exports.start = () => {
 			mapJson.layers[2].objects[i].y - mapJson.layers[2].objects[i].height;
 		exports.flowers.push(tmpFlower);
 		exports.lastFlowerID++;
+	}
+	for (let i = 0; i < mapJson.layers[3].objects.length; i++) {
+		const tmpFrog = new Frog(
+			exports.lastFrogID,
+			mapJson.layers[3].objects[i].x,
+			mapJson.layers[3].objects[i].y - mapJson.layers[3].objects[i].height);
+		exports.frogs.push(tmpFrog);
+		exports.lastFrogID++;
 	}
 	for (let i = 0; i < 5; i++) {
 		const tmpBee = new Bee(exports.lastBeeID);

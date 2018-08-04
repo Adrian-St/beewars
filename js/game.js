@@ -72,12 +72,14 @@ class Game {
 		game.load.image('wasp', 'assets/sprites/wasp.png')
 		game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
 		game.load.spritesheet('rain', 'assets/sprites/rain.png', 17, 17);
+		game.load.spritesheet('frog', 'assets/sprites/frog.png', 64, 64);
 	}
 
 	create() {
 		const map = game.add.tilemap('map');
 		this.addBackground(map);
 		this.addFlowers(map);
+		this.addFrogs(map);
 		this.addBeehive(map);
 		this.addRain();
 		game.add.button(20, 20, 'switch', this.switchToInside, this, 2, 1, 0);
@@ -162,6 +164,23 @@ class Game {
 			object.anchor.setTo(0.5);
 			object.inputEnabled = true;
 			object.events.onInputUp.add(this.getCoordinates, this);
+		});
+	}
+
+	addFrogs(map) {
+		map.addTilesetImage('frog');
+		this.frogSprites = game.add.group();
+		map.createFromObjects(
+			'Frogs',
+			'',
+			'frog',
+			0,
+			true,
+			false,
+			this.frogSprites
+		);
+		this.frogSprites.children.forEach(object => {
+			object.anchor.setTo(0.5);
 		});
 	}
 
