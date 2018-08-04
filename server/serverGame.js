@@ -80,13 +80,6 @@ exports.allObjects = () => {
 	};
 };
 
-exports.performActionForBee = (playerID, playerAction) => {
-	const bee = exports.beeForId(playerAction.beeID);
-	playerAction.playerID = playerID;
-	playerAction.stop = false;
-	bee.performAction(playerAction);
-};
-
 exports.calculatePlayerExperienceAfterBeeArrived = bee => {
 	const positiveContributer = bee.playerActions[0].playerIDs;
 	positiveContributer.forEach(playerID =>
@@ -126,16 +119,24 @@ exports.handleMovementRequest = (playerId, moveData) => {
 	if (bee.status === Bee.STATES.INACTIVE) {
 		console.log('Bee is beesy');
 	} else {
-		exports.performActionForBee(playerId, moveData);
-		if (bee.playerActions[0].stop) {
-			bee.resetFlyTimer();
-			bee.startIdleTimer();
-		} else {
-			bee.startFlyTimer(moveData.target);
-			bee.resetIdleTimer();
+		moveData.playerID = playerId;
+		const result = bee.performAction(moveData);
+		if (result === 'changed') {
+			bee.startFlying(bee.playerActions[0].target);
+			connection.moveBee(bee.getSendableBee());
 		}
-		connection.updateBee(bee.getSendableBee());
+		else if(result === 'stop') {
+			bee.stopFlying();
+			connection.stopBee(bee.getSendableBee());
+		}
 	}
+};
+
+exports.isFrogPosition = (x,y) => {
+	const frog = this.frogs.find((frog) => {
+		return frog.contains(x,y);
+	});
+	return (frog !== undefined);
 };
 
 exports.updateAge = () => {

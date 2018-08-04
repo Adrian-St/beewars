@@ -658,16 +658,20 @@ class Game {
 			bee.stopShadowTween();
 		}
 
-		if (action.stop) {
-			if (bee.shadow) Game.showAllActions(bee);
-			return;
-		}
-
 		bee.startTween({ x: action.target.x, y: action.target.y });
 
 		if (bee.shadow) {
 			bee.startShadowTween({ x: action.target.x, y: action.target.y });
 		}
+	}
+
+	stopBee(bee) {
+		bee.stopTween(); // In case the bee was flying to another flower (or hive)
+		if (bee.shadowTween) {
+			bee.stopShadowTween();
+		}
+
+		if (bee.shadow) this.showAllActions(bee);
 	}
 
 	removeBee(bee) {
