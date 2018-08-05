@@ -64,6 +64,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
+                 "centerX":260,
+                 "centerY":75,
                  "x":220,
                  "y":360
                 },
@@ -105,6 +107,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
+                 "centerX":223,
+                 "centerY":-108,
                  "x":220,
                  "y":360
                 },
@@ -137,6 +141,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
+                 "centerX":222,
+                 "centerY":-48,
                  "x":271,
                  "y":178
                 },
@@ -169,6 +175,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
+                 "centerX":222,
+                 "centerY":48,
                  "x":259,
                  "y":517
                 }],
