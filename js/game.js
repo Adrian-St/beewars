@@ -17,12 +17,10 @@ class Game {
 	}
 
 	init() {
-		console.log('game - init');
 		game.stage.disableVisibilityChange = true;
 	}
 
 	preload() {
-		console.log('game - preload');
 		game.load.tilemap(
 			'map',
 			'assets/map/outside_map.json',
@@ -56,8 +54,6 @@ class Game {
 	}
 
 	create() {
-		console.log('game - create');
-
 		this.outsideState = new Outside();
 		this.insideState = new Inside();
 		this.outsideState.initialize();
@@ -69,7 +65,7 @@ class Game {
 		this.outsideState.addFlowerObjects(data.flowers);
 		this.outsideState.addBeehiveObject(data.beehive);
 		this.outsideState.addBees(data.bees);
-		this.insideState.addBees(data.hiveBees);
+		this.insideState.addBees(data.insideBees);
 		this.switchToOutside(); // 
 
 		Menu.createHiveMenu(this.beehive.getSendableBeehive(), this.outsideState.length);
@@ -86,14 +82,12 @@ class Game {
 	}
 
 	switchToInside() {
-		console.log('switch to inside')
 		this.currentState = 'INSIDE';
 		this.outsideState.disableState();
 		this.insideState.enableState();
 	}
 
 	switchToOutside() {
-		console.log('switch to outside')
 		this.currentState = 'OUTSIDE';
 		this.insideState.disableState();
 		this.outsideState.enableState();
@@ -131,6 +125,17 @@ class Game {
 		const outsideBee = this.outsideState.updateBee(bee);
 		const beeToBeUpdated = (insideBee)? insideBee : outsideBee;
 		return beeToBeUpdated;
+	}
+
+	moveBeeFormInsideToOutside(serverBee) {
+		let bee = this.insideState.beeForId(serverBee.id);
+		const index = this.insideState.bees.indexOf(bee);
+		bee.sprite.visible = !bee.sprite.visible
+		bee.sprite.position.x = serverBee.x;
+		bee.sprite.position.y = serverBee.y;
+		this.outsideState.setUpUserInputForBee(bee);
+		this.outsideState.bees.push(bee);
+		this.insideState.bees.splice(index,1);
 	}
 
 	moveBee(bee) {

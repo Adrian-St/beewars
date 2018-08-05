@@ -114,9 +114,9 @@ class Inside extends State{
 			case 'Queen':  console.log('start caring for the queen'); this.produceGeleeRoyal(); break; // feeding the queen with geleeRoyal (maybe progressbar for the amount of gelee)
 			case 'Cleaning':  console.log('start cleaning'); this.handleCleaning(); break; // remove the number of dirty honeycombs
 		}
-		//TODO: server implementation of states
 		//TODO: game elements for inside (real behavior)
-		//TODO: at some point in time inside bees bacome outside bees
+		//TODO: fix wasps (sometimes the dissapear)
+		//TODO: fix flyTimer (it does not get reset when the destination is changes in mid flight)
 	}
 
 	handleBuilding() { // belongs on the server

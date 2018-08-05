@@ -1,4 +1,4 @@
-const Bee = require('./serverBee.js');
+const {Bee, BeeTypes} = require('./serverBee.js');
 const Wasp = require('./serverWasp.js');
 const Flower = require('./serverFlower.js');
 const Player = require('./player.js');
@@ -34,13 +34,15 @@ exports.start = () => {
 	}
 	for (let i = 0; i < 5; i++) {
 		let tmpBee = new Bee(exports.lastBeeID);
-		tmpBee.type = 1;
+		tmpBee.type = BeeTypes.OUTSIDEBEE;
 		exports.bees.push(tmpBee);
 		exports.lastBeeID++;
 	}
 	for (let j = 0; j < 5; j++) {
-		//exports.bees.push(new Bee(exports.lastBeeID)); // quick and dirty fix (needs to be improved)
-		exports.hiveBees.push(new Bee(exports.lastBeeID)); 
+		let tmpBee = new Bee(exports.lastBeeID);
+		tmpBee.type = BeeTypes.INSIDEBEE;
+		exports.bees.push(tmpBee); // quick and dirty fix (needs to be improved)
+		//exports.hiveBees.push(new Bee(exports.lastBeeID)); 
 		exports.lastBeeID++;
 	}
 	exports.startTime = new Date();
@@ -65,8 +67,8 @@ exports.newPlayer = () => {
 
 exports.allObjects = () => {
 	return {
-		bees: exports.bees.map(bee => bee.getSendableBee()),
-		hiveBees: exports.hiveBees.map(bee => bee.getSendableBee()),
+		bees: exports.outsideBees().map(bee => bee.getSendableBee()),
+		insideBees: exports.insideBees().map(bee => bee.getSendableBee()),
 		players: exports.players,
 		flowers: exports.flowers,
 		beehive: exports.beehive
@@ -75,7 +77,7 @@ exports.allObjects = () => {
 
 exports.performActionForBee = (playerID, playerAction) => {
 	let bee = exports.beeForId(playerAction.beeID);
-	if(!bee) bee = exports.hiveBees.find(b => {return b.id === playerAction.beeID}); //bee from inside (quick and dirty fix)
+	//if(!bee) bee = exports.hiveBees.find(b => {return b.id === playerAction.beeID}); //bee from inside (quick and dirty fix)
 	playerAction.playerID = playerID;
 	playerAction.stop = false;
 	bee.performAction(playerAction);
@@ -96,6 +98,14 @@ exports.beeForId = id => {
 	return exports.bees.find(bee => {
 		return bee.id === id;
 	});
+};
+
+exports.outsideBees = () => {
+	return exports.bees.filter(bee => (bee.type === BeeTypes.OUTSIDEBEE));
+};
+
+exports.insideBees = () => {
+	return exports.bees.filter(bee => (bee.type === BeeTypes.INSIDEBEE));
 };
 
 exports.flowerForId = id => {
@@ -148,6 +158,10 @@ exports.updateAge = () => {
 		connection.updateBee(bee.getSendableBee());
 	});
 };
+
+exports.moveBeeToOutside = (bee) => {
+	connection.moveBeeToOutside(bee);
+}
 
 exports.addNectarToBee = (bee, flower) => {
 	bee.pollen += 10;

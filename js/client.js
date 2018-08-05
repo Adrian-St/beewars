@@ -12,6 +12,10 @@ class Client {
 				if (bee.playerActions.length > 0) Game.moveBee(updatedBee);
 			});
 
+			this.socket.on('moveBeeOut', bee => {
+				Game.moveBeeFormInsideToOutside(bee)
+			});
+
 			this.socket.on('stateOfFlower', flower => {
 				Game.outsideState.updateFlower(flower);
 			});

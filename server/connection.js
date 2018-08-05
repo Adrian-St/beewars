@@ -33,6 +33,10 @@ Connection.updateBee = updatedBee => {
 	io.emit('stateOfBee', updatedBee);
 };
 
+Connection.moveBeeToOutside = updatedBee => {
+	io.emit('moveBeeOut', updatedBee);
+};
+
 Connection.updateBeehive = updatedBeehive => {
 	io.emit('stateOfBeehive', updatedBeehive);
 };

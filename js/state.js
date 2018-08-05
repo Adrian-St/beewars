@@ -48,18 +48,21 @@ class State {
 		const sprite = game.add.sprite(serverBee.x, serverBee.y, 'sprite');
 		sprite.anchor.setTo(0.5);
 		sprite.inputEnabled = true;
-		sprite.events.onInputUp.add(this.onUp, this);
 		const bee = new Bee(serverBee, sprite);
 		this.setUpUserInputForBee(bee);
 		this.bees.push(bee);
 	}
 
 	setUpUserInputForBee(bee) { 
-		bee.sprite.events.onInputOver.add(() => {this.onBeeInputOver(bee)}, this);
-		bee.sprite.events.onInputOut.add(() => {this.onBeeInputOut(bee)}, this);
+		bee.sprite.events.onInputOver.removeAll();
+		bee.sprite.events.onInputOut.removeAll();
+		bee.sprite.events.onInputUp.removeAll();
+		bee.sprite.events.onInputUp.add(this.onUp, this);
+		bee.onInputOverEvent = bee.sprite.events.onInputOver.add(() => {this.onBeeInputOver(bee)}, this);
+		bee.onInputOutEvent = bee.sprite.events.onInputOut.add(() => {this.onBeeInputOut(bee)}, this);
 	}
 
-	onBeeInputOver(currentBee) { // this should work for inside and outside
+	onBeeInputOver(currentBee) {
 		const allBees = this.getAllBeesAtPosition(currentBee);
 		const originalPosition = allBees[0].sprite.position.clone();
 
@@ -72,7 +75,7 @@ class State {
 		}
 	}
 
-	onBeeInputOut(currentBee) { // this should work for inside and outside
+	onBeeInputOut(currentBee) {
 		if (this.multipleBeeSelectionStatus) {
 			if (this.multipleBeeSelectionCollection.indexOf(currentBee) > -1) {
 				this.displaySingleBeeGroup();
@@ -111,7 +114,7 @@ class State {
 		}
 	}
 
-	displayMultipleBees(allBees, originalPosition) { // this should work for inside and outside
+	displayMultipleBees(allBees, originalPosition) { 
 		const length = allBees.length * 40;
 		const leftX = originalPosition.x - length / 2;
 
@@ -122,7 +125,7 @@ class State {
 		}
 	}
 
-	displaySingleBeeGroup() { // this should work for inside and outside
+	displaySingleBeeGroup() { 
 		for (let i = 0; i < this.multipleBeeSelectionCollection.length; i++) {
 			const currBee = this.multipleBeeSelectionCollection[i];
 			currBee.sprite.position = Object.assign(

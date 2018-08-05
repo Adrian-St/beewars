@@ -51,6 +51,9 @@ playerAction {
 
 	increaseAge() {
 		this.age += 1;
+		if (this.age >= 15 && this.type === BeeTypes.INSIDEBEE) { 
+			this.leaveBeehive();
+		} 
 		if (this.age >= 45) {
 			this.die();
 		}
@@ -58,6 +61,16 @@ playerAction {
 
 	die() {
 		Game.removeBee(this);
+	}
+
+	leaveBeehive() {
+		this.type = BeeTypes.OUTSIDEBEE
+		this.cancelAllTimeEvents();
+		this.x = Game.beehive.x;
+		this.y = Game.beehive.y;
+		this.playerActions = [];
+		// synchronize
+		Game.moveBeeToOutside(this);
 	}
 
 	reduceHealth(amount) {
@@ -222,16 +235,21 @@ playerAction {
 		if (this.destination === null)
 			console.log('[WARNING] destination is null but it shouldnt');
 
-		if (
+		if(this.type === BeeTypes.OUTSIDEBEE){
+			if (
 			this.destination.x === Game.beehive.x &&
 			this.destination.y === Game.beehive.y
-		) {
-			Game.returnNectar(this);
+			) {
+				Game.returnNectar(this);
+			} else {
+				const flower = Game.getFlowerForPosition(this.destination);
+				if (!flower) console.log('[WARNING] no flower found for this position');
+				Game.addNectarToBee(this, flower);
+			}
 		} else {
-			const flower = Game.getFlowerForPosition(this.destination);
-			if (!flower) console.log('[WARNING] no flower found for this position');
-			Game.addNectarToBee(this, flower);
+			console.log('arreived at inside position')
 		}
+		
 		this.resetFlyTimer();
 		Game.calculatePlayerExperienceAfterBeeArrived(this);
 		this.x = this.destination.x;
@@ -260,4 +278,6 @@ playerAction {
 	}
 }
 
-module.exports = Bee;
+
+module.exports = {BeeTypes, Bee};
+//module.exports = Bee;
