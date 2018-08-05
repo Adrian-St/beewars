@@ -1,5 +1,6 @@
 const Game = require('./serverGame.js');
 const Insect = require('./serverInsect.js');
+
 const STATES = {
 	IDLE: 0,
 	WORKING: 1,
@@ -52,8 +53,7 @@ playerAction {
 		if (this.health <= 0) {
 			this.health = 0;
 			this.die();
-		}
-		else {
+		} else {
 			Game.reduceHealth(this);
 		}
 	}
@@ -107,9 +107,8 @@ playerAction {
 		if (this.playerActions[0] === previousAction && this.flyTimer !== null) {
 			return 'unchanged';
 		}
-		else {
-			return 'changed'
-		}
+
+		return 'changed';
 	}
 
 	removeOldPlayerAction(playerID, indexOfOldPlayerAction) {
@@ -145,10 +144,13 @@ playerAction {
 	startFlying(destination) {
 		this.resetFlyTimer();
 		let actualDestination = destination;
-		for(let i = 0; i < Game.frogs.length; i++) {
-			if(Game.frogs[i].collidesWithPath(this, destination)) {
-					actualDestination = Game.frogs[i].calculateActualDestination(this, destination);
-					break;
+		for (let i = 0; i < Game.frogs.length; i++) {
+			if (Game.frogs[i].collidesWithPath(this, destination)) {
+				actualDestination = Game.frogs[i].calculateActualDestination(
+					this,
+					destination
+				);
+				break;
 			}
 		}
 		this.startFlyTimer(actualDestination);
@@ -161,14 +163,13 @@ playerAction {
 	}
 
 	resetFlyTimer() {
- 		if (this.flyTimer !== null) {
+		if (this.flyTimer !== null) {
 			// Everytime the timer resets we calculate the new x and y
 			// this is the case when there is a conflict
 			this.calculateNewPosition();
-     	super.resetFlyTimer();
+			super.resetFlyTimer();
 		}
 	}
-
 
 	startIdleTimer() {
 		this.resetIdleTimer();
@@ -216,8 +217,9 @@ playerAction {
 	}
 
 	isInBeehive() {
-		return (this.x === Game.beehive.x)&&(this.y === Game.beehive.y)
+		return this.x === Game.beehive.x && this.y === Game.beehive.y;
 	}
+
 	onIdleForTooLong() {
 		Game.handleBeeIsIdleForTooLong(this.id);
 	}
@@ -234,17 +236,13 @@ playerAction {
 		if (
 			this.destination.x === Game.beehive.x &&
 			this.destination.y === Game.beehive.y
-    ) {
+		) {
 			this.restoreHealth();
 			Game.returnNectar(this);
-		}
-		else if (
-			Game.isFrogPosition(this.destination.x, this.destination.y)
-		) {
+		} else if (Game.isFrogPosition(this.destination.x, this.destination.y)) {
 			this.die();
 			return;
-		}
-		else {
+		} else {
 			const flower = Game.getFlowerForPosition(this.destination);
 			if (!flower) console.log('[WARNING] no flower found for this position');
 			Game.addNectarToBee(this, flower);

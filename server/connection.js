@@ -50,7 +50,7 @@ Connection.updateFlower = updatedFlower => {
 };
 
 Connection.killBee = bee => {
-	io.emit('deadBee', bee );
+	io.emit('deadBee', bee);
 };
 
 Connection.createWasp = wasp => {
@@ -67,6 +67,6 @@ Connection.removeWasp = wasp => {
 
 Connection.updateWeather = weather => {
 	io.emit('updateWeather', weather);
-}
+};
 
 module.exports = Connection;

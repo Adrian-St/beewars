@@ -1,30 +1,29 @@
 class Insect {
-  constructor(id) {
-    this.age = 0;
-    this.id = id;
-    this.x = this.randomInt(100, 400);
-    this.y = this.randomInt(100, 400);
-    this.flyTimer = null;
-    this.destination = null;
-    this.flyDuration = 0;
-  }
+	constructor(id) {
+		this.age = 0;
+		this.id = id;
+		this.x = this.randomInt(100, 400);
+		this.y = this.randomInt(100, 400);
+		this.flyTimer = null;
+		this.destination = null;
+		this.flyDuration = 0;
+	}
 
-  increaseAge() {
+	increaseAge() {
 		this.age += 1;
 		if (this.age >= 45) {
 			this.die();
 			return false;
 		}
-		else {
-			return true;
-		}
+
+		return true;
 	}
 
-  randomInt(low, high) {
+	randomInt(low, high) {
 		return Math.floor(Math.random() * (high - low) + low);
 	}
 
-  startFlyTimer(destination) {
+	startFlyTimer(destination) {
 		this.resetFlyTimer();
 		this.setDestination(destination);
 		this.flyTimer = setTimeout(
@@ -48,16 +47,16 @@ class Insect {
 				this.calculateDistance(destination) * 10 * this.calculateSpeed();
 	}
 
-  calculateDistance(gameObject) {
-    //Uses Euclidean distance
-    var xDistance = gameObject.x - this.x;
-    var yDistance = gameObject.y - this.y;
-    return Math.sqrt(xDistance*xDistance + yDistance*yDistance);
-  }
+	calculateDistance(gameObject) {
+		// Uses Euclidean distance
+		const xDistance = gameObject.x - this.x;
+		const yDistance = gameObject.y - this.y;
+		return Math.sqrt(xDistance * xDistance + yDistance * yDistance);
+	}
 
-  onArriveAtDestination() {
-    console.log('Should be overriden');
-  }
+	onArriveAtDestination() {
+		console.log('Should be overriden');
+	}
 }
 
 module.exports = Insect;

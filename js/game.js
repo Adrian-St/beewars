@@ -69,7 +69,7 @@ class Game {
 			71
 		);
 		game.load.image('sprite', 'assets/sprites/bees64px-version2.png');
-		game.load.image('wasp', 'assets/sprites/wasp.png')
+		game.load.image('wasp', 'assets/sprites/wasp.png');
 		game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
 		game.load.spritesheet('rain', 'assets/sprites/rain.png', 17, 17);
 		game.load.spritesheet('frog', 'assets/sprites/frog.png', 64, 64);
@@ -104,7 +104,7 @@ class Game {
 		this.rain = game.add.emitter(game.world.centerX, 0, 400);
 
 		this.rain.width = game.world.width;
-		// emitter.angle = 30; // uncomment to set an angle for the rain.
+		// Emitter.angle = 30; // uncomment to set an angle for the rain.
 
 		this.rain.makeParticles('rain');
 
@@ -552,7 +552,7 @@ class Game {
 
 	beeForId(id) {
 		return this.bees.find(bee => {
-      return bee.id === id;
+			return bee.id === id;
 		});
 	}
 
@@ -567,7 +567,8 @@ class Game {
 		if (beeToBeUpdated.status === Bee.STATES.INACTIVE) {
 			// Bee was blocked
 			if (bee.status === Bee.STATES.IDLE) this.activateBee(beeToBeUpdated); // Bee is free now
-		} else if (bee.status === Bee.STATES.INACTIVE) this.deactivateBee(beeToBeUpdated, 4); // Bee is now blocked
+		} else if (bee.status === Bee.STATES.INACTIVE)
+			this.deactivateBee(beeToBeUpdated, 4); // Bee is now blocked
 		beeToBeUpdated.age = bee.age;
 		beeToBeUpdated.status = bee.status;
 		beeToBeUpdated.health = bee.health;
@@ -675,12 +676,11 @@ class Game {
 	}
 
 	removeBee(bee) {
-		var deletedBee = this.beeForId(bee.id);
-		if (deletedBee.shadow)
-			this.deselectBee(deletedBee);
+		const deletedBee = this.beeForId(bee.id);
+		if (deletedBee.shadow) this.deselectBee(deletedBee);
 		deletedBee.sprite.destroy();
-		var index = this.bees.indexOf(deletedBee);
-		this.bees.splice(index,1);
+		const index = this.bees.indexOf(deletedBee);
+		this.bees.splice(index, 1);
 		Menu.createHiveMenu(this.beehive.getSendableBeehive(), this.bees.length);
 	}
 
@@ -702,24 +702,23 @@ class Game {
 		wasp.health = serverWasp.health;
 		wasp.speed = serverWasp.speed;
 
-		if(serverWasp.moving) {
+		if (serverWasp.moving) {
 			wasp.startTween({ x: serverWasp.target.x, y: serverWasp.target.y });
 		}
 	}
 
 	removeWasp(serverWasp) {
-		var deletedWasp = this.waspForId(serverWasp.id);
+		const deletedWasp = this.waspForId(serverWasp.id);
 		deletedWasp.sprite.destroy();
-		var index = this.wasps.indexOf(deletedWasp);
-		this.wasps.splice(index,1);
+		const index = this.wasps.indexOf(deletedWasp);
+		this.wasps.splice(index, 1);
 	}
 
 	updateWeater(weather) {
 		console.log(weather.chanceOfRain);
-		if(weather.raining) {
+		if (weather.raining) {
 			this.rain.on = true;
-		}
-		else {
+		} else {
 			this.rain.on = false;
 		}
 	}
