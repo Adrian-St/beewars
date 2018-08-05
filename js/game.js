@@ -161,7 +161,12 @@ class Game {
 			bee.stopShadowTween();
 		}
 
-		if (bee.shadow) this.showAllActions(bee);
+		if (bee.shadow) {
+			if (this.outsideState.bees.includes(bee))
+				this.outsideState.showAllActions(bee);
+			if (this.insideState.bees.includes(bee))
+				this.insideState.showAllActions(bee);
+		}
 	}
 
 	removeBee(bee) {
