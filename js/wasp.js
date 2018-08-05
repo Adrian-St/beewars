@@ -14,6 +14,7 @@ class Wasp {
 
   initializeTween() {
 		this.tween = game.add.tween(this.sprite);
+		if(!(Game.currentState == Game.outsideState)) this.sprite.visible = false; 
 	}
 
   startTween(destination) {

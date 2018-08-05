@@ -13,11 +13,11 @@ class Client {
 			});
 
 			this.socket.on('stateOfFlower', flower => {
-				Game.updateFlower(flower);
+				Game.outsideState.updateFlower(flower);
 			});
 
 			this.socket.on('stateOfBeehive', beehive => {
-				Game.updateBeehive(beehive);
+				Game.outsideState.updateBeehive(beehive);
 			});
 
 			this.socket.on('deadBee', bee => {
@@ -25,15 +25,15 @@ class Client {
 			});
 
 			this.socket.on('createWasp', wasp => {
-				Game.createWasp(wasp);
+				Game.outsideState.createWasp(wasp);
 			});
 
 			this.socket.on('updateWasp', wasp => {
-				Game.updateWasp(wasp);
+				Game.outsideState.updateWasp(wasp);
 			});
 
 			this.socket.on('removeWasp', wasp => {
-				Game.removeWasp(wasp);
+				Game.outsideState.removeWasp(wasp);
 			});
 		});
 	}

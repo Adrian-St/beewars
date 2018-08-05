@@ -7,9 +7,9 @@ Connection.start = param => {
 	console.log(game);
 	game.setConnection(Connection);
 	io.on('connection', socket => {
-		socket.on('newplayer', gameObjects => {
+		socket.on('newplayer', () => {
 			if (game.lastPlayerID === 0) {
-				game.start(gameObjects);
+				game.start();
 				socket.emit('newGame');
 			}
 

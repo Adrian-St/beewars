@@ -5,6 +5,10 @@ const STATES = {
 	WORKING: 1,
 	INACTIVE: 2
 };
+const BeeTypes  = {
+	OUTSIDEBEE: 0,
+	INSIDEBEE: 1
+};
 
 class Bee extends Insect {
 	constructor(id) {
@@ -20,6 +24,7 @@ class Bee extends Insect {
 		this.idleTimer = null; // Meassures the time since the bee performed the last action
 		this.inactiveTimer = null; // Blocks the bee for a while after an action is performed
 		this.attackPower = 25;
+		this.type = BeeTypes.INSIDEBEE;
 	}
 
 	/* Schema of a playerAction

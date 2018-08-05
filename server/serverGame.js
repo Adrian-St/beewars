@@ -13,6 +13,7 @@ exports.lastWaspID = 0;
 exports.lastActionId = 0;
 exports.flowers = [];
 exports.bees = [];
+exports.hiveBees = []; //
 exports.players = [];
 exports.enemies = [];
 
@@ -32,8 +33,14 @@ exports.start = () => {
 		exports.lastFlowerID++;
 	}
 	for (let i = 0; i < 5; i++) {
-		const tmpBee = new Bee(exports.lastBeeID);
+		let tmpBee = new Bee(exports.lastBeeID);
+		tmpBee.type = 1;
 		exports.bees.push(tmpBee);
+		exports.lastBeeID++;
+	}
+	for (let j = 0; j < 5; j++) {
+		//exports.bees.push(new Bee(exports.lastBeeID)); // quick and dirty fix (needs to be improved)
+		exports.hiveBees.push(new Bee(exports.lastBeeID)); 
 		exports.lastBeeID++;
 	}
 	exports.startTime = new Date();
@@ -59,6 +66,7 @@ exports.newPlayer = () => {
 exports.allObjects = () => {
 	return {
 		bees: exports.bees.map(bee => bee.getSendableBee()),
+		hiveBees: exports.hiveBees.map(bee => bee.getSendableBee()),
 		players: exports.players,
 		flowers: exports.flowers,
 		beehive: exports.beehive
@@ -66,7 +74,8 @@ exports.allObjects = () => {
 };
 
 exports.performActionForBee = (playerID, playerAction) => {
-	const bee = exports.beeForId(playerAction.beeID);
+	let bee = exports.beeForId(playerAction.beeID);
+	if(!bee) bee = exports.hiveBees.find(b => {return b.id === playerAction.beeID}); //bee from inside (quick and dirty fix)
 	playerAction.playerID = playerID;
 	playerAction.stop = false;
 	bee.performAction(playerAction);
@@ -108,6 +117,16 @@ exports.handleBeeIsIdleForTooLong = beeId => {
 
 exports.handleMovementRequest = (playerId, moveData) => {
 	const bee = exports.beeForId(moveData.beeID);
+	if(!bee){ // this is a quick and dirty fix that needs to be improved in the near future
+		const bee = exports.hiveBees.find(b => {return b.id === moveData.beeID}); //bee from inside
+		if (bee.status === Bee.STATES.INACTIVE) {
+		console.log('Bee is beesy');
+		} else {
+			exports.performActionForBee(playerId, moveData);
+			connection.updateBee(bee.getSendableBee());
+		}
+		return
+	}
 	if (bee.status === Bee.STATES.INACTIVE) {
 		console.log('Bee is beesy');
 	} else {
