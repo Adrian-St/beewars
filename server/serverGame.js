@@ -1,7 +1,9 @@
 const {Bee, BeeTypes} = require('./serverBee.js');
 const Wasp = require('./serverWasp.js');
 const Flower = require('./serverFlower.js');
+const Frog = require('./serverFrog.js')
 const Player = require('./player.js');
+const Weather = require('./weather.js');
 
 let connection; // = require('./connection.js');
 exports.beehive = require('./serverBeehive.js');
@@ -9,13 +11,16 @@ exports.beehive = require('./serverBeehive.js');
 exports.lastPlayerID = 0;
 exports.lastBeeID = 0;
 exports.lastFlowerID = 0;
+exports.lastFrogID = 0;
 exports.lastWaspID = 0;
 exports.lastActionId = 0;
 exports.flowers = [];
+exports.frogs = [];
 exports.bees = [];
 exports.hiveBees = []; //
 exports.players = [];
 exports.enemies = [];
+exports.weather = {};
 
 const mapJson = require('./../assets/map/outside_map.json');
 
@@ -32,6 +37,14 @@ exports.start = () => {
 		exports.flowers.push(tmpFlower);
 		exports.lastFlowerID++;
 	}
+	for (let i = 0; i < mapJson.layers[3].objects.length; i++) {
+		const tmpFrog = new Frog(
+			exports.lastFrogID,
+			mapJson.layers[3].objects[i].x,
+			mapJson.layers[3].objects[i].y - mapJson.layers[3].objects[i].height);
+		exports.frogs.push(tmpFrog);
+		exports.lastFrogID++;
+	}
 	for (let i = 0; i < 5; i++) {
 		let tmpBee = new Bee(exports.lastBeeID);
 		tmpBee.type = BeeTypes.OUTSIDEBEE;
@@ -46,8 +59,10 @@ exports.start = () => {
 		exports.lastBeeID++;
 	}
 	exports.startTime = new Date();
+	exports.weather = new Weather();
+	exports.weather.startSimulation();
 	setInterval(exports.updateAge, 5000);
-	setInterval(exports.spawnEnemy, 30000);
+	setInterval(exports.spawnEnemy, 60000);
 };
 
 exports.spawnEnemy = () => {
@@ -73,14 +88,6 @@ exports.allObjects = () => {
 		flowers: exports.flowers,
 		beehive: exports.beehive
 	};
-};
-
-exports.performActionForBee = (playerID, playerAction) => {
-	let bee = exports.beeForId(playerAction.beeID);
-	//if(!bee) bee = exports.hiveBees.find(b => {return b.id === playerAction.beeID}); //bee from inside (quick and dirty fix)
-	playerAction.playerID = playerID;
-	playerAction.stop = false;
-	bee.performAction(playerAction);
 };
 
 exports.calculatePlayerExperienceAfterBeeArrived = bee => {
@@ -140,22 +147,34 @@ exports.handleMovementRequest = (playerId, moveData) => {
 	if (bee.status === Bee.STATES.INACTIVE) {
 		console.log('Bee is beesy');
 	} else {
-		exports.performActionForBee(playerId, moveData);
-		if (bee.playerActions[0].stop) {
-			bee.resetFlyTimer();
-			bee.startIdleTimer();
-		} else {
-			bee.startFlyTimer(moveData.target);
-			bee.resetIdleTimer();
+		moveData.playerID = playerId;
+		const result = bee.performAction(moveData);
+		if (result === 'changed') {
+			bee.startFlying(bee.playerActions[0].target);
+			connection.moveBee(bee.getSendableBee());
 		}
-		connection.updateBee(bee.getSendableBee());
+		else if(result === 'stop') {
+			bee.stopFlying();
+			connection.stopBee(bee.getSendableBee());
+		}
 	}
+};
+
+exports.isFrogPosition = (x,y) => {
+	const frog = this.frogs.find((frog) => {
+		return frog.contains(x,y);
+	});
+	return (frog !== undefined);
 };
 
 exports.updateAge = () => {
 	exports.bees.forEach((bee) => {
-		bee.increaseAge();
-		connection.updateBee(bee.getSendableBee());
+		var success = bee.increaseAge();
+		if(success) connection.updateBee(bee.getSendableBee());
+	});
+	exports.enemies.forEach((wasp) => {
+		var success = wasp.increaseAge();
+		if(success) connection.updateWasp(wasp.getSendableWasp());
 	});
 };
 
@@ -214,7 +233,7 @@ exports.removeWasp = (wasp) => {
 
 exports.updateBee = bee => {
 	connection.updateBee(bee.getSendableBee());
-}
+};
 
 exports.removeBee = (bee) => {
 	var index = this.bees.indexOf(bee);
@@ -226,4 +245,8 @@ exports.removeBee = (bee) => {
 
 exports.reduceHealth = (bee) => {
 	connection.updateBee(bee.getSendableBee());
+};
+
+exports.updateWeather = (weather) => {
+	connection.updateWeather(weather.getSendableWeather());
 };

@@ -16,6 +16,8 @@ class Outside extends State{
 		this.flowerSprites = {}; // A Group of sprites
 		this.flowers = [];
 		this.wasps = [];
+		this.rain = null;
+		this.frogSprites = null;
 		this.beehivePosition = {
 			x: 0,
 			y: 0
@@ -40,6 +42,7 @@ class Outside extends State{
 		this.outsideMap.visible = true;
 		this.outsideLayer.visible = true;
 		this.outsideButton.visible = true;
+		this.frogSprites.visible = true;
 	}
 
 	disableState() {
@@ -56,6 +59,7 @@ class Outside extends State{
 		this.outsideMap.visible = false;
 		this.outsideLayer.visible = false;
 		this.outsideButton.visible = false;
+		this.frogSprites.visible = false;
 	}
 
 	initialize() {
@@ -65,6 +69,8 @@ class Outside extends State{
 		this.addBackground();
 		this.graphics = Game.add.graphics(0, 0);
 		this.addFlowers();
+		this.addFrogs();
+		this.addRain();
 		this.addBeehive();
 		this.outsideButton = Game.add.button(20, 20, 'switch', Game.switchToInside, Game, 2, 1, 0);
 	}
@@ -151,6 +157,44 @@ class Outside extends State{
 
 	addBeehiveObject(beehive) {
 		Game.beehive = new Beehive(beehive, this.beehiveSprite);
+	}
+
+	addRain() {
+		this.rain = game.add.emitter(game.world.centerX, 0, 400);
+
+		this.rain.width = game.world.width;
+		// emitter.angle = 30; // uncomment to set an angle for the rain.
+
+		this.rain.makeParticles('rain');
+
+		this.rain.minParticleScale = 0.1;
+		this.rain.maxParticleScale = 0.5;
+
+		this.rain.setYSpeed(300, 500);
+		this.rain.setXSpeed(-5, 5);
+
+		this.rain.minRotation = 0;
+		this.rain.maxRotation = 0;
+
+		this.rain.start(false, 1600, 5, 0);
+		this.rain.on = false;
+}
+
+	addFrogs() {
+		this.outsideMap.addTilesetImage('frog');
+		this.frogSprites = game.add.group();
+		this.outsideMap.createFromObjects(
+			'Frogs',
+			'',
+			'frog',
+			0,
+			true,
+			false,
+			this.frogSprites
+		);
+		this.frogSprites.children.forEach(object => {
+			object.anchor.setTo(0.5);
+		});
 	}
 
 	addFlowerObjects(flowers) {
@@ -272,6 +316,16 @@ class Outside extends State{
 
 		if (document.getElementById('menu').firstChild.id === 'hiveMenu') {
 			Menu.createHiveMenu(Game.beehive, this.bees.length);
+		}
+	}
+
+	updateWeater(weather) {
+		console.log(weather.chanceOfRain);
+		if(weather.raining) {
+			this.rain.on = true;
+		}
+		else {
+			this.rain.on = false;
 		}
 	}
 }

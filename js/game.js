@@ -51,6 +51,8 @@ class Game {
 		game.load.image('sprite', 'assets/sprites/bees64px-version2.png');
 		game.load.image('wasp', 'assets/sprites/wasp.png')
 		game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
+		game.load.spritesheet('rain', 'assets/sprites/rain.png', 17, 17);
+		game.load.spritesheet('frog', 'assets/sprites/frog.png', 64, 64);
 	}
 
 	create() {
@@ -146,11 +148,6 @@ class Game {
 			bee.stopShadowTween();
 		}
 
-		if (action.stop) {
-			if (bee.shadow) Game.showAllActions(bee);
-			return;
-		}
-
 		bee.startTween({ x: action.target.x, y: action.target.y });
 
 		if (bee.shadow) {
@@ -158,11 +155,19 @@ class Game {
 		}
 	}
 
+	stopBee(bee) {
+		bee.stopTween(); // In case the bee was flying to another flower (or hive)
+		if (bee.shadowTween) {
+			bee.stopShadowTween();
+		}
+
+		if (bee.shadow) this.showAllActions(bee);
+	}
+
 	removeBee(bee) {
 		this.insideState.removeBee(bee);
 		this.outsideState.removeBee(bee);
 	}
-
 }
 
 export default new Game();

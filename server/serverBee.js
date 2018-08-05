@@ -13,7 +13,6 @@ const BeeTypes  = {
 class Bee extends Insect {
 	constructor(id) {
 		super(id);
-		this.age = 0;
 		this.status = Bee.STATES.IDLE;
 		this.health = 100;
 		this.energy = 100;
@@ -90,7 +89,7 @@ playerAction {
 
 	performAction(playerAction) {
 		// Calculate here what action to perform
-		this.removeStopActions();
+		const previousAction = this.playerActions[0];
 
 		const indexOfExistingAction = this.playerActions.findIndex(
 			action =>
@@ -127,14 +126,15 @@ playerAction {
 
 		if (this.playerActions.length > 1) {
 			if (this.playerActions[0].weight - this.playerActions[1].weight < 0.2) {
-				const newPlayerActions = [];
-				newPlayerActions.push({ beeID: this.id, stop: true });
-				this.playerActions.forEach(action => newPlayerActions.push(action));
-				return newPlayerActions;
+				return 'stop';
 			}
 		}
-		if (this.playerActions.length > 0)
-			this.setDestination(this.playerActions[0].target);
+		if (this.playerActions[0] === previousAction && this.flyTimer !== null) {
+			return 'unchanged';
+		}
+		else {
+			return 'changed'
+		}
 	}
 
 	removeOldPlayerAction(playerID, indexOfOldPlayerAction) {
@@ -147,8 +147,8 @@ playerAction {
 		}
 	}
 
-	removeStopActions() {
-		this.playerActions = this.playerActions.filter(action => !action.stop);
+	restoreHealth() {
+		this.health = 100;
 	}
 
 	calculateWeightsForActions() {
@@ -166,6 +166,34 @@ playerAction {
 		this.status = Bee.STATES.INACTIVE;
 		this.startInactiveTimer();
 	}
+
+	startFlying(destination) {
+		this.resetFlyTimer();
+		let actualDestination = destination;
+		for(let i = 0; i < Game.frogs.length; i++) {
+			if(Game.frogs[i].collidesWithPath(this, destination)) {
+					actualDestination = Game.frogs[i].calculateActualDestination(this, destination);
+					break;
+			}
+		}
+		this.startFlyTimer(actualDestination);
+		this.resetIdleTimer();
+	}
+
+	stopFlying() {
+		this.resetFlyTimer();
+		this.startIdleTimer();
+	}
+
+	resetFlyTimer() {
+ 		if (this.flyTimer !== null) {
+			// Everytime the timer resets we calculate the new x and y
+			// this is the case when there is a conflict
+			this.calculateNewPosition();
+     	super.resetFlyTimer();
+		}
+	}
+
 
 	startIdleTimer() {
 		this.resetIdleTimer();
@@ -193,15 +221,6 @@ playerAction {
 		}
 	}
 
-	resetFlyTimer() {
-		if (this.flyTimer !== null) {
-			// Everytime the timer resets we calculate the new x and y
-			// this is the case when there is a conflict
-			this.calculateNewPosition();
-			super.resetFlyTimer();
-		}
-	}
-
 	calculateFlownDistancePercentage() {
 		return 1 - this.getTimeLeft(this.flyTimer) / this.flyDuration;
 	}
@@ -221,6 +240,9 @@ playerAction {
 		);
 	}
 
+	isInBeehive() {
+		return (this.x === Game.beehive.x)&&(this.y === Game.beehive.y)
+	}
 	onIdleForTooLong() {
 		Game.handleBeeIsIdleForTooLong(this.id);
 	}
@@ -237,11 +259,19 @@ playerAction {
 
 		if(this.type === BeeTypes.OUTSIDEBEE){
 			if (
-			this.destination.x === Game.beehive.x &&
-			this.destination.y === Game.beehive.y
-			) {
+				this.destination.x === Game.beehive.x &&
+				this.destination.y === Game.beehive.y
+    		) {
+				this.restoreHealth();
 				Game.returnNectar(this);
-			} else {
+			}
+			else if (
+				Game.isFrogPosition(this.destination.x, this.destination.y)
+			) {
+				this.die();
+				return;
+			}
+			else {
 				const flower = Game.getFlowerForPosition(this.destination);
 				if (!flower) console.log('[WARNING] no flower found for this position');
 				Game.addNectarToBee(this, flower);
@@ -249,7 +279,8 @@ playerAction {
 		} else {
 			console.log('arreived at inside position')
 		}
-		
+	
+		this.calculateNewPosition();
 		this.resetFlyTimer();
 		Game.calculatePlayerExperienceAfterBeeArrived(this);
 		this.x = this.destination.x;

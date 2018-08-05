@@ -1,5 +1,6 @@
 class Insect {
   constructor(id) {
+    this.age = 0;
     this.id = id;
     this.x = this.randomInt(100, 400);
     this.y = this.randomInt(100, 400);
@@ -7,6 +8,17 @@ class Insect {
     this.destination = null;
     this.flyDuration = 0;
   }
+
+  increaseAge() {
+		this.age += 1;
+		if (this.age >= 45) {
+			this.die();
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
 
   randomInt(low, high) {
 		return Math.floor(Math.random() * (high - low) + low);

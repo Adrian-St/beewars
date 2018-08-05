@@ -116,7 +116,6 @@ class Inside extends State{
 		}
 		//TODO: game elements for inside (real behavior)
 		//TODO: fix wasps (sometimes the dissapear)
-		//TODO: fix flyTimer (it does not get reset when the destination is changes in mid flight)
 	}
 
 	handleBuilding() { // belongs on the server

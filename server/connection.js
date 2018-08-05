@@ -37,6 +37,14 @@ Connection.moveBeeToOutside = updatedBee => {
 	io.emit('moveBeeOut', updatedBee);
 };
 
+Connection.moveBee = updatedBee => {
+	io.emit('moveBee', updatedBee);
+};
+
+Connection.stopBee = updatedBee => {
+	io.emit('stopBee', updatedBee);
+};
+
 Connection.updateBeehive = updatedBeehive => {
 	io.emit('stateOfBeehive', updatedBeehive);
 };
@@ -59,6 +67,10 @@ Connection.updateWasp = wasp => {
 
 Connection.removeWasp = wasp => {
 	io.emit('removeWasp', wasp);
+};
+
+Connection.updateWeather = weather => {
+	io.emit('updateWeather', weather);
 };
 
 module.exports = Connection;

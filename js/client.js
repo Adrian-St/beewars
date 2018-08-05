@@ -9,11 +9,20 @@ class Client {
 			this.socket.on('stateOfBee', bee => {
 				// This includes updating the player actions
 				const updatedBee = Game.updateBee(bee);
+			});
+
+			this.socket.on('moveBee', bee => {
+				const updatedBee = Game.updateBee(bee);
 				if (bee.playerActions.length > 0) Game.moveBee(updatedBee);
 			});
 
 			this.socket.on('moveBeeOut', bee => {
-				Game.moveBeeFormInsideToOutside(bee)
+				Game.moveBeeFormInsideToOutside(bee);
+			});
+
+			this.socket.on('stopBee', bee => {
+				const updatedBee = Game.updateBee(bee);
+				Game.stopBee(updatedBee);
 			});
 
 			this.socket.on('stateOfFlower', flower => {
@@ -38,6 +47,10 @@ class Client {
 
 			this.socket.on('removeWasp', wasp => {
 				Game.outsideState.removeWasp(wasp);
+			});
+
+			this.socket.on('updateWeather', weather => {
+				Game.outsideState.updateWeater(weather);
 			});
 		});
 	}

@@ -66,9 +66,11 @@ class Menu {
 
 		const age = this.createTextField('Age: ', bee.age);
 
+		const health = this.createTextField('Heath: ', bee.health);
+
 		const status = this.createTextField('Status: ', bee.status);
 
-		const subMenu = this.createSubmenu(nectar, pollen, age, status);
+		const subMenu = this.createSubmenu(health, nectar, pollen, age, status);
 
 		const beeMenu = this.createMenu('beeMenu-' + bee.id, heading, subMenu);
 
