@@ -1,40 +1,36 @@
 import { game } from './main.js';
 import Menu from './menu.js';
-import Client from './client.js';
-import Beehive from './beehive.js';
-import Flower from './flower.js';
 import Bee from './bee.js';
-import Wasp from './wasp.js';
 import Game from './game.js';
 
 class State {
 	constructor() {
 		this.bees = [];
-		this.graphics = null; // for drawing the paths of flying bees
+		this.graphics = null; // For drawing the paths of flying bees
 		this.multipleBeeSelectionStatus = false;
 		this.multipleBeeSelectionPosition = {
 			x: 0,
 			y: 0
 		};
 		this.multipleBeeSelectionCollection = [];
-		this.stateName = '' //gets overridden in subclass
+		this.stateName = ''; // Gets overridden in subclass
 	}
 
-	initialize(){
+	initialize() {
 		this.graphics = Game.add.graphics(0, 0);
 	}
 
-	enableState(){
+	enableState() {
 		this.bees.forEach(bee => {
 			bee.sprite.visible = true;
-			if(bee.shadow) bee.shadow.visible = true;
+			if (bee.shadow) bee.shadow.visible = true;
 		});
 	}
 
-	disableState(){
+	disableState() {
 		this.bees.forEach(bee => {
 			bee.sprite.visible = false;
-			if(bee.shadow) bee.shadow.visible = false;
+			if (bee.shadow) bee.shadow.visible = false;
 		});
 	}
 
@@ -53,13 +49,17 @@ class State {
 		this.bees.push(bee);
 	}
 
-	setUpUserInputForBee(bee) { 
+	setUpUserInputForBee(bee) {
 		bee.sprite.events.onInputOver.removeAll();
 		bee.sprite.events.onInputOut.removeAll();
 		bee.sprite.events.onInputUp.removeAll();
 		bee.sprite.events.onInputUp.add(this.onUp, this);
-		bee.onInputOverEvent = bee.sprite.events.onInputOver.add(() => {this.onBeeInputOver(bee)}, this);
-		bee.onInputOutEvent = bee.sprite.events.onInputOut.add(() => {this.onBeeInputOut(bee)}, this);
+		bee.onInputOverEvent = bee.sprite.events.onInputOver.add(() => {
+			this.onBeeInputOver(bee);
+		}, this);
+		bee.onInputOutEvent = bee.sprite.events.onInputOut.add(() => {
+			this.onBeeInputOut(bee);
+		}, this);
 	}
 
 	onBeeInputOver(currentBee) {
@@ -83,8 +83,8 @@ class State {
 			}
 		}
 	}
- 
- 	onUp(sprite) {
+
+	onUp(sprite) {
 		const clickedBee = this.bees.find(item => item.sprite === sprite);
 
 		this.stopAllOtherShadowTweens(clickedBee);
@@ -114,7 +114,7 @@ class State {
 		}
 	}
 
-	displayMultipleBees(allBees, originalPosition) { 
+	displayMultipleBees(allBees, originalPosition) {
 		const length = allBees.length * 40;
 		const leftX = originalPosition.x - length / 2;
 
@@ -125,7 +125,7 @@ class State {
 		}
 	}
 
-	displaySingleBeeGroup() { 
+	displaySingleBeeGroup() {
 		for (let i = 0; i < this.multipleBeeSelectionCollection.length; i++) {
 			const currBee = this.multipleBeeSelectionCollection[i];
 			currBee.sprite.position = Object.assign(
@@ -140,7 +140,7 @@ class State {
 		}
 	}
 
-	createProgressBar(x, y, image, barWidth, barHeight, seconds, type) { 
+	createProgressBar(x, y, image, barWidth, barHeight, seconds, type) {
 		// Type: 0 = decreasing | 1 = increasing
 
 		const innerProgressBar = Game.add.sprite(
@@ -157,7 +157,7 @@ class State {
 
 		innerProgressBar.height = barHeight;
 		innerProgressBar.progress = barWidth / seconds;
-		if(Game.currentState !== this.stateName) innerProgressBar.visible = false; 
+		if (Game.currentState !== this.stateName) innerProgressBar.visible = false;
 
 		Game.time.events.repeat(
 			Phaser.Timer.SECOND,
@@ -170,7 +170,8 @@ class State {
 	}
 
 	updateProgressBar(progressBar, type) {
-		if(Game.currentState === this.stateName) progressBar.visible = true; else progressBar.visible = false; 
+		if (Game.currentState === this.stateName) progressBar.visible = true;
+		else progressBar.visible = false;
 		if (type === 0) {
 			progressBar.width -= progressBar.progress;
 		} else if (type === 1) {
@@ -282,7 +283,7 @@ class State {
 
 	beeForId(id) {
 		return this.bees.find(bee => {
-    		return bee.id === id;
+			return bee.id === id;
 		});
 	}
 
@@ -296,11 +297,12 @@ class State {
 
 	updateBee(bee) {
 		const beeToBeUpdated = this.beeForId(bee.id);
-		if(!beeToBeUpdated) return; // in case the beeToBeUpdated is not in this state
+		if (!beeToBeUpdated) return; // In case the beeToBeUpdated is not in this state
 		if (beeToBeUpdated.status === Bee.STATES.INACTIVE) {
 			// Bee was blocked
 			if (bee.status === Bee.STATES.IDLE) this.activateBee(beeToBeUpdated); // Bee is free now
-		} else if (bee.status === Bee.STATES.INACTIVE) this.deactivateBee(beeToBeUpdated, 4); // Bee is now blocked
+		} else if (bee.status === Bee.STATES.INACTIVE)
+			this.deactivateBee(beeToBeUpdated, 4); // Bee is now blocked
 		beeToBeUpdated.age = bee.age;
 		beeToBeUpdated.status = bee.status;
 		beeToBeUpdated.health = bee.health;
@@ -319,23 +321,21 @@ class State {
 	}
 
 	activateBee(bee) {
-		console.log('bee is free')
+		console.log('bee is free');
 		return bee;
 		// Bee.status = 0;
 		// Client.synchronizeBee(bee.getSendableBee());
 	}
 
 	removeBee(bee) {
-		var deletedBee = this.beeForId(bee.id);
+		const deletedBee = this.beeForId(bee.id);
 		if (!deletedBee) return;
-		if (deletedBee.shadow)
-			this.deselectBee(deletedBee);
+		if (deletedBee.shadow) this.deselectBee(deletedBee);
 		deletedBee.sprite.destroy();
-		var index = this.bees.indexOf(deletedBee);
-		this.bees.splice(index,1);
+		const index = this.bees.indexOf(deletedBee);
+		this.bees.splice(index, 1);
 		Menu.createHiveMenu(Game.beehive.getSendableBeehive(), this.bees.length);
 	}
-
 }
 
 export default State;

@@ -54,7 +54,7 @@ Connection.updateFlower = updatedFlower => {
 };
 
 Connection.killBee = bee => {
-	io.emit('deadBee', bee );
+	io.emit('deadBee', bee);
 };
 
 Connection.createWasp = wasp => {

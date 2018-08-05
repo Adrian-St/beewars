@@ -3,12 +3,11 @@ import Menu from './menu.js';
 import Client from './client.js';
 import Beehive from './beehive.js';
 import Flower from './flower.js';
-import Bee from './bee.js';
 import Wasp from './wasp.js';
 import Game from './game.js';
-import State from './state.js'
+import State from './state.js';
 
-class Outside extends State{
+class Outside extends State {
 	constructor() {
 		super();
 
@@ -72,7 +71,16 @@ class Outside extends State{
 		this.addFrogs();
 		this.addRain();
 		this.addBeehive();
-		this.outsideButton = Game.add.button(20, 20, 'switch', Game.switchToInside, Game, 2, 1, 0);
+		this.outsideButton = Game.add.button(
+			20,
+			20,
+			'switch',
+			Game.switchToInside,
+			Game,
+			2,
+			1,
+			0
+		);
 	}
 
 	addBackground() {
@@ -150,8 +158,8 @@ class Outside extends State{
 		this.beehiveSprite.inputEnabled = true;
 		this.beehiveSprite.events.onInputUp.add(this.getCoordinates, this);
 
-		// this is the exact position of the entrance of the beehive-image
-		this.beehivePosition.x = this.beehiveSprite.centerX + 30; 
+		// This is the exact position of the entrance of the beehive-image
+		this.beehivePosition.x = this.beehiveSprite.centerX + 30;
 		this.beehivePosition.y = this.beehiveSprite.centerY + 50;
 	}
 
@@ -163,7 +171,7 @@ class Outside extends State{
 		this.rain = game.add.emitter(game.world.centerX, 0, 400);
 
 		this.rain.width = game.world.width;
-		// emitter.angle = 30; // uncomment to set an angle for the rain.
+		// Emitter.angle = 30; // uncomment to set an angle for the rain.
 
 		this.rain.makeParticles('rain');
 
@@ -178,7 +186,7 @@ class Outside extends State{
 
 		this.rain.start(false, 1600, 5, 0);
 		this.rain.on = false;
-}
+	}
 
 	addFrogs() {
 		this.outsideMap.addTilesetImage('frog');
@@ -241,7 +249,7 @@ class Outside extends State{
 			)
 		) {
 			if (this.isABeeSelected()) {
-				const flower = this.getFlowerForSprite(object); 
+				const flower = this.getFlowerForSprite(object);
 				this.requestGoToFlower(flower);
 			} else {
 				Menu.createFlowerMenu(this.getFlowerForSprite(object));
@@ -284,16 +292,16 @@ class Outside extends State{
 		wasp.health = serverWasp.health;
 		wasp.speed = serverWasp.speed;
 
-		if(serverWasp.moving) {
+		if (serverWasp.moving) {
 			wasp.startTween({ x: serverWasp.target.x, y: serverWasp.target.y });
 		}
 	}
 
 	removeWasp(serverWasp) {
-		var deletedWasp = this.waspForId(serverWasp.id);
+		const deletedWasp = this.waspForId(serverWasp.id);
 		deletedWasp.sprite.destroy();
-		var index = this.wasps.indexOf(deletedWasp);
-		this.wasps.splice(index,1);
+		const index = this.wasps.indexOf(deletedWasp);
+		this.wasps.splice(index, 1);
 	}
 
 	updateFlower(flower) {
@@ -321,10 +329,9 @@ class Outside extends State{
 
 	updateWeater(weather) {
 		console.log(weather.chanceOfRain);
-		if(weather.raining) {
+		if (weather.raining) {
 			this.rain.on = true;
-		}
-		else {
+		} else {
 			this.rain.on = false;
 		}
 	}

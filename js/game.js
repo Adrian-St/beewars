@@ -1,16 +1,13 @@
 import { game } from './main.js';
 import Menu from './menu.js';
 import Client from './client.js';
-import Beehive from './beehive.js';
-import Flower from './flower.js';
 import Bee from './bee.js';
-import Wasp from './wasp.js';
 import Inside from './inside.js';
 import Outside from './outside.js';
 
 class Game {
 	constructor() {
-		this.beehive = null; // the attributes from beehive are used in inside and outside but the sprite is only shown outside
+		this.beehive = null; // The attributes from beehive are used in inside and outside but the sprite is only shown outside
 		this.outsideState = null;
 		this.insideState = null;
 		this.currentState = '';
@@ -49,7 +46,7 @@ class Game {
 			71
 		);
 		game.load.image('sprite', 'assets/sprites/bees64px-version2.png');
-		game.load.image('wasp', 'assets/sprites/wasp.png')
+		game.load.image('wasp', 'assets/sprites/wasp.png');
 		game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
 		game.load.spritesheet('rain', 'assets/sprites/rain.png', 17, 17);
 		game.load.spritesheet('frog', 'assets/sprites/frog.png', 64, 64);
@@ -68,10 +65,13 @@ class Game {
 		this.outsideState.addBeehiveObject(data.beehive);
 		this.outsideState.addBees(data.bees);
 		this.insideState.addBees(data.insideBees);
-		this.switchToOutside(); // 
+		this.switchToOutside(); //
 
-		Menu.createHiveMenu(this.beehive.getSendableBeehive(), this.outsideState.length);
-		//this.setUpUserInput();
+		Menu.createHiveMenu(
+			this.beehive.getSendableBeehive(),
+			this.outsideState.length
+		);
+		// This.setUpUserInput();
 	}
 
 	addNewBee(serverBee) {
@@ -115,29 +115,29 @@ class Game {
 			this
 		);
 	}
-	
+
 	onTweenRunning() {
 		this.insideState.onTweenRunning();
 		this.outsideState.onTweenRunning();
 	}
 
 	updateBee(bee) {
-		//the bee that needs to be updated is either in this.insideState.bees or in this.outsideState.bees
+		// The bee that needs to be updated is either in this.insideState.bees or in this.outsideState.bees
 		const insideBee = this.insideState.updateBee(bee);
 		const outsideBee = this.outsideState.updateBee(bee);
-		const beeToBeUpdated = (insideBee)? insideBee : outsideBee;
+		const beeToBeUpdated = insideBee ? insideBee : outsideBee;
 		return beeToBeUpdated;
 	}
 
 	moveBeeFormInsideToOutside(serverBee) {
-		let bee = this.insideState.beeForId(serverBee.id);
+		const bee = this.insideState.beeForId(serverBee.id);
 		const index = this.insideState.bees.indexOf(bee);
-		bee.sprite.visible = !bee.sprite.visible
+		bee.sprite.visible = !bee.sprite.visible;
 		bee.sprite.position.x = serverBee.x;
 		bee.sprite.position.y = serverBee.y;
 		this.outsideState.setUpUserInputForBee(bee);
 		this.outsideState.bees.push(bee);
-		this.insideState.bees.splice(index,1);
+		this.insideState.bees.splice(index, 1);
 	}
 
 	moveBee(bee) {

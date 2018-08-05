@@ -1,29 +1,23 @@
-import { game } from './main.js';
-import Menu from './menu.js';
 import Client from './client.js';
-import Beehive from './beehive.js';
-import Flower from './flower.js';
-import Bee from './bee.js';
-import Wasp from './wasp.js';
 import Game from './game.js';
-import State from './state.js'
+import State from './state.js';
 
-class Inside extends State{
+class Inside extends State {
 	constructor() {
 		super();
 		this.insideMap = null;
 		this.insideButton = null;
 		this.insideLayers = [];
 		this.insideWorkareas = {};
-		this.insideGraphics = null; // for drawing the borders of the hive
+		this.insideGraphics = null; // For drawing the borders of the hive
 
 		this.initialize();
 		this.stateName = 'INSIDE';
-		//this.disableState();
+		// This.disableState();
 	}
 
 	initialize() {
-		super.initialize()
+		super.initialize();
 
 		this.insideMap = Game.add.tilemap('inside_map');
 		this.insideMap.addTilesetImage('grass');
@@ -82,44 +76,60 @@ class Inside extends State{
 	}
 
 	getWorkarea(layer, pointer) {
-		console.log('click')
+		console.log('click');
 		let clickedOnBeeHive = false;
 		Object.keys(this.insideWorkareas).forEach(key => {
 			const area = this.insideWorkareas[key];
 			if (area.contains(pointer.worldX, pointer.worldY)) {
 				this.requestGoToPosition(pointer.worldX, pointer.worldY);
-				this.simulateArrival(key); // delete me later
+				this.simulateArrival(key); // Delete me later
 				clickedOnBeeHive = true;
 			}
 		});
-		
-		if(!clickedOnBeeHive){ // it was click on the background
+
+		if (!clickedOnBeeHive) {
+			// It was click on the background
 			this.stopAllOtherShadowTweens({});
 			this.deactivateAllOtherShadows({});
 		}
 	}
 
 	requestGoToPosition(x, y) {
-		if (this.isABeeSelected()) { // needs improvement
+		if (this.isABeeSelected()) {
+			// Needs improvement
 			Client.requestMovement(this.createMoveData(x, y));
 			// Game.getSelectedBee().resetTimer();
 		}
 	}
 
-	simulateArrival(key) { // because the server is not finished yet this simulates that the bee arrived (without delay!)
+	simulateArrival(key) {
+		// Remove me later
+		// Because the server is not finished yet this simulates that the bee arrived (without delay!)
 		console.log('arrived at: ' + key);
-		switch(key){
-			case 'Building':  console.log('start building'); this.handleBuilding(); break; // honeycombs total: free + dirty + used; produce wax
-			case 'Nursing':  console.log('start nursing'); break; // larvae that eat honey (maybe progressbar for the amount of food)
-			case 'Queen':  console.log('start caring for the queen'); this.produceGeleeRoyal(); break; // feeding the queen with geleeRoyal (maybe progressbar for the amount of gelee)
-			case 'Cleaning':  console.log('start cleaning'); this.handleCleaning(); break; // remove the number of dirty honeycombs
+		switch (key) {
+			case 'Building':
+				console.log('start building');
+				this.handleBuilding();
+				break; // Honeycombs total: free + dirty + used; produce wax
+			case 'Nursing':
+				console.log('start nursing');
+				break; // Larvae that eat honey (maybe progressbar for the amount of food)
+			case 'Queen':
+				console.log('start caring for the queen');
+				this.produceGeleeRoyal();
+				break; // Feeding the queen with geleeRoyal (maybe progressbar for the amount of gelee)
+			case 'Cleaning':
+				console.log('start cleaning');
+				this.handleCleaning();
+				break; // Remove the number of dirty honeycombs
 		}
-		//TODO: game elements for inside (real behavior)
-		//TODO: fix wasps (sometimes the dissapear)
+		// TODO: game elements for inside (real behavior)
+		// TODO: fix wasps (sometimes the dissapear)
 	}
 
-	handleBuilding() { // belongs on the server
-		if(Game.beehive.honey >= 10){
+	handleBuilding() {
+		// Belongs on the server
+		if (Game.beehive.honey >= 10) {
 			Game.beehive.freeHoneycombs += 1;
 			Game.beehive.honeycombs += 1;
 			Game.beehive.honey -= 10;
@@ -127,39 +137,41 @@ class Inside extends State{
 		console.log(Game.beehive);
 	}
 
-	produceGeleeRoyal() { // belongs on the server
+	produceGeleeRoyal() {
+		// Belongs on the server
 		// the queen produces laves every "day" (e.g. 5 sec) as long as it has enough geleeRoyal (this.produceLarvae)
 
-		// the bees can produce geleeRoyal 
+		// the bees can produce geleeRoyal
 		// maybe producing geleeRoyal costs "pollen ressources" (even though in reality it does not)
-		if(Game.beehive.pollen >= 5){
+		if (Game.beehive.pollen >= 5) {
 			Game.beehive.pollen -= 5;
 			Game.beehive.geleeRoyal += 1;
 		}
 		console.log(Game.beehive);
 	}
 
-	handleCleaning() { // belongs on the server
-		if(Game.beehive.dirtyHoneycombs > 0){
+	handleCleaning() {
+		// Belongs on the server
+		if (Game.beehive.dirtyHoneycombs > 0) {
 			Game.beehive.freeHoneycombs += 1;
 			Game.beehive.dirtyHoneycombs -= 1;
 		}
 		console.log(Game.beehive);
 	}
 
-	produceLarvae(){ // this belongs on the server
-		if(Game.beehive.geleeRoyal > 0){
-			Game.beehive.geleeRoyal	-= 1;
-			if(Game.beehive.freeHoneycombs > 0) {
+	produceLarvae() {
+		// This belongs on the server
+		if (Game.beehive.geleeRoyal > 0) {
+			Game.beehive.geleeRoyal -= 1;
+			if (Game.beehive.freeHoneycombs > 0) {
 				Game.beehive.freeHoneycombs -= 1;
 				Game.beehive.dirtyHoneycombs += 1;
-				// start timer
-				//if the timer runs out we add a new "inside bee" and synchronize the bee and the beehive
+				// Start timer
+				// if the timer runs out we add a new "inside bee" and synchronize the bee and the beehive
 			}
 		}
 		console.log(Game.beehive);
 	}
-
 }
 
 export default Inside;

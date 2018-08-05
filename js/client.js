@@ -8,7 +8,7 @@ class Client {
 
 			this.socket.on('stateOfBee', bee => {
 				// This includes updating the player actions
-				const updatedBee = Game.updateBee(bee);
+				Game.updateBee(bee);
 			});
 
 			this.socket.on('moveBee', bee => {
