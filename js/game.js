@@ -34,6 +34,16 @@ class Game {
 		this.insideLayers = [];
 		this.insideWorkareas = {};
 		this.insideGraphics = null;
+		this.day = 0;
+		this.dayDisplay = null;
+		this.rainDisplay = null;
+		this.rainDisplayMinOffset = 27;
+		this.rainDisplayMaxOffset = 276;
+		this.rainPointer = null;
+		this.temperatureDisplay = null;
+		this.temperatureDisplayMinOffset = 40;
+		this.temperatureDisplayMaxOffset = 288;
+		this.temperaturePointer = null;
 	}
 
 	init() {
@@ -64,15 +74,21 @@ class Game {
 		);
 		game.load.spritesheet(
 			'switch',
-			'assets/sprites/button_sprite_sheet.png',
-			193,
-			71
+			'assets/menu/button.png',
+			254,
+			52
 		);
 		game.load.image('sprite', 'assets/sprites/bees64px-version2.png');
 		game.load.image('wasp', 'assets/sprites/wasp.png')
 		game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
 		game.load.spritesheet('rain', 'assets/sprites/rain.png', 17, 17);
 		game.load.spritesheet('frog', 'assets/sprites/frog.png', 64, 64);
+		game.load.spritesheet('Honeycomb-Background', 'assets/map/Honeycomb-Background.png', 64, 64);
+		game.load.image('tree', 'assets/map/tree.png');
+		game.load.image('river', 'assets/map/river.png');
+		game.load.image('rain-button', 'assets/menu/rain-button.png');
+		game.load.image('temperature-button', 'assets/menu/temperature-button.png');
+		game.load.image('pointer', 'assets/menu/pointer.png');
 	}
 
 	create() {
@@ -82,13 +98,16 @@ class Game {
 		this.addFrogs(map);
 		this.addBeehive(map);
 		this.addRain();
-		game.add.button(20, 20, 'switch', this.switchToInside, this, 2, 1, 0);
+		this.addTopMenu();
 		this.graphics = game.add.graphics(0, 0);
 		Client.registerNewPlayer();
 	}
 
 	addBackground(map) {
-		map.addTilesetImage('grass'); // Tilesheet is the key of the tileset in map's JSON file
+		map.addTilesetImage('Honeycomb-Background')
+		map.addTilesetImage('grass');
+		map.addTilesetImage('tree');
+		map.addTilesetImage('river');
 		const layer = map.createLayer('Background');
 		layer.resizeWorld();
 		layer.inputEnabled = true;
@@ -98,6 +117,16 @@ class Game {
 			this.stopAllOtherShadowTweens({});
 			this.graphics.clear();
 		}, this);
+		map.createLayer('TreeAndRiver')
+	}
+
+	addTopMenu() {
+		game.add.button(6, 6, 'switch', this.switchToInside, this, 1, 0, 2);
+		this.rainDisplay = game.add.image(320, 6, 'rain-button');
+		this.rainPointer = game.add.sprite(400, 16, 'pointer');
+		this.temperatureDisplay = game.add.image(640, 6, 'temperature-button');
+		this.temperaturePointer = game.add.sprite(700, 16, 'pointer');
+		this.dayDisplay = game.add.text(1000, 8, 'Day: 0', {font: 'bold 28pt Raleway'});
 	}
 
 	addRain() {
@@ -544,7 +573,7 @@ class Game {
 
 	getSelectedBee() {
 		for (let i = 0; i < this.bees.length; i++) {
-			if (this.bees[i].shadow) {
+			if (this.bees[i].isSelected()) {
 				return this.bees[i];
 			}
 		}
@@ -715,13 +744,45 @@ class Game {
 	}
 
 	updateWeater(weather) {
-		console.log(weather.chanceOfRain);
+		const normedChanceOfRain = this.calculateNormedValue(weather.chanceOfRain, 0, 100);
+		this.rainPointer.x = this.calculatePostion(
+			this.rainDisplay.x + this.rainDisplayMinOffset,
+			this.rainDisplay.x + this.rainDisplayMaxOffset,
+			normedChanceOfRain);
+		const normedTemperature = this.calculateNormedValue(weather.temperature, -20, 40);
+		this.temperaturePointer.x = this.calculatePostion(
+			this.temperatureDisplay.x + this.temperatureDisplayMinOffset,
+			this.temperatureDisplay.x + this.temperatureDisplayMaxOffset,
+			normedTemperature);
 		if(weather.raining) {
 			this.rain.on = true;
 		}
 		else {
 			this.rain.on = false;
 		}
+	}
+
+	calculateNormedValue(value, min, max) {
+		return ((value - min) / (max - min));
+	}
+
+	calculatePostion(x, y, value) {
+		return (x*(1 - value) + y*value);
+	}
+
+	dayPassed() {
+		this.bees.forEach(bee => {
+			bee.age ++;
+			if(bee.isSelected()) {
+				Menu.createBeeMenu(bee);
+			}
+		});
+		this.advanceDay();
+	}
+
+	advanceDay() {
+		this.day++;
+		this.dayDisplay.text = 'Day: ' + this.day;
 	}
 }
 

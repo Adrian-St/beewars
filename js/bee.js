@@ -34,6 +34,10 @@ class Bee {
 		}
 	}
 
+	isSelected() {
+		return !(this.shadow === null);
+	}
+
 	initializeTween() {
 		this.tween = game.add.tween(this.sprite);
 	}

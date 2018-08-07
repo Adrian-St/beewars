@@ -73,7 +73,6 @@ class Weather {
     if(this.chanceOfRain >= chanceMax) {
       this.chanceOfRain = chanceMax;
       this.rainTendency = Weather.TENDENCIES.DECREASE;
-      console.log(this.rainTendency);
     }
     if(this.chanceOfRain <= chanceMin) {
       this.chanceOfRain = chanceMin;

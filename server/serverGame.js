@@ -5,6 +5,8 @@ const Frog = require('./serverFrog.js')
 const Player = require('./player.js');
 const Weather = require('./weather.js');
 
+exports.DAY_DURATION = 5000;
+
 let connection; // = require('./connection.js');
 exports.beehive = require('./serverBeehive.js');
 
@@ -28,19 +30,19 @@ exports.setConnection = newConnection => {
 };
 
 exports.start = () => {
-	for (let i = 0; i < mapJson.layers[2].objects.length; i++) {
+	for (let i = 0; i < mapJson.layers[3].objects.length; i++) {
 		const tmpFlower = new Flower(exports.lastFlowerID);
-		tmpFlower.x = mapJson.layers[2].objects[i].x;
+		tmpFlower.x = mapJson.layers[3].objects[i].x;
 		tmpFlower.y =
-			mapJson.layers[2].objects[i].y - mapJson.layers[2].objects[i].height;
+			mapJson.layers[3].objects[i].y - mapJson.layers[3].objects[i].height;
 		exports.flowers.push(tmpFlower);
 		exports.lastFlowerID++;
 	}
-	for (let i = 0; i < mapJson.layers[3].objects.length; i++) {
+	for (let i = 0; i < mapJson.layers[4].objects.length; i++) {
 		const tmpFrog = new Frog(
 			exports.lastFrogID,
-			mapJson.layers[3].objects[i].x,
-			mapJson.layers[3].objects[i].y - mapJson.layers[3].objects[i].height);
+			mapJson.layers[4].objects[i].x,
+			mapJson.layers[4].objects[i].y - mapJson.layers[4].objects[i].height);
 		exports.frogs.push(tmpFrog);
 		exports.lastFrogID++;
 	}
@@ -52,7 +54,7 @@ exports.start = () => {
 	exports.startTime = new Date();
 	exports.weather = new Weather();
 	exports.weather.startSimulation();
-	setInterval(exports.updateAge, 5000);
+	setInterval(exports.advanceDay, exports.DAY_DURATION);
 	setInterval(exports.spawnEnemy, 60000);
 };
 
@@ -139,15 +141,14 @@ exports.isFrogPosition = (x,y) => {
 	return (frog !== undefined);
 };
 
-exports.updateAge = () => {
+exports.advanceDay = () => {
 	exports.bees.forEach((bee) => {
 		var success = bee.increaseAge();
-		if(success) connection.updateBee(bee.getSendableBee());
 	});
 	exports.enemies.forEach((wasp) => {
 		var success = wasp.increaseAge();
-		if(success) connection.updateWasp(wasp.getSendableWasp());
 	});
+	connection.advanceDay();
 };
 
 exports.addNectarToBee = (bee, flower) => {
