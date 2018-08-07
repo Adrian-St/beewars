@@ -1,5 +1,6 @@
 const Game = require('./serverGame.js');
 const Insect = require('./serverInsect.js');
+const BeeTypes = require('./serverBee.js');
 
 class Wasp extends Insect {
 	constructor(id) {
@@ -62,6 +63,7 @@ class Wasp extends Insect {
 			return (
 				bee.x === this.flower.x &&
 				bee.y === this.flower.y &&
+				bee.type === BeeType.OUTSIDEBEE &&
 				bee.flyTimer === null
 			);
 		}.bind(this);

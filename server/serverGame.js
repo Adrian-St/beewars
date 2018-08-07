@@ -62,6 +62,7 @@ exports.start = () => {
 	exports.weather = new Weather();
 	exports.weather.startSimulation();
 	setInterval(exports.updateAge, 5000);
+	setInterval(exports.spawnLarvae, 15000);
 	setInterval(exports.spawnEnemy, 60000);
 
 	for (let i = 0; i < insideMapJson.layers[2].objects.length; i++) {
@@ -175,9 +176,35 @@ exports.updateAge = () => {
 	});
 };
 
+exports.spawnLarvae = () => {
+	console.log('new larvae');
+	if(exports.beehive.geleeRoyal > 0) {
+		exports.beehive.geleeRoyal -= 1;
+		if (exports.beehive.freeHoneycombs > 0){
+			exports.beehive.freeHoneycombs -= 1;
+			exports.beehive.geleeRoyal -= 1;
+			setTimeout(exports.spawnBee, 60000); // 60 sec
+		}
+		connection.updateBeehive(exports.beehive);
+	} else {
+		console.log('The Queen is too hungry to produce larvae')
+	}	
+};
+
+exports.spawnBee = () => {
+	console.log('new bee');
+	const newBee = new Bee(exports.lastBeeID);
+	exports.lastBeeID++;
+	exports.beehive.freeHoneycombs += 1;
+	exports.beehive.dirtyHoneycombs += 1;
+	exports.bees.push(newBee);
+	connection.spawnNewBee(newBee);
+	connection.updateBeehive(exports.beehive);
+};
+
 exports.moveBeeToOutside = (bee) => {
 	connection.moveBeeToOutside(bee);
-}
+};
 
 exports.addNectarToBee = (bee, flower) => {
 	bee.pollen += 10;
@@ -261,7 +288,6 @@ exports.handleBuilding = () => {
 }
 
 exports.produceGeleeRoyal = () => {
-	// the queen produces laves every "day" (e.g. 5 sec) as long as it has enough geleeRoyal (this.produceLarvae)
 	if (this.beehive.pollen >= 5) {
 		this.beehive.pollen -= 5;
 		this.beehive.geleeRoyal += 1;
@@ -277,21 +303,6 @@ exports.handleCleaning = () => {
 		this.beehive.dirtyHoneycombs -= 1;
 	} else {
 		console.log('There are no honeycombs to be cleaned')
-	}
-	connection.updateBeehive(this.beehive);
-}
-
-exports.produceLarvae = () => {
-	if (this.beehive.geleeRoyal > 0) {
-		this.beehive.geleeRoyal -= 1;
-		if (this.beehive.freeHoneycombs > 0) {
-			this.beehive.freeHoneycombs -= 1;
-			this.beehive.dirtyHoneycombs += 1;
-			// Start timer
-			// if the timer runs out we add a new "inside bee" and synchronize the bee and the beehive
-		}
-	} else {
-		console.log('The Queen is too hungry to produce larvae')
 	}
 	connection.updateBeehive(this.beehive);
 }

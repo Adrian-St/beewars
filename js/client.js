@@ -33,6 +33,10 @@ class Client {
 				Game.outsideState.updateBeehive(beehive);
 			});
 
+			this.socket.on('newBee', bee => {
+				Game.insideState.addNewBee(bee);
+			});
+
 			this.socket.on('deadBee', bee => {
 				Game.removeBee(bee);
 			});

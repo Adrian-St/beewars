@@ -82,6 +82,11 @@ class Inside extends State {
 		this.insideGraphics.visible = false;
 	}
 
+	addNewBee(serverBee) {
+		const addedBee = super.addNewBee(serverBee);
+		if (Game.currentState === 'OUTSIDE') addedBee.sprite.visible = false;
+	}
+
 	getWorkarea(layer, pointer) {
 		console.log('click');
 		let clickedOnBeeHive = false;

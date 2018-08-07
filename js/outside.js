@@ -217,6 +217,12 @@ class Outside extends State {
 		});
 	}
 
+	addNewBee(serverBee) {
+		const addedBee = super.addNewBee(serverBee);
+		if (Game.currentState === 'INSIDE') addedBee.sprite.visible = false;
+	}
+
+
 	addFlowerObjects(flowers) {
 		for (let i = 0; i < flowers.length; i++) {
 			this.flowers.push(new Flower(flowers[i], this.flowerSprites.children[i]));
@@ -292,6 +298,7 @@ class Outside extends State {
 	}
 
 	createWasp(serverWasp) {
+		console.log('create wasp')
 		const sprite = game.add.sprite(serverWasp.x, serverWasp.y, 'wasp');
 		sprite.anchor.setTo(0.5);
 		const wasp = new Wasp(serverWasp, sprite);
@@ -299,6 +306,7 @@ class Outside extends State {
 	}
 
 	updateWasp(serverWasp) {
+		console.log('update wasp')
 		const wasp = this.waspForId(serverWasp.id);
 		wasp.health = serverWasp.health;
 		wasp.speed = serverWasp.speed;
@@ -309,6 +317,7 @@ class Outside extends State {
 	}
 
 	removeWasp(serverWasp) {
+		console.log('remove wasp')
 		const deletedWasp = this.waspForId(serverWasp.id);
 		deletedWasp.sprite.destroy();
 		const index = this.wasps.indexOf(deletedWasp);

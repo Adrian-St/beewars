@@ -53,6 +53,10 @@ Connection.updateFlower = updatedFlower => {
 	io.emit('stateOfFlower', updatedFlower);
 };
 
+Connection.spawnNewBee = bee => {
+	io.emit('newBee', bee);
+};
+
 Connection.killBee = bee => {
 	io.emit('deadBee', bee);
 };

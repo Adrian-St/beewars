@@ -47,6 +47,7 @@ class State {
 		const bee = new Bee(serverBee, sprite);
 		this.setUpUserInputForBee(bee);
 		this.bees.push(bee);
+		return bee;
 	}
 
 	setUpUserInputForBee(bee) {
