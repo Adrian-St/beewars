@@ -1,4 +1,5 @@
 const Game = require('./serverGame.js');
+const {Bee, BeeTypes} = require('./serverBee.js');
 
 const chanceMax = 100;
 const chanceMin = 0;
@@ -120,7 +121,7 @@ class Weather {
 	rain() {
 		// Damages all bees that are outside
 		Game.bees.forEach(bee => {
-			if (bee.isInBeehive()) return;
+			if (bee.isInBeehive() || bee.type === BeeTypes.INSIDEBEE) return;
 			bee.reduceHealth(5);
 		}, this);
 	}

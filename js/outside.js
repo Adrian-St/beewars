@@ -45,6 +45,7 @@ class Outside extends State {
 		this.frogSprites.children.forEach(object => {
 			object.visible = true;
 		});
+		this.rain.visible = true;
 	}
 
 	disableState() {
@@ -65,6 +66,7 @@ class Outside extends State {
 		this.frogSprites.children.forEach(object => {
 			object.visible = false;
 		});
+		this.rain.visible = false;
 	}
 
 	initialize() {
