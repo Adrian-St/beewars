@@ -135,6 +135,10 @@ class Game {
 		bee.sprite.visible = !bee.sprite.visible;
 		bee.sprite.position.x = serverBee.x;
 		bee.sprite.position.y = serverBee.y;
+		if (bee.shadow) {
+			bee.shadow.destroy();
+			bee.shadow = null;
+		}
 		this.outsideState.setUpUserInputForBee(bee);
 		this.outsideState.bees.push(bee);
 		this.insideState.bees.splice(index, 1);

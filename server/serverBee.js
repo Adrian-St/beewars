@@ -169,13 +169,15 @@ playerAction {
 	startFlying(destination) {
 		this.resetFlyTimer();
 		let actualDestination = destination;
-		for (let i = 0; i < Game.frogs.length; i++) {
-			if (Game.frogs[i].collidesWithPath(this, destination)) {
-				actualDestination = Game.frogs[i].calculateActualDestination(
-					this,
-					destination
-				);
-				break;
+		if (this.type === BeeTypes.OUTSIDEBEE) {
+			for (let i = 0; i < Game.frogs.length; i++) {
+				if (Game.frogs[i].collidesWithPath(this, destination)) {
+					actualDestination = Game.frogs[i].calculateActualDestination(
+						this,
+						destination
+					);
+					break;
+				}
 			}
 		}
 		this.startFlyTimer(actualDestination);
@@ -260,10 +262,7 @@ playerAction {
 			console.log('[WARNING] destination is null but it shouldnt');
 
 		if (this.type === BeeTypes.OUTSIDEBEE) {
-			if (
-				this.destination.x === Game.beehive.x &&
-				this.destination.y === Game.beehive.y
-			) {
+			if (this.destinationEqualsPosition(Game.beehive)) {
 				this.restoreHealth();
 				Game.returnNectar(this);
 			} else if (Game.isFrogPosition(this.destination.x, this.destination.y)) {
@@ -275,7 +274,20 @@ playerAction {
 				Game.addNectarToBee(this, flower);
 			}
 		} else {
-			console.log('arreived at inside position');
+			if (this.destinationEqualsPosition(Game.centerPoints[0])) { // maybe use dictionary
+				console.log('Building');
+				Game.handleBuilding();
+			} else if (this.destinationEqualsPosition(Game.centerPoints[1])) {
+				console.log('Nursing');
+			} else if (this.destinationEqualsPosition(Game.centerPoints[2])) {
+				console.log('Queen');
+				Game.produceGeleeRoyal();
+			} else if (this.destinationEqualsPosition(Game.centerPoints[3])) {
+				console.log('Cleaning');
+				Game.handleCleaning();
+			} else {
+				console.log('[WARNING] centerPos not found', this.destination)
+			}
 		}
 
 		this.calculateNewPosition();
@@ -288,6 +300,10 @@ playerAction {
 		this.startIdleTimer();
 		Game.clearPlayerActionsForBee(this);
 		Game.updateBee(this);
+	}
+
+	destinationEqualsPosition(pos) {
+		return this.destination.x === pos.x && this.destination.y === pos.y
 	}
 
 	getSendableBee() {
@@ -308,4 +324,3 @@ playerAction {
 }
 
 module.exports = { BeeTypes, Bee };
-// Module.exports = Bee;

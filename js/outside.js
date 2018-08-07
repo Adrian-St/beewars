@@ -41,7 +41,10 @@ class Outside extends State {
 		this.outsideMap.visible = true;
 		this.outsideLayer.visible = true;
 		this.outsideButton.visible = true;
-		this.frogSprites.visible = true;
+		//this.frogSprites.visible = true;
+		this.frogSprites.children.forEach(object => {
+			object.visible = true;
+		});
 	}
 
 	disableState() {
@@ -58,7 +61,10 @@ class Outside extends State {
 		this.outsideMap.visible = false;
 		this.outsideLayer.visible = false;
 		this.outsideButton.visible = false;
-		this.frogSprites.visible = false;
+		//this.frogSprites.visible = false;
+		this.frogSprites.children.forEach(object => {
+			object.visible = false;
+		});
 	}
 
 	initialize() {
@@ -167,6 +173,12 @@ class Outside extends State {
 		Game.beehive = new Beehive(beehive, this.beehiveSprite);
 	}
 
+	addEnemies(waspCollection) {
+		for (let i = 0; i < waspCollection.length; i++) {
+			this.createWasp(waspCollection[i]);
+		}
+	}
+
 	addRain() {
 		this.rain = game.add.emitter(game.world.centerX, 0, 400);
 
@@ -262,7 +274,6 @@ class Outside extends State {
 			const { x } = this.beehivePosition;
 			const { y } = this.beehivePosition;
 			Client.requestMovement(this.createMoveData(x, y));
-			// Game.getSelectedBee().resetTimer();
 		}
 	}
 
@@ -321,14 +332,18 @@ class Outside extends State {
 		Game.beehive.pollen = beehive.pollen;
 		Game.beehive.honey = beehive.honey;
 		Game.beehive.honeycombs = beehive.honeycombs;
+		Game.beehive.freeHoneycombs = beehive.freeHoneycombs;
+		Game.beehive.dirtyHoneycombs = beehive.dirtyHoneycombs;
+		Game.beehive.occupiedHoneycombs = beehive.occupiedHoneycombs;
+		Game.beehive.geleeRoyal = beehive.geleeRoyal;
 
+		console.log(Game.beehive)
 		if (document.getElementById('menu').firstChild.id === 'hiveMenu') {
 			Menu.createHiveMenu(Game.beehive, this.bees.length);
 		}
 	}
 
 	updateWeater(weather) {
-		console.log(weather.chanceOfRain);
 		if (weather.raining) {
 			this.rain.on = true;
 		} else {

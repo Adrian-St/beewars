@@ -17,31 +17,32 @@ exports.lastActionId = 0;
 exports.flowers = [];
 exports.frogs = [];
 exports.bees = [];
-exports.hiveBees = []; //
 exports.players = [];
 exports.enemies = [];
 exports.weather = {};
+exports.centerPoints = [];
 
-const mapJson = require('./../assets/map/outside_map.json');
+const outsideMapJson = require('./../assets/map/outside_map.json');
+const insideMapJson = require('./../assets/map/inside_map.json');
 
 exports.setConnection = newConnection => {
 	connection = newConnection;
 };
 
 exports.start = () => {
-	for (let i = 0; i < mapJson.layers[2].objects.length; i++) {
+	for (let i = 0; i < outsideMapJson.layers[2].objects.length; i++) {
 		const tmpFlower = new Flower(exports.lastFlowerID);
-		tmpFlower.x = mapJson.layers[2].objects[i].x;
+		tmpFlower.x = outsideMapJson.layers[2].objects[i].x;
 		tmpFlower.y =
-			mapJson.layers[2].objects[i].y - mapJson.layers[2].objects[i].height;
+			outsideMapJson.layers[2].objects[i].y - outsideMapJson.layers[2].objects[i].height;
 		exports.flowers.push(tmpFlower);
 		exports.lastFlowerID++;
 	}
-	for (let i = 0; i < mapJson.layers[3].objects.length; i++) {
+	for (let i = 0; i < outsideMapJson.layers[3].objects.length; i++) {
 		const tmpFrog = new Frog(
 			exports.lastFrogID,
-			mapJson.layers[3].objects[i].x,
-			mapJson.layers[3].objects[i].y - mapJson.layers[3].objects[i].height);
+			outsideMapJson.layers[3].objects[i].x,
+			outsideMapJson.layers[3].objects[i].y - outsideMapJson.layers[3].objects[i].height);
 		exports.frogs.push(tmpFrog);
 		exports.lastFrogID++;
 	}
@@ -54,8 +55,7 @@ exports.start = () => {
 	for (let j = 0; j < 5; j++) {
 		let tmpBee = new Bee(exports.lastBeeID);
 		tmpBee.type = BeeTypes.INSIDEBEE;
-		exports.bees.push(tmpBee); // quick and dirty fix (needs to be improved)
-		//exports.hiveBees.push(new Bee(exports.lastBeeID)); 
+		exports.bees.push(tmpBee); 
 		exports.lastBeeID++;
 	}
 	exports.startTime = new Date();
@@ -63,6 +63,12 @@ exports.start = () => {
 	exports.weather.startSimulation();
 	setInterval(exports.updateAge, 5000);
 	setInterval(exports.spawnEnemy, 60000);
+
+	for (let i = 0; i < insideMapJson.layers[2].objects.length; i++) {
+		const tmpX = insideMapJson.layers[2].objects[i].centerX + insideMapJson.layers[2].objects[i].x;
+		const tmpY = insideMapJson.layers[2].objects[i].centerY + insideMapJson.layers[2].objects[i].y;
+		this.centerPoints.push({x: tmpX, y: tmpY});
+	}
 };
 
 exports.spawnEnemy = () => {
@@ -86,7 +92,8 @@ exports.allObjects = () => {
 		insideBees: exports.insideBees().map(bee => bee.getSendableBee()),
 		players: exports.players,
 		flowers: exports.flowers,
-		beehive: exports.beehive
+		beehive: exports.beehive,
+		enemies: exports.enemies
 	};
 };
 
@@ -134,16 +141,6 @@ exports.handleBeeIsIdleForTooLong = beeId => {
 
 exports.handleMovementRequest = (playerId, moveData) => {
 	const bee = exports.beeForId(moveData.beeID);
-	if(!bee){ // this is a quick and dirty fix that needs to be improved in the near future
-		const bee = exports.hiveBees.find(b => {return b.id === moveData.beeID}); //bee from inside
-		if (bee.status === Bee.STATES.INACTIVE) {
-		console.log('Bee is beesy');
-		} else {
-			exports.performActionForBee(playerId, moveData);
-			connection.updateBee(bee.getSendableBee());
-		}
-		return
-	}
 	if (bee.status === Bee.STATES.INACTIVE) {
 		console.log('Bee is beesy');
 	} else {
@@ -250,3 +247,51 @@ exports.reduceHealth = (bee) => {
 exports.updateWeather = (weather) => {
 	connection.updateWeather(weather.getSendableWeather());
 };
+
+exports.handleBuilding = () => {
+	// Belongs on the server
+	if (this.beehive.honey >= 10) {
+		this.beehive.freeHoneycombs += 1;
+		this.beehive.honeycombs += 1;
+		this.beehive.honey -= 10;
+	} else {
+		console.log('Not enough honey for building')
+	}
+	connection.updateBeehive(this.beehive);
+}
+
+exports.produceGeleeRoyal = () => {
+	// the queen produces laves every "day" (e.g. 5 sec) as long as it has enough geleeRoyal (this.produceLarvae)
+	if (this.beehive.pollen >= 5) {
+		this.beehive.pollen -= 5;
+		this.beehive.geleeRoyal += 1;
+	} else {
+		console.log('Not enough pollen for producing gelee-royal')
+	}
+	connection.updateBeehive(this.beehive);
+}
+
+exports.handleCleaning = () => {
+	if (this.beehive.dirtyHoneycombs > 0) {
+		this.beehive.freeHoneycombs += 1;
+		this.beehive.dirtyHoneycombs -= 1;
+	} else {
+		console.log('There are no honeycombs to be cleaned')
+	}
+	connection.updateBeehive(this.beehive);
+}
+
+exports.produceLarvae = () => {
+	if (this.beehive.geleeRoyal > 0) {
+		this.beehive.geleeRoyal -= 1;
+		if (this.beehive.freeHoneycombs > 0) {
+			this.beehive.freeHoneycombs -= 1;
+			this.beehive.dirtyHoneycombs += 1;
+			// Start timer
+			// if the timer runs out we add a new "inside bee" and synchronize the bee and the beehive
+		}
+	} else {
+		console.log('The Queen is too hungry to produce larvae')
+	}
+	connection.updateBeehive(this.beehive);
+}

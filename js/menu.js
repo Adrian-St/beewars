@@ -42,11 +42,13 @@ class Menu {
 
 		const pollen = this.createTextField('Pollen: ', hive.pollen);
 
+		const geleeRoyal = this.createTextField('Gelee-Royal: ', hive.geleeRoyal);
+
 		const honeycombs = this.createTextField('Honeycombs: ', hive.honeycombs);
 
 		const bees = this.createTextField('Number of Bees: ', beeCount);
 
-		const subMenu = this.createSubmenu(honey, pollen, honeycombs, bees);
+		const subMenu = this.createSubmenu(honey, pollen, geleeRoyal, honeycombs, bees);
 
 		const hiveMenu = this.createMenu('hiveMenu', heading, subMenu);
 
