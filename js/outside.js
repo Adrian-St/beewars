@@ -300,7 +300,6 @@ class Outside extends State {
 	}
 
 	createWasp(serverWasp) {
-		console.log('create wasp')
 		const sprite = game.add.sprite(serverWasp.x, serverWasp.y, 'wasp');
 		sprite.anchor.setTo(0.5);
 		const wasp = new Wasp(serverWasp, sprite);
@@ -308,7 +307,6 @@ class Outside extends State {
 	}
 
 	updateWasp(serverWasp) {
-		console.log('update wasp')
 		const wasp = this.waspForId(serverWasp.id);
 		wasp.health = serverWasp.health;
 		wasp.speed = serverWasp.speed;
@@ -319,7 +317,6 @@ class Outside extends State {
 	}
 
 	removeWasp(serverWasp) {
-		console.log('remove wasp')
 		const deletedWasp = this.waspForId(serverWasp.id);
 		deletedWasp.sprite.destroy();
 		const index = this.wasps.indexOf(deletedWasp);
@@ -348,7 +345,6 @@ class Outside extends State {
 		Game.beehive.occupiedHoneycombs = beehive.occupiedHoneycombs;
 		Game.beehive.geleeRoyal = beehive.geleeRoyal;
 
-		console.log(Game.beehive)
 		if (document.getElementById('menu').firstChild.id === 'hiveMenu') {
 			Menu.createHiveMenu(Game.beehive, this.bees.length);
 		}
