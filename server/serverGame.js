@@ -33,19 +33,19 @@ exports.setConnection = newConnection => {
 
 exports.start = () => {
 
-	for (let i = 0; i < mapJson.layers[3].objects.length; i++) {
+	for (let i = 0; i < outsideMapJson.layers[3].objects.length; i++) {
 		const tmpFlower = new Flower(exports.lastFlowerID);
-		tmpFlower.x = mapJson.layers[3].objects[i].x;
+		tmpFlower.x = outsideMapJson.layers[3].objects[i].x;
 		tmpFlower.y =
-			mapJson.layers[3].objects[i].y - mapJson.layers[3].objects[i].height;
+			outsideMapJson.layers[3].objects[i].y - outsideMapJson.layers[3].objects[i].height;
 		exports.flowers.push(tmpFlower);
 		exports.lastFlowerID++;
 	}
-	for (let i = 0; i < mapJson.layers[4].objects.length; i++) {
+	for (let i = 0; i < outsideMapJson.layers[4].objects.length; i++) {
 		const tmpFrog = new Frog(
 			exports.lastFrogID,
-			mapJson.layers[4].objects[i].x,
-			mapJson.layers[4].objects[i].y - mapJson.layers[4].objects[i].height);
+			outsideMapJson.layers[4].objects[i].x,
+			outsideMapJson.layers[4].objects[i].y - outsideMapJson.layers[4].objects[i].height);
 		exports.frogs.push(tmpFrog);
 		exports.lastFrogID++;
 	}

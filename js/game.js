@@ -61,35 +61,11 @@ class Game {
 	}
 
 	create() {
-<<<<<<< HEAD
 		this.outsideState = new Outside();
 		this.insideState = new Inside();
 		this.outsideState.initialize();
 
 		Client.registerNewPlayer();
-=======
-		const map = game.add.tilemap('map');
-		this.addBackground(map);
-		this.addFlowers(map);
-		this.addFrogs(map);
-		this.addBeehive(map);
-		this.addRain();
-		this.addTopMenu();
-		this.graphics = game.add.graphics(0, 0);
-		Client.registerNewPlayer();
-	}
-
-	addTopMenu() {
-		game.add.button(6, 6, 'switch', this.switchToInside, this, 1, 0, 2);
-		this.rainDisplay = game.add.image(320, 6, 'rain-button');
-		this.rainPointer = game.add.sprite(400, 16, 'pointer');
-		this.temperatureDisplay = game.add.image(640, 6, 'temperature-button');
-		this.temperaturePointer = game.add.sprite(700, 16, 'pointer');
-		this.dayDisplay = game.add.text(1000, 8, 'Day: 0', {font: 'bold 28pt Raleway'});
-	}
-
->>>>>>> 783e7cabd7245c669df29a51f78ba49022022e96
-
 	}
 
 	addProperties(data) {
@@ -211,12 +187,8 @@ class Game {
 	}
 
 	dayPassed() {
-		this.bees.forEach(bee => {
-			bee.age ++;
-			if(bee.isSelected()) {
-				Menu.createBeeMenu(bee);
-			}
-		});
+		this.insideState.dayPassed();
+		this.outsideState.dayPassed();
 		this.advanceDay();
 	}
 

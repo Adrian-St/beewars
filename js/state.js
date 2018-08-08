@@ -324,8 +324,6 @@ class State {
 	activateBee(bee) {
 		console.log('bee is free');
 		return bee;
-		// Bee.status = 0;
-		// Client.synchronizeBee(bee.getSendableBee());
 	}
 
 	removeBee(bee) {
@@ -336,6 +334,15 @@ class State {
 		const index = this.bees.indexOf(deletedBee);
 		this.bees.splice(index, 1);
 		Menu.createHiveMenu(Game.beehive.getSendableBeehive(), this.bees.length);
+	}
+
+	dayPassed() {
+		this.bees.forEach(bee => {
+			bee.age ++;
+			if(bee.isSelected()) {
+				Menu.createBeeMenu(bee);
+			}
+		});
 	}
 }
 
