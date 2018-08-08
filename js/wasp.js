@@ -12,11 +12,12 @@ class Wasp {
 		this.shadowTween = null;
 	}
 
-  initializeTween() {
+	initializeTween() {
 		this.tween = game.add.tween(this.sprite);
+		if (Game.currentState === 'INSIDE') this.sprite.visible = false;
 	}
 
-  startTween(destination) {
+	startTween(destination) {
 		const duration =
 			Phaser.Math.distance(
 				this.sprite.position.x,

@@ -16,6 +16,7 @@ class Bee {
 		this.shadow = null;
 		this.shadowTween = null;
 		this.playerActions = [];
+		this.type = serverBee.type;
 	}
 
 	activateShadow() {
@@ -32,6 +33,10 @@ class Bee {
 			this.shadow.destroy();
 			this.shadow = null;
 		}
+	}
+
+	isSelected() {
+		return !(this.shadow === null);
 	}
 
 	initializeTween() {
@@ -123,9 +128,9 @@ class Bee {
 }
 
 const STATES = {
-  IDLE: 0,
-  WORKING: 1,
-  INACTIVE: 2
+	IDLE: 0,
+	WORKING: 1,
+	INACTIVE: 2
 };
 
 Bee.STATES = STATES;

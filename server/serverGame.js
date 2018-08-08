@@ -1,9 +1,11 @@
-const Bee = require('./serverBee.js');
+const {Bee, BeeTypes} = require('./serverBee.js');
 const Wasp = require('./serverWasp.js');
 const Flower = require('./serverFlower.js');
 const Frog = require('./serverFrog.js')
 const Player = require('./player.js');
 const Weather = require('./weather.js');
+
+exports.DAY_DURATION = 5000;
 
 let connection; // = require('./connection.js');
 exports.beehive = require('./serverBeehive.js');
@@ -20,40 +22,57 @@ exports.bees = [];
 exports.players = [];
 exports.enemies = [];
 exports.weather = {};
+exports.centerPoints = [];
 
-const mapJson = require('./../assets/map/outside_map.json');
+const outsideMapJson = require('./../assets/map/outside_map.json');
+const insideMapJson = require('./../assets/map/inside_map.json');
 
 exports.setConnection = newConnection => {
 	connection = newConnection;
 };
 
 exports.start = () => {
-	for (let i = 0; i < mapJson.layers[2].objects.length; i++) {
+
+	for (let i = 0; i < outsideMapJson.layers[3].objects.length; i++) {
 		const tmpFlower = new Flower(exports.lastFlowerID);
-		tmpFlower.x = mapJson.layers[2].objects[i].x;
+		tmpFlower.x = outsideMapJson.layers[3].objects[i].x;
 		tmpFlower.y =
-			mapJson.layers[2].objects[i].y - mapJson.layers[2].objects[i].height;
+			outsideMapJson.layers[3].objects[i].y - outsideMapJson.layers[3].objects[i].height;
 		exports.flowers.push(tmpFlower);
 		exports.lastFlowerID++;
 	}
-	for (let i = 0; i < mapJson.layers[3].objects.length; i++) {
+	for (let i = 0; i < outsideMapJson.layers[4].objects.length; i++) {
 		const tmpFrog = new Frog(
 			exports.lastFrogID,
-			mapJson.layers[3].objects[i].x,
-			mapJson.layers[3].objects[i].y - mapJson.layers[3].objects[i].height);
+			outsideMapJson.layers[4].objects[i].x,
+			outsideMapJson.layers[4].objects[i].y - outsideMapJson.layers[4].objects[i].height);
 		exports.frogs.push(tmpFrog);
 		exports.lastFrogID++;
 	}
 	for (let i = 0; i < 5; i++) {
-		const tmpBee = new Bee(exports.lastBeeID);
+		let tmpBee = new Bee(exports.lastBeeID);
+		tmpBee.type = BeeTypes.OUTSIDEBEE;
 		exports.bees.push(tmpBee);
+		exports.lastBeeID++;
+	}
+	for (let j = 0; j < 5; j++) {
+		let tmpBee = new Bee(exports.lastBeeID);
+		tmpBee.type = BeeTypes.INSIDEBEE;
+		exports.bees.push(tmpBee); 
 		exports.lastBeeID++;
 	}
 	exports.startTime = new Date();
 	exports.weather = new Weather();
 	exports.weather.startSimulation();
-	setInterval(exports.updateAge, 5000);
+	setInterval(exports.spawnLarvae, 15000);
+	setInterval(exports.advanceDay, exports.DAY_DURATION);
 	setInterval(exports.spawnEnemy, 60000);
+
+	for (let i = 0; i < insideMapJson.layers[2].objects.length; i++) {
+		const tmpX = insideMapJson.layers[2].objects[i].centerX + insideMapJson.layers[2].objects[i].x;
+		const tmpY = insideMapJson.layers[2].objects[i].centerY + insideMapJson.layers[2].objects[i].y;
+		this.centerPoints.push({x: tmpX, y: tmpY});
+	}
 };
 
 exports.spawnEnemy = () => {
@@ -73,10 +92,12 @@ exports.newPlayer = () => {
 
 exports.allObjects = () => {
 	return {
-		bees: exports.bees.map(bee => bee.getSendableBee()),
+		bees: exports.outsideBees().map(bee => bee.getSendableBee()),
+		insideBees: exports.insideBees().map(bee => bee.getSendableBee()),
 		players: exports.players,
 		flowers: exports.flowers,
-		beehive: exports.beehive
+		beehive: exports.beehive,
+		enemies: exports.enemies
 	};
 };
 
@@ -95,6 +116,14 @@ exports.beeForId = id => {
 	return exports.bees.find(bee => {
 		return bee.id === id;
 	});
+};
+
+exports.outsideBees = () => {
+	return exports.bees.filter(bee => (bee.type === BeeTypes.OUTSIDEBEE));
+};
+
+exports.insideBees = () => {
+	return exports.bees.filter(bee => (bee.type === BeeTypes.INSIDEBEE));
 };
 
 exports.flowerForId = id => {
@@ -139,15 +168,44 @@ exports.isFrogPosition = (x,y) => {
 	return (frog !== undefined);
 };
 
-exports.updateAge = () => {
+exports.advanceDay = () => {
 	exports.bees.forEach((bee) => {
-		var success = bee.increaseAge();
-		if(success) connection.updateBee(bee.getSendableBee());
+		bee.increaseAge();
 	});
 	exports.enemies.forEach((wasp) => {
-		var success = wasp.increaseAge();
-		if(success) connection.updateWasp(wasp.getSendableWasp());
+		wasp.increaseAge();
 	});
+	connection.advanceDay();
+};
+
+exports.spawnLarvae = () => {
+	console.log('new larvae');
+	if(exports.beehive.geleeRoyal > 0) {
+		exports.beehive.geleeRoyal -= 1;
+		if (exports.beehive.freeHoneycombs > 0){
+			exports.beehive.freeHoneycombs -= 1;
+			exports.beehive.geleeRoyal -= 1;
+			setTimeout(exports.spawnBee, 60000); // 60 sec
+		}
+		connection.updateBeehive(exports.beehive);
+	} else {
+		console.log('The Queen is too hungry to produce larvae')
+	}	
+};
+
+exports.spawnBee = () => {
+	console.log('new bee');
+	const newBee = new Bee(exports.lastBeeID);
+	exports.lastBeeID++;
+	exports.beehive.freeHoneycombs += 1;
+	exports.beehive.dirtyHoneycombs += 1;
+	exports.bees.push(newBee);
+	connection.spawnNewBee(newBee);
+	connection.updateBeehive(exports.beehive);
+};
+
+exports.moveBeeToOutside = (bee) => {
+	connection.moveBeeToOutside(bee);
 };
 
 exports.addNectarToBee = (bee, flower) => {
@@ -218,3 +276,35 @@ exports.reduceHealth = (bee) => {
 exports.updateWeather = (weather) => {
 	connection.updateWeather(weather.getSendableWeather());
 };
+
+exports.handleBuilding = () => {
+	// Belongs on the server
+	if (this.beehive.honey >= 10) {
+		this.beehive.freeHoneycombs += 1;
+		this.beehive.honeycombs += 1;
+		this.beehive.honey -= 10;
+	} else {
+		console.log('Not enough honey for building')
+	}
+	connection.updateBeehive(this.beehive);
+}
+
+exports.produceGeleeRoyal = () => {
+	if (this.beehive.pollen >= 5) {
+		this.beehive.pollen -= 5;
+		this.beehive.geleeRoyal += 1;
+	} else {
+		console.log('Not enough pollen for producing gelee-royal')
+	}
+	connection.updateBeehive(this.beehive);
+}
+
+exports.handleCleaning = () => {
+	if (this.beehive.dirtyHoneycombs > 0) {
+		this.beehive.freeHoneycombs += 1;
+		this.beehive.dirtyHoneycombs -= 1;
+	} else {
+		console.log('There are no honeycombs to be cleaned')
+	}
+	connection.updateBeehive(this.beehive);
+}
