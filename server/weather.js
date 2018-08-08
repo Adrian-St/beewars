@@ -51,7 +51,7 @@ class Weather {
 		return Weather.TENDENCIES.NORMAL;
 	}
 
-	updateWeather() { // merge conflict
+	updateWeather() {
 		this.updateRain();
 		this.updateTemperature();
 		Game.updateWeather(this);
