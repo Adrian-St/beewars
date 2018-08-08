@@ -54,7 +54,9 @@ class State {
 	}
 
 	addTopMenu() {
-		this.dayDisplay = game.add.text(1000, 8, 'Day: 0', {font: 'bold 28pt Raleway'});
+		this.dayDisplay = game.add.text(1000, 8, 'Day: 0', {
+			font: 'bold 28pt Raleway'
+		});
 	}
 
 	setUpUserInputForBee(bee) {
@@ -345,8 +347,8 @@ class State {
 
 	dayPassed() {
 		this.bees.forEach(bee => {
-			bee.age ++;
-			if(bee.isSelected()) {
+			bee.age++;
+			if (bee.isSelected()) {
 				Menu.createBeeMenu(bee);
 			}
 		});

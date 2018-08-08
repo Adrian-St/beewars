@@ -1,6 +1,6 @@
 const Game = require('./serverGame.js');
 const Insect = require('./serverInsect.js');
-const {Bee, BeeTypes} = require('./serverBee.js');
+const { Bee, BeeTypes } = require('./serverBee.js');
 
 class Wasp extends Insect {
 	constructor(id) {

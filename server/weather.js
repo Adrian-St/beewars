@@ -1,5 +1,5 @@
 const Game = require('./serverGame.js');
-const {Bee, BeeTypes} = require('./serverBee.js');
+const { Bee, BeeTypes } = require('./serverBee.js');
 
 const chanceMax = 100;
 const chanceMin = 0;
@@ -51,7 +51,8 @@ class Weather {
 		return Weather.TENDENCIES.NORMAL;
 	}
 
-	updateWeather() { // merge conflict
+	updateWeather() {
+		// Merge conflict
 		this.updateRain();
 		this.updateTemperature();
 		Game.updateWeather(this);

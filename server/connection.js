@@ -78,6 +78,6 @@ Connection.updateWeather = weather => {
 
 Connection.advanceDay = () => {
 	io.emit('dayPassed');
-}
+};
 
 module.exports = Connection;

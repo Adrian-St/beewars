@@ -24,7 +24,6 @@ class Inside extends State {
 		this.addBackground();
 		this.addBeehive();
 		this.addWorkAreas();
-		
 
 		this.graphics = Game.add.graphics(0, 0);
 		this.addTopMenu();
@@ -52,8 +51,9 @@ class Inside extends State {
 		this.insideGraphics.visible = false;
 	}
 
-	addBackground() { // part of this could be in State
-		//this.insideMap.addTilesetImage('Honeycomb-Background'); // this is not part of the map yet
+	addBackground() {
+		// Part of this could be in State
+		// this.insideMap.addTilesetImage('Honeycomb-Background'); // this is not part of the map yet
 		this.insideMap.addTilesetImage('grass');
 		this.insideLayers.push(this.insideMap.createLayer('Grass'));
 	}
@@ -81,15 +81,24 @@ class Inside extends State {
 			this.insideGraphics.drawPolygon(this.insideWorkareas[object.name].points);
 		});
 
-		this.insideWorkareaCenters['Building'] = {x: 480, y: 435}; // this need improvement
-		this.insideWorkareaCenters['Nursing'] = {x: 483, y: 252};
-		this.insideWorkareaCenters['Queen'] = {x: 493, y: 130};
-		this.insideWorkareaCenters['Cleaning'] = {x: 481, y: 565};
+		this.insideWorkareaCenters.Building = { x: 480, y: 435 }; // This need improvement
+		this.insideWorkareaCenters.Nursing = { x: 483, y: 252 };
+		this.insideWorkareaCenters.Queen = { x: 493, y: 130 };
+		this.insideWorkareaCenters.Cleaning = { x: 481, y: 565 };
 	}
 
 	addTopMenu() {
 		super.addTopMenu();
-		this.insideButton = Game.add.button(6, 6, 'switch', Game.switchToOutside, Game, 2, 1, 0);
+		this.insideButton = Game.add.button(
+			6,
+			6,
+			'switch',
+			Game.switchToOutside,
+			Game,
+			2,
+			1,
+			0
+		);
 	}
 
 	addNewBee(serverBee) {
@@ -103,7 +112,7 @@ class Inside extends State {
 		Object.keys(this.insideWorkareas).forEach(key => {
 			const area = this.insideWorkareas[key];
 			if (area.contains(pointer.worldX, pointer.worldY)) {
-				console.log(this.insideWorkareaCenters[key])
+				console.log(this.insideWorkareaCenters[key]);
 				const destination = this.insideWorkareaCenters[key];
 				this.requestGoToPosition(destination.x, destination.y);
 				clickedOnBeeHive = true;
@@ -123,7 +132,7 @@ class Inside extends State {
 		if (this.isABeeSelected()) {
 			Client.requestMovement(this.createMoveData(x, y));
 		}
-	}	
+	}
 }
 
 export default Inside;

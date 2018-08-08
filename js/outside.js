@@ -101,7 +101,7 @@ class Outside extends State {
 	}
 
 	addBackground() {
-		this.outsideMap.addTilesetImage('Honeycomb-Background')
+		this.outsideMap.addTilesetImage('Honeycomb-Background');
 		this.outsideMap.addTilesetImage('grass');
 		this.outsideMap.addTilesetImage('tree');
 		this.outsideMap.addTilesetImage('river');
@@ -119,7 +119,16 @@ class Outside extends State {
 
 	addTopMenu() {
 		super.addTopMenu();
-		this.outsideButton = game.add.button(6, 6, 'switch', Game.switchToInside, Game, 1, 0, 2);
+		this.outsideButton = game.add.button(
+			6,
+			6,
+			'switch',
+			Game.switchToInside,
+			Game,
+			1,
+			0,
+			2
+		);
 		this.rainDisplay = game.add.image(320, 6, 'rain-button');
 		this.rainPointer = game.add.sprite(400, 16, 'pointer');
 		this.temperatureDisplay = game.add.image(640, 6, 'temperature-button');
@@ -245,7 +254,6 @@ class Outside extends State {
 		const addedBee = super.addNewBee(serverBee);
 		if (Game.currentState === 'INSIDE') addedBee.sprite.visible = false;
 	}
-
 
 	addFlowerObjects(flowers) {
 		for (let i = 0; i < flowers.length; i++) {
@@ -373,30 +381,39 @@ class Outside extends State {
 	}
 
 	updateWeater(weather) {
-		const normedChanceOfRain = this.calculateNormedValue(weather.chanceOfRain, 0, 100);
+		const normedChanceOfRain = this.calculateNormedValue(
+			weather.chanceOfRain,
+			0,
+			100
+		);
 		this.rainPointer.x = this.calculatePostion(
 			this.rainDisplay.x + this.rainDisplayMinOffset,
 			this.rainDisplay.x + this.rainDisplayMaxOffset,
-			normedChanceOfRain);
-		const normedTemperature = this.calculateNormedValue(weather.temperature, -20, 40);
+			normedChanceOfRain
+		);
+		const normedTemperature = this.calculateNormedValue(
+			weather.temperature,
+			-20,
+			40
+		);
 		this.temperaturePointer.x = this.calculatePostion(
 			this.temperatureDisplay.x + this.temperatureDisplayMinOffset,
 			this.temperatureDisplay.x + this.temperatureDisplayMaxOffset,
-			normedTemperature);
-		if(weather.raining) {
+			normedTemperature
+		);
+		if (weather.raining) {
 			this.rain.on = true;
-		}
-		else {
+		} else {
 			this.rain.on = false;
 		}
 	}
 
 	calculateNormedValue(value, min, max) {
-		return ((value - min) / (max - min));
+		return (value - min) / (max - min);
 	}
 
 	calculatePostion(x, y, value) {
-		return (x*(1 - value) + y*value);
+		return x * (1 - value) + y * value;
 	}
 }
 

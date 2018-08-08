@@ -273,21 +273,20 @@ playerAction {
 				if (!flower) console.log('[WARNING] no flower found for this position');
 				Game.addNectarToBee(this, flower);
 			}
+		} else if (this.destinationEqualsPosition(Game.centerPoints[0])) {
+			// Maybe use dictionary
+			console.log('Building');
+			Game.handleBuilding();
+		} else if (this.destinationEqualsPosition(Game.centerPoints[1])) {
+			console.log('Nursing');
+		} else if (this.destinationEqualsPosition(Game.centerPoints[2])) {
+			console.log('Queen');
+			Game.produceGeleeRoyal();
+		} else if (this.destinationEqualsPosition(Game.centerPoints[3])) {
+			console.log('Cleaning');
+			Game.handleCleaning();
 		} else {
-			if (this.destinationEqualsPosition(Game.centerPoints[0])) { // maybe use dictionary
-				console.log('Building');
-				Game.handleBuilding();
-			} else if (this.destinationEqualsPosition(Game.centerPoints[1])) {
-				console.log('Nursing');
-			} else if (this.destinationEqualsPosition(Game.centerPoints[2])) {
-				console.log('Queen');
-				Game.produceGeleeRoyal();
-			} else if (this.destinationEqualsPosition(Game.centerPoints[3])) {
-				console.log('Cleaning');
-				Game.handleCleaning();
-			} else {
-				console.log('[WARNING] centerPos not found', this.destination)
-			}
+			console.log('[WARNING] centerPos not found', this.destination);
 		}
 
 		this.calculateNewPosition();
@@ -303,7 +302,7 @@ playerAction {
 	}
 
 	destinationEqualsPosition(pos) {
-		return this.destination.x === pos.x && this.destination.y === pos.y
+		return this.destination.x === pos.x && this.destination.y === pos.y;
 	}
 
 	getSendableBee() {

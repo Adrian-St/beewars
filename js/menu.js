@@ -49,7 +49,14 @@ class Menu {
 
 		const bees = this.createTextField('Number of Bees: ', beeCount);
 
-		const subMenu = this.createSubmenu(heading, honey, pollen, geleeRoyal, honeycombs, bees);
+		const subMenu = this.createSubmenu(
+			heading,
+			honey,
+			pollen,
+			geleeRoyal,
+			honeycombs,
+			bees
+		);
 
 		const hiveMenu = this.createMenu('hiveMenu', subMenu);
 
@@ -73,7 +80,14 @@ class Menu {
 
 		const status = this.createTextField('Status: ', bee.status);
 
-		const subMenu = this.createSubmenu(heading, health, nectar, pollen, age, status);
+		const subMenu = this.createSubmenu(
+			heading,
+			health,
+			nectar,
+			pollen,
+			age,
+			status
+		);
 
 		const beeMenu = this.createMenu('beeMenu-' + bee.id, subMenu);
 
@@ -91,10 +105,7 @@ class Menu {
 
 		const subMenu = this.createSubmenu(heading, nectar, pollen);
 
-		const flowerMenu = this.createMenu(
-			'flowerMenu-' + flower.id,
-			subMenu
-		);
+		const flowerMenu = this.createMenu('flowerMenu-' + flower.id, subMenu);
 
 		const menu = document.getElementById('menu');
 		menu.removeChild(menu.firstChild);

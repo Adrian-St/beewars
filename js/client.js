@@ -59,7 +59,7 @@ class Client {
 
 			this.socket.on('dayPassed', () => {
 				Game.dayPassed();
-			})
+			});
 		});
 	}
 

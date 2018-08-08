@@ -40,18 +40,18 @@ class Game {
 			32,
 			24
 		);
-		game.load.spritesheet(
-			'switch',
-			'assets/Menu/button.png',
-			254,
-			52
-		);
+		game.load.spritesheet('switch', 'assets/Menu/button.png', 254, 52);
 		game.load.image('sprite', 'assets/sprites/bees64px-version2.png');
 		game.load.image('wasp', 'assets/sprites/wasp.png');
 		game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
 		game.load.spritesheet('rain', 'assets/sprites/rain.png', 17, 17);
 		game.load.spritesheet('frog', 'assets/sprites/frog.png', 64, 64);
-		game.load.spritesheet('Honeycomb-Background', 'assets/map/Honeycomb-Background.png', 64, 64);
+		game.load.spritesheet(
+			'Honeycomb-Background',
+			'assets/map/Honeycomb-Background.png',
+			64,
+			64
+		);
 		game.load.image('tree', 'assets/map/tree.png');
 		game.load.image('river', 'assets/map/river.png');
 		game.load.image('rain-button', 'assets/Menu/rain-button.png');
@@ -186,7 +186,7 @@ class Game {
 	}
 
 	dayPassed() {
-		//this.insideState.dayPassed();
+		// This.insideState.dayPassed();
 		this.outsideState.dayPassed();
 		this.day++;
 	}
