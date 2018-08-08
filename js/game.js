@@ -7,49 +7,12 @@ import Outside from './outside.js';
 
 class Game {
 	constructor() {
-<<<<<<< HEAD
-		this.beehive = null; // The attributes from beehive are used in inside and outside but the sprite is only shown outside
+		this.beehive = {}; // The attributes from beehive are used in inside and outside but the sprite is only shown outside
 		this.outsideState = null;
 		this.insideState = null;
 		this.currentState = '';
-=======
-		this.beehiveSprite = {}; // A Sprite
-		this.flowerSprites = {}; // A Group of sprites
-		this.beehive = {};
-		this.flowers = [];
-		this.bees = [];
-		this.wasps = [];
-		this.ressourceLabel = '';
-		this.beeLabel = '';
-		this.beehivePosition = {
-			x: 0,
-			y: 0
-		};
-		this.line = null;
-		this.graphics = null;
-		this.rain = null;
-		this.multipleBeeSelectionStatus = false;
-		this.multipleBeeSelectionPosition = {
-			x: 0,
-			y: 0
-		};
-		this.multipleBeeSelectionCollection = [];
-		this.insideMap = null;
-		this.insideButton = null;
-		this.insideLayers = [];
-		this.insideWorkareas = {};
-		this.insideGraphics = null;
 		this.day = 0;
 		this.dayDisplay = null;
-		this.rainDisplay = null;
-		this.rainDisplayMinOffset = 27;
-		this.rainDisplayMaxOffset = 276;
-		this.rainPointer = null;
-		this.temperatureDisplay = null;
-		this.temperatureDisplayMinOffset = 40;
-		this.temperatureDisplayMaxOffset = 288;
-		this.temperaturePointer = null;
->>>>>>> 783e7cabd7245c669df29a51f78ba49022022e96
 	}
 
 	init() {
@@ -102,6 +65,8 @@ class Game {
 		this.outsideState = new Outside();
 		this.insideState = new Inside();
 		this.outsideState.initialize();
+
+		Client.registerNewPlayer();
 =======
 		const map = game.add.tilemap('map');
 		this.addBackground(map);
@@ -114,23 +79,6 @@ class Game {
 		Client.registerNewPlayer();
 	}
 
-	addBackground(map) {
-		map.addTilesetImage('Honeycomb-Background')
-		map.addTilesetImage('grass');
-		map.addTilesetImage('tree');
-		map.addTilesetImage('river');
-		const layer = map.createLayer('Background');
-		layer.resizeWorld();
-		layer.inputEnabled = true;
-		layer.events.onInputUp.add(() => {
-			Menu.createHiveMenu(this.beehive, this.bees.length);
-			this.deactivateAllOtherShadows({});
-			this.stopAllOtherShadowTweens({});
-			this.graphics.clear();
-		}, this);
-		map.createLayer('TreeAndRiver')
-	}
-
 	addTopMenu() {
 		game.add.button(6, 6, 'switch', this.switchToInside, this, 1, 0, 2);
 		this.rainDisplay = game.add.image(320, 6, 'rain-button');
@@ -140,25 +88,8 @@ class Game {
 		this.dayDisplay = game.add.text(1000, 8, 'Day: 0', {font: 'bold 28pt Raleway'});
 	}
 
-	addRain() {
-		this.rain = game.add.emitter(game.world.centerX, 0, 400);
-
-		this.rain.width = game.world.width;
-		// emitter.angle = 30; // uncomment to set an angle for the rain.
-
-		this.rain.makeParticles('rain');
-
-		this.rain.minParticleScale = 0.1;
-		this.rain.maxParticleScale = 0.5;
-
-		this.rain.setYSpeed(300, 500);
-		this.rain.setXSpeed(-5, 5);
-
-		this.rain.minRotation = 0;
-		this.rain.maxRotation = 0;
 >>>>>>> 783e7cabd7245c669df29a51f78ba49022022e96
 
-		Client.registerNewPlayer();
 	}
 
 	addProperties(data) {

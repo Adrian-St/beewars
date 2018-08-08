@@ -16,6 +16,14 @@ class Outside extends State {
 		this.flowers = [];
 		this.wasps = [];
 		this.rain = null;
+		this.rainDisplay = null;
+		this.rainDisplayMinOffset = 27;
+		this.rainDisplayMaxOffset = 276;
+		this.rainPointer = null;
+		this.temperatureDisplay = null;
+		this.temperatureDisplayMinOffset = 40;
+		this.temperatureDisplayMaxOffset = 288;
+		this.temperaturePointer = null;
 		this.frogSprites = null;
 		this.beehivePosition = {
 			x: 0,
@@ -74,25 +82,19 @@ class Outside extends State {
 
 		this.outsideMap = Game.add.tilemap('map');
 		this.addBackground();
-		this.graphics = Game.add.graphics(0, 0);
 		this.addFlowers();
 		this.addFrogs();
 		this.addRain();
 		this.addBeehive();
-		this.outsideButton = Game.add.button(
-			20,
-			20,
-			'switch',
-			Game.switchToInside,
-			Game,
-			2,
-			1,
-			0
-		);
+		this.addTopMenu();
+		this.graphics = Game.add.graphics(0, 0);
 	}
 
 	addBackground() {
-		this.outsideMap.addTilesetImage('grass'); // Tilesheet is the key of the tileset in map's JSON file
+		this.outsideMap.addTilesetImage('Honeycomb-Background')
+		this.outsideMap.addTilesetImage('grass');
+		this.outsideMap.addTilesetImage('tree');
+		this.outsideMap.addTilesetImage('river');
 		this.outsideLayer = this.outsideMap.createLayer('Background');
 		this.outsideLayer.resizeWorld();
 		this.outsideLayer.inputEnabled = true;
@@ -102,6 +104,16 @@ class Outside extends State {
 			this.stopAllOtherShadowTweens({});
 			this.graphics.clear();
 		}, this);
+		this.outsideMap.createLayer('TreeAndRiver')
+	}
+
+	addTopMenu() {
+		this.outsideButton = game.add.button(6, 6, 'switch', Game.switchToInside, Game, 1, 0, 2);
+		this.rainDisplay = game.add.image(320, 6, 'rain-button');
+		this.rainPointer = game.add.sprite(400, 16, 'pointer');
+		this.temperatureDisplay = game.add.image(640, 6, 'temperature-button');
+		this.temperaturePointer = game.add.sprite(700, 16, 'pointer');
+		this.dayDisplay = game.add.text(1000, 8, 'Day: 0', {font: 'bold 28pt Raleway'});
 	}
 
 	addFlowers() {
