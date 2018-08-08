@@ -2,19 +2,21 @@ class Menu {
 	static createTextField(title, element) {
 		const text = document.createElement('P');
 		text.style.fontFamily = 'Raleway';
+		text.style.fontWeight = 'bold';
 		text.appendChild(document.createTextNode(title));
 		text.appendChild(document.createTextNode(element));
 		return text;
 	}
 
 	static createHeading(title, element) {
-		const heading = document.createElement('H3');
+		const heading = document.createElement('P');
 		heading.style.fontFamily = 'Raleway';
+		heading.style.fontWeight = 'bold';
 		heading.appendChild(document.createTextNode(title));
 		if (typeof element !== 'undefined') {
 			heading.appendChild(document.createTextNode(element));
 		}
-		heading.classList.add('heading');
+		heading.id = 'heading';
 		return heading;
 	}
 
@@ -27,10 +29,9 @@ class Menu {
 		return subMenu;
 	}
 
-	static createMenu(id, heading, subMenu) {
+	static createMenu(id, subMenu) {
 		const menu = document.createElement('DIV');
 		menu.id = id;
-		menu.appendChild(heading);
 		menu.appendChild(subMenu);
 		return menu;
 	}
@@ -48,9 +49,9 @@ class Menu {
 
 		const bees = this.createTextField('Number of Bees: ', beeCount);
 
-		const subMenu = this.createSubmenu(honey, pollen, geleeRoyal, honeycombs, bees);
+		const subMenu = this.createSubmenu(heading, honey, pollen, geleeRoyal, honeycombs, bees);
 
-		const hiveMenu = this.createMenu('hiveMenu', heading, subMenu);
+		const hiveMenu = this.createMenu('hiveMenu', subMenu);
 
 		const menu = document.getElementById('menu');
 		if (menu.firstChild) {
@@ -72,9 +73,9 @@ class Menu {
 
 		const status = this.createTextField('Status: ', bee.status);
 
-		const subMenu = this.createSubmenu(health, nectar, pollen, age, status);
+		const subMenu = this.createSubmenu(heading, health, nectar, pollen, age, status);
 
-		const beeMenu = this.createMenu('beeMenu-' + bee.id, heading, subMenu);
+		const beeMenu = this.createMenu('beeMenu-' + bee.id, subMenu);
 
 		const menu = document.getElementById('menu');
 		menu.removeChild(menu.firstChild);
@@ -88,11 +89,10 @@ class Menu {
 
 		const pollen = this.createTextField('Pollen: ', flower.pollen);
 
-		const subMenu = this.createSubmenu(nectar, pollen);
+		const subMenu = this.createSubmenu(heading, nectar, pollen);
 
 		const flowerMenu = this.createMenu(
 			'flowerMenu-' + flower.id,
-			heading,
 			subMenu
 		);
 

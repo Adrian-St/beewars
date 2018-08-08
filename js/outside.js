@@ -351,11 +351,30 @@ class Outside extends State {
 	}
 
 	updateWeater(weather) {
-		if (weather.raining) {
+		const normedChanceOfRain = this.calculateNormedValue(weather.chanceOfRain, 0, 100);
+		this.rainPointer.x = this.calculatePostion(
+			this.rainDisplay.x + this.rainDisplayMinOffset,
+			this.rainDisplay.x + this.rainDisplayMaxOffset,
+			normedChanceOfRain);
+		const normedTemperature = this.calculateNormedValue(weather.temperature, -20, 40);
+		this.temperaturePointer.x = this.calculatePostion(
+			this.temperatureDisplay.x + this.temperatureDisplayMinOffset,
+			this.temperatureDisplay.x + this.temperatureDisplayMaxOffset,
+			normedTemperature);
+		if(weather.raining) {
 			this.rain.on = true;
-		} else {
+		}
+		else {
 			this.rain.on = false;
 		}
+	}
+
+	calculateNormedValue(value, min, max) {
+		return ((value - min) / (max - min));
+	}
+
+	calculatePostion(x, y, value) {
+		return (x*(1 - value) + y*value);
 	}
 }
 

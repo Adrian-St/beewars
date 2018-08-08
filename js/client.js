@@ -56,6 +56,10 @@ class Client {
 			this.socket.on('updateWeather', weather => {
 				Game.outsideState.updateWeater(weather);
 			});
+
+			this.socket.on('dayPassed', () => {
+				Game.dayPassed();
+			})
 		});
 	}
 
