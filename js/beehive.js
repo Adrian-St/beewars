@@ -14,7 +14,11 @@ class Beehive {
 		return {
 			pollen: this.pollen,
 			honey: this.honey,
-			honeycombs: this.honeycombs
+			honeycombs: this.honeycombs,
+			freeHoneycombs: this.freeHoneycombs,
+			dirtyHoneycombs: this.dirtyHoneycombs,
+			occupiedHoneycombs: this.occupiedHoneycombs,
+			geleeRoyal: this.geleeRoyal
 		};
 	}
 }
