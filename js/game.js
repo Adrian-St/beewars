@@ -74,7 +74,7 @@ class Game {
 		);
 		game.load.spritesheet(
 			'switch',
-			'assets/menu/button.png',
+			'assets/Menu/button.png',
 			254,
 			52
 		);
@@ -86,9 +86,9 @@ class Game {
 		game.load.spritesheet('Honeycomb-Background', 'assets/map/Honeycomb-Background.png', 64, 64);
 		game.load.image('tree', 'assets/map/tree.png');
 		game.load.image('river', 'assets/map/river.png');
-		game.load.image('rain-button', 'assets/menu/rain-button.png');
-		game.load.image('temperature-button', 'assets/menu/temperature-button.png');
-		game.load.image('pointer', 'assets/menu/pointer.png');
+		game.load.image('rain-button', 'assets/Menu/rain-button.png');
+		game.load.image('temperature-button', 'assets/Menu/temperature-button.png');
+		game.load.image('pointer', 'assets/Menu/pointer.png');
 	}
 
 	create() {
