@@ -21,43 +21,13 @@ class Inside extends State {
 		super.initialize();
 
 		this.insideMap = Game.add.tilemap('inside_map');
-		this.insideMap.addTilesetImage('grass');
-		this.insideMap.addTilesetImage('Honeycomb-Tileset-double');
-		this.insideLayers.push(this.insideMap.createLayer('Grass'));
-		this.insideLayers.push(this.insideMap.createLayer('Honeycombs'));
-		this.insideLayers[1].resizeWorld();
-		this.insideLayers[1].inputEnabled = true;
-		this.insideLayers[1].events.onInputUp.add(this.getWorkarea, this);
-		this.insideGraphics = Game.add.graphics(0, 0);
-		this.insideMap.objects['Inner Beehive'].forEach(object => {
-			const points = [object.polygon.length];
-			for (let i = 0; i < object.polygon.length; i++) {
-				points[i] = {
-					x: object.x + object.polygon[i][0],
-					y: object.y + object.polygon[i][1]
-				};
-			}
-			this.insideWorkareas[object.name] = new Phaser.Polygon(points);
-			this.insideGraphics.lineStyle(10, 0xffd900, 1);
-			this.insideGraphics.drawPolygon(this.insideWorkareas[object.name].points);
-		});
-
-		this.insideWorkareaCenters['Building'] = {x: 480, y: 435}; // this need improvement
-		this.insideWorkareaCenters['Nursing'] = {x: 483, y: 252};
-		this.insideWorkareaCenters['Queen'] = {x: 493, y: 130};
-		this.insideWorkareaCenters['Cleaning'] = {x: 481, y: 565};
+		this.addBackground();
+		this.addBeehive();
+		this.addWorkAreas();
+		
 
 		this.graphics = Game.add.graphics(0, 0);
-		this.insideButton = Game.add.button(
-			20,
-			20,
-			'switch',
-			Game.switchToOutside,
-			Game,
-			2,
-			1,
-			0
-		);
+		this.addTopMenu();
 	}
 
 	enableState() {
@@ -80,6 +50,46 @@ class Inside extends State {
 			layer.visible = false;
 		});
 		this.insideGraphics.visible = false;
+	}
+
+	addBackground() { // part of this could be in State
+		//this.insideMap.addTilesetImage('Honeycomb-Background'); // this is not part of the map yet
+		this.insideMap.addTilesetImage('grass');
+		this.insideLayers.push(this.insideMap.createLayer('Grass'));
+	}
+
+	addBeehive() {
+		this.insideMap.addTilesetImage('Honeycomb-Tileset-double');
+		this.insideLayers.push(this.insideMap.createLayer('Honeycombs'));
+		this.insideLayers[1].resizeWorld();
+		this.insideLayers[1].inputEnabled = true;
+		this.insideLayers[1].events.onInputUp.add(this.getWorkarea, this);
+	}
+
+	addWorkAreas() {
+		this.insideGraphics = Game.add.graphics(0, 0);
+		this.insideMap.objects['Inner Beehive'].forEach(object => {
+			const points = [object.polygon.length];
+			for (let i = 0; i < object.polygon.length; i++) {
+				points[i] = {
+					x: object.x + object.polygon[i][0],
+					y: object.y + object.polygon[i][1]
+				};
+			}
+			this.insideWorkareas[object.name] = new Phaser.Polygon(points);
+			this.insideGraphics.lineStyle(10, 0xffd900, 1);
+			this.insideGraphics.drawPolygon(this.insideWorkareas[object.name].points);
+		});
+
+		this.insideWorkareaCenters['Building'] = {x: 480, y: 435}; // this need improvement
+		this.insideWorkareaCenters['Nursing'] = {x: 483, y: 252};
+		this.insideWorkareaCenters['Queen'] = {x: 493, y: 130};
+		this.insideWorkareaCenters['Cleaning'] = {x: 481, y: 565};
+	}
+
+	addTopMenu() {
+		super.addTopMenu();
+		this.insideButton = Game.add.button(6, 6, 'switch', Game.switchToOutside, Game, 2, 1, 0);
 	}
 
 	addNewBee(serverBee) {

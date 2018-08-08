@@ -31,7 +31,7 @@ class Outside extends State {
 		};
 		this.outsideButton = null;
 		this.outsideMap = null;
-		this.outsideLayer = null;
+		this.outsideLayers = [];
 		this.stateName = 'OUTSIDE';
 	}
 
@@ -45,15 +45,20 @@ class Outside extends State {
 		this.wasps.forEach(wasp => {
 			wasp.sprite.visible = true;
 		});
-		this.graphics.visible = true;
-		this.outsideMap.visible = true;
-		this.outsideLayer.visible = true;
-		this.outsideButton.visible = true;
-		//this.frogSprites.visible = true;
+		this.outsideLayers.forEach(layer => {
+			layer.visible = true;
+		});
 		this.frogSprites.children.forEach(object => {
 			object.visible = true;
 		});
+		this.graphics.visible = true;
+		this.outsideMap.visible = true;
+		this.outsideButton.visible = true;
 		this.rain.visible = true;
+		this.rainDisplay.visible = true;
+		this.rainPointer.visible = true;
+		this.temperatureDisplay.visible = true;
+		this.temperaturePointer.visible = true;
 	}
 
 	disableState() {
@@ -66,15 +71,20 @@ class Outside extends State {
 		this.wasps.forEach(wasp => {
 			wasp.sprite.visible = false;
 		});
-		this.graphics.visible = false;
-		this.outsideMap.visible = false;
-		this.outsideLayer.visible = false;
-		this.outsideButton.visible = false;
-		//this.frogSprites.visible = false;
+		this.outsideLayers.forEach(layer => {
+			layer.visible = false;
+		});
 		this.frogSprites.children.forEach(object => {
 			object.visible = false;
 		});
+		this.graphics.visible = false;
+		this.outsideMap.visible = false;
+		this.outsideButton.visible = false;
 		this.rain.visible = false;
+		this.rainDisplay.visible = false;
+		this.rainPointer.visible = false;
+		this.temperatureDisplay.visible = false;
+		this.temperaturePointer.visible = false;
 	}
 
 	initialize() {
@@ -95,25 +105,25 @@ class Outside extends State {
 		this.outsideMap.addTilesetImage('grass');
 		this.outsideMap.addTilesetImage('tree');
 		this.outsideMap.addTilesetImage('river');
-		this.outsideLayer = this.outsideMap.createLayer('Background');
-		this.outsideLayer.resizeWorld();
-		this.outsideLayer.inputEnabled = true;
-		this.outsideLayer.events.onInputUp.add(() => {
+		this.outsideLayers.push(this.outsideMap.createLayer('Background'));
+		this.outsideLayers[0].resizeWorld();
+		this.outsideLayers[0].inputEnabled = true;
+		this.outsideLayers[0].events.onInputUp.add(() => {
 			Menu.createHiveMenu(Game.beehive, this.bees.length);
 			this.deactivateAllOtherShadows({});
 			this.stopAllOtherShadowTweens({});
 			this.graphics.clear();
 		}, this);
-		this.outsideMap.createLayer('TreeAndRiver')
+		this.outsideLayers.push(this.outsideMap.createLayer('TreeAndRiver'));
 	}
 
 	addTopMenu() {
+		super.addTopMenu();
 		this.outsideButton = game.add.button(6, 6, 'switch', Game.switchToInside, Game, 1, 0, 2);
 		this.rainDisplay = game.add.image(320, 6, 'rain-button');
 		this.rainPointer = game.add.sprite(400, 16, 'pointer');
 		this.temperatureDisplay = game.add.image(640, 6, 'temperature-button');
 		this.temperaturePointer = game.add.sprite(700, 16, 'pointer');
-		this.dayDisplay = game.add.text(1000, 8, 'Day: 0', {font: 'bold 28pt Raleway'});
 	}
 
 	addFlowers() {

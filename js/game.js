@@ -12,7 +12,6 @@ class Game {
 		this.insideState = null;
 		this.currentState = '';
 		this.day = 0;
-		this.dayDisplay = null;
 	}
 
 	init() {
@@ -187,14 +186,9 @@ class Game {
 	}
 
 	dayPassed() {
-		this.insideState.dayPassed();
+		//this.insideState.dayPassed();
 		this.outsideState.dayPassed();
-		this.advanceDay();
-	}
-
-	advanceDay() {
 		this.day++;
-		this.dayDisplay.text = 'Day: ' + this.day;
 	}
 }
 
