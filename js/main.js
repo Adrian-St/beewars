@@ -1,4 +1,5 @@
 import Game from './game.js';
+import MainMenu from './mainMenu.js';
 
 export const game = new Phaser.Game(
 	38 * 32,
@@ -7,4 +8,5 @@ export const game = new Phaser.Game(
 	document.getElementById('game')
 );
 game.state.add('Game', Game);
-game.state.start('Game');
+game.state.add('MainMenu', MainMenu);
+game.state.start('MainMenu');

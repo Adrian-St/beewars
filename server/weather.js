@@ -52,7 +52,10 @@ class Weather {
 	}
 
 	updateWeather() {
+<<<<<<< HEAD
 		// Merge conflict
+=======
+>>>>>>> ee0a6ca6c49316a67de66a046bd215024e1435ee
 		this.updateRain();
 		this.updateTemperature();
 		Game.updateWeather(this);
