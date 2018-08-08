@@ -6,6 +6,10 @@ const STATES = {
 	WORKING: 1,
 	INACTIVE: 2
 };
+const BeeTypes = {
+	OUTSIDEBEE: 0,
+	INSIDEBEE: 1
+};
 
 class Bee extends Insect {
 	constructor(id) {
@@ -20,6 +24,7 @@ class Bee extends Insect {
 		this.idleTimer = null; // Meassures the time since the bee performed the last action
 		this.inactiveTimer = null; // Blocks the bee for a while after an action is performed
 		this.attackPower = 25;
+		this.type = BeeTypes.INSIDEBEE;
 	}
 
 	/* Schema of a playerAction
@@ -44,8 +49,28 @@ playerAction {
 		this.resetFlyTimer();
 	}
 
+	increaseAge() {
+		this.age += 1;
+		if (this.age >= 15 && this.type === BeeTypes.INSIDEBEE) {
+			this.leaveBeehive();
+		}
+		if (this.age >= 45) {
+			this.die();
+		}
+	}
+
 	die() {
 		Game.removeBee(this);
+	}
+
+	leaveBeehive() {
+		this.type = BeeTypes.OUTSIDEBEE;
+		this.cancelAllTimeEvents();
+		this.x = Game.beehive.x;
+		this.y = Game.beehive.y;
+		this.playerActions = [];
+		// Synchronize
+		Game.moveBeeToOutside(this);
 	}
 
 	reduceHealth(amount) {
@@ -144,13 +169,15 @@ playerAction {
 	startFlying(destination) {
 		this.resetFlyTimer();
 		let actualDestination = destination;
-		for (let i = 0; i < Game.frogs.length; i++) {
-			if (Game.frogs[i].collidesWithPath(this, destination)) {
-				actualDestination = Game.frogs[i].calculateActualDestination(
-					this,
-					destination
-				);
-				break;
+		if (this.type === BeeTypes.OUTSIDEBEE) {
+			for (let i = 0; i < Game.frogs.length; i++) {
+				if (Game.frogs[i].collidesWithPath(this, destination)) {
+					actualDestination = Game.frogs[i].calculateActualDestination(
+						this,
+						destination
+					);
+					break;
+				}
 			}
 		}
 		this.startFlyTimer(actualDestination);
@@ -233,20 +260,36 @@ playerAction {
 		this.calculateFlownDistancePercentage();
 		if (this.destination === null)
 			console.log('[WARNING] destination is null but it shouldnt');
-		if (
-			this.destination.x === Game.beehive.x &&
-			this.destination.y === Game.beehive.y
-		) {
-			this.restoreHealth();
-			Game.returnNectar(this);
-		} else if (Game.isFrogPosition(this.destination.x, this.destination.y)) {
-			this.die();
-			return;
+
+		if (this.type === BeeTypes.OUTSIDEBEE) {
+			if (this.destinationEqualsPosition(Game.beehive)) {
+				this.restoreHealth();
+				Game.returnNectar(this);
+			} else if (Game.isFrogPosition(this.destination.x, this.destination.y)) {
+				this.die();
+				return;
+			} else {
+				const flower = Game.getFlowerForPosition(this.destination);
+				if (!flower) console.log('[WARNING] no flower found for this position');
+				Game.addNectarToBee(this, flower);
+			}
 		} else {
-			const flower = Game.getFlowerForPosition(this.destination);
-			if (!flower) console.log('[WARNING] no flower found for this position');
-			Game.addNectarToBee(this, flower);
+			if (this.destinationEqualsPosition(Game.centerPoints[0])) { // maybe use dictionary
+				console.log('Building');
+				Game.handleBuilding();
+			} else if (this.destinationEqualsPosition(Game.centerPoints[1])) {
+				console.log('Nursing');
+			} else if (this.destinationEqualsPosition(Game.centerPoints[2])) {
+				console.log('Queen');
+				Game.produceGeleeRoyal();
+			} else if (this.destinationEqualsPosition(Game.centerPoints[3])) {
+				console.log('Cleaning');
+				Game.handleCleaning();
+			} else {
+				console.log('[WARNING] centerPos not found', this.destination)
+			}
 		}
+
 		this.calculateNewPosition();
 		this.resetFlyTimer();
 		Game.calculatePlayerExperienceAfterBeeArrived(this);
@@ -257,6 +300,10 @@ playerAction {
 		this.startIdleTimer();
 		Game.clearPlayerActionsForBee(this);
 		Game.updateBee(this);
+	}
+
+	destinationEqualsPosition(pos) {
+		return this.destination.x === pos.x && this.destination.y === pos.y
 	}
 
 	getSendableBee() {
@@ -276,4 +323,4 @@ playerAction {
 	}
 }
 
-module.exports = Bee;
+module.exports = { BeeTypes, Bee };

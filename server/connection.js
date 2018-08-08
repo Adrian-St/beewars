@@ -4,7 +4,6 @@ const game = require('./serverGame.js');
 
 Connection.start = param => {
 	io = param;
-	console.log(game);
 	game.setConnection(Connection);
 	io.on('connection', socket => {
 		socket.on('newplayer', () => {
@@ -33,6 +32,10 @@ Connection.updateBee = updatedBee => {
 	io.emit('stateOfBee', updatedBee);
 };
 
+Connection.moveBeeToOutside = updatedBee => {
+	io.emit('moveBeeOut', updatedBee);
+};
+
 Connection.moveBee = updatedBee => {
 	io.emit('moveBee', updatedBee);
 };
@@ -47,6 +50,10 @@ Connection.updateBeehive = updatedBeehive => {
 
 Connection.updateFlower = updatedFlower => {
 	io.emit('stateOfFlower', updatedFlower);
+};
+
+Connection.spawnNewBee = bee => {
+	io.emit('newBee', bee);
 };
 
 Connection.killBee = bee => {
@@ -68,5 +75,9 @@ Connection.removeWasp = wasp => {
 Connection.updateWeather = weather => {
 	io.emit('updateWeather', weather);
 };
+
+Connection.advanceDay = () => {
+	io.emit('dayPassed');
+}
 
 module.exports = Connection;

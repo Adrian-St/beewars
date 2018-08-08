@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "express": "^4.15.2",
+    "font-awesome": "^4.7.0",
     "phaser": "^3.6.0",
     "prettier": "^1.13.5",
     "socket.io": "^1.7.3"
@@ -14,17 +15,26 @@
     "xo": "^0.21.1"
   },
   "xo": {
-    "ignores": ["js/phaser.min.js"],
+    "ignores": [
+      "js/phaser.min.js"
+    ],
     "prettier": true,
     "overrides": [
       {
         "files": "js/*.js",
-        "env": ["browser"],
-        "globals": ["io", "Phaser"]
+        "env": [
+          "browser"
+        ],
+        "globals": [
+          "io",
+          "Phaser"
+        ]
       },
       {
         "files": "server/*.js",
-        "env": ["node"]
+        "env": [
+          "node"
+        ]
       }
     ],
     "rules": {
@@ -34,7 +44,13 @@
           "case": "camelCase"
         }
       ],
-      "import/extensions": ["error", "always", {"ignorePackages": true} ]
+      "import/extensions": [
+        "error",
+        "always",
+        {
+          "ignorePackages": true
+        }
+      ]
     }
   }
 }

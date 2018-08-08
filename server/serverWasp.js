@@ -1,5 +1,6 @@
 const Game = require('./serverGame.js');
 const Insect = require('./serverInsect.js');
+const {Bee, BeeTypes} = require('./serverBee.js');
 
 class Wasp extends Insect {
 	constructor(id) {
@@ -60,7 +61,10 @@ class Wasp extends Insect {
 	findBeesOnFlower() {
 		const filterFunction = function(bee) {
 			return (
-				bee.x == this.flower.x && bee.y == this.flower.y && bee.flyTimer == null
+				bee.x === this.flower.x &&
+				bee.y === this.flower.y &&
+				bee.type === BeeTypes.OUTSIDEBEE &&
+				bee.flyTimer === null
 			);
 		}.bind(this);
 		return Game.bees.filter(filterFunction);
@@ -70,7 +74,7 @@ class Wasp extends Insect {
 		if (this.flower === null)
 			console.log('[WARNING] cannot fight bees when not on flower');
 		const bees = this.findBeesOnFlower();
-		if (bees.length == 0) {
+		if (bees.length === 0) {
 			this.resetAttackTimer();
 			this.flyToNearestFlower(this.flower);
 			return;
@@ -117,7 +121,7 @@ class Wasp extends Insect {
 			x: this.x,
 			y: this.y,
 			health: this.health,
-			moving: this.flyTimer != null,
+			moving: this.flyTimer !== null,
 			speed: this.speed,
 			target: this.destination
 		};

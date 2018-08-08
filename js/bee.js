@@ -16,6 +16,7 @@ class Bee {
 		this.shadow = null;
 		this.shadowTween = null;
 		this.playerActions = [];
+		this.type = serverBee.type;
 	}
 
 	activateShadow() {
@@ -32,6 +33,10 @@ class Bee {
 			this.shadow.destroy();
 			this.shadow = null;
 		}
+	}
+
+	isSelected() {
+		return !(this.shadow === null);
 	}
 
 	initializeTween() {

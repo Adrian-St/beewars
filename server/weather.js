@@ -1,4 +1,5 @@
 const Game = require('./serverGame.js');
+const {Bee, BeeTypes} = require('./serverBee.js');
 
 const chanceMax = 100;
 const chanceMin = 0;
@@ -92,9 +93,9 @@ class Weather {
 	}
 
 	updateTemperature() {
-		if (this.temperatureTendency == Weather.TENDENCIES.NORMAL) {
+		if (this.temperatureTendency === Weather.TENDENCIES.NORMAL) {
 			this.temperature += this.randomInt(-2, 2);
-		} else if (this.temperatureTendency == Weather.TENDENCIES.INCREASE) {
+		} else if (this.temperatureTendency === Weather.TENDENCIES.INCREASE) {
 			this.temperature += this.randomInt(-3, 1);
 		} else {
 			this.temperature += this.randomInt(-1, 3);
@@ -120,7 +121,7 @@ class Weather {
 	rain() {
 		// Damages all bees that are outside
 		Game.bees.forEach(bee => {
-			if (bee.isInBeehive()) return;
+			if (bee.isInBeehive() || bee.type === BeeTypes.INSIDEBEE) return;
 			bee.reduceHealth(5);
 		}, this);
 	}

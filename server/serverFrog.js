@@ -39,7 +39,15 @@ class Frog {
 		const ankath = this.amount(midPointVector);
 		const hyp = ankath / this.cosAlpha(midPointVector, pathVector);
 		const gegenkath = Math.sqrt(hyp * hyp - ankath * ankath);
-		return gegenkath <= RADIUS;
+		const distanceBeeFrog = this.calculateDistance(bee, this);
+		const distanceBeeDestination = this.calculateDistance(bee, destination);
+		return ((gegenkath <= RADIUS)&&(distanceBeeFrog <= distanceBeeDestination));
+	}
+
+	calculateDistance(object1, object2) {
+		var xDistance = object2.x - object1.x;
+    	var yDistance = object2.y - object1.y;
+    	return Math.sqrt(xDistance*xDistance + yDistance*yDistance);
 	}
 
 	cosAlpha(v1, v2) {
