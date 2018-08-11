@@ -224,25 +224,6 @@ playerAction {
 		}
 	}
 
-	calculateFlownDistancePercentage() {
-		return 1 - this.getTimeLeft(this.flyTimer) / this.flyDuration;
-	}
-
-	calculateNewPosition() {
-		this.x =
-			this.x +
-			(this.destination.x - this.x) * this.calculateFlownDistancePercentage();
-		this.y =
-			this.y +
-			(this.destination.y - this.y) * this.calculateFlownDistancePercentage();
-	}
-
-	getTimeLeft(timeout) {
-		return Math.ceil(
-			timeout._idleStart + timeout._idleTimeout - process.uptime() * 1000
-		);
-	}
-
 	isInBeehive() {
 		return this.x === Game.beehive.x && this.y === Game.beehive.y;
 	}
@@ -317,7 +298,8 @@ playerAction {
 			pollen: this.pollen,
 			nectar: this.nectar,
 			capacity: this.capacity,
-			playerActions: this.playerActions
+			playerActions: this.playerActions,
+			target: this.destination
 		};
 	}
 }

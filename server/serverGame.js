@@ -92,12 +92,12 @@ exports.newPlayer = () => {
 
 exports.allObjects = () => {
 	return {
-		bees: exports.outsideBees().map(bee => bee.getSendableBee()),
-		insideBees: exports.insideBees().map(bee => bee.getSendableBee()),
+		bees: exports.beesWithUpdatedPosition(exports.outsideBees()),
+		insideBees: exports.beesWithUpdatedPosition(exports.insideBees()),
 		players: exports.players,
 		flowers: exports.flowers,
 		beehive: exports.beehive,
-		enemies: exports.enemies
+		enemies: exports.waspsWithUpdatedPosition()
 	};
 };
 
@@ -109,7 +109,8 @@ exports.calculatePlayerExperienceAfterBeeArrived = bee => {
 };
 
 exports.raiseExperienceForPlayer = (playerID, value) => {
-	exports.players.find(player => player.id === playerID).raiseExpBy(value);
+	const currPlayer = exports.players.find(player => player.id === playerID);
+	if (currPlayer) currPlayer.raiseExpBy(value);
 };
 
 exports.beeForId = id => {
@@ -125,6 +126,22 @@ exports.outsideBees = () => {
 exports.insideBees = () => {
 	return exports.bees.filter(bee => (bee.type === BeeTypes.INSIDEBEE));
 };
+
+exports.beesWithUpdatedPosition = (bees) => {
+	return bees.map(bee => 
+		{
+			if(bee.destination) bee.calculateNewPosition();
+			return bee.getSendableBee();
+		});
+}
+
+exports.waspsWithUpdatedPosition = () => {
+	return exports.enemies.map(wasp => 
+		{
+			if(wasp.destination) wasp.calculateNewPosition();
+			return wasp.getSendableWasp();
+		});
+}
 
 exports.flowerForId = id => {
 	return exports.flowers.find(flower => {
@@ -278,7 +295,6 @@ exports.updateWeather = (weather) => {
 };
 
 exports.handleBuilding = () => {
-	// Belongs on the server
 	if (this.beehive.honey >= 10) {
 		this.beehive.freeHoneycombs += 1;
 		this.beehive.honeycombs += 1;

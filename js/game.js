@@ -71,6 +71,7 @@ class Game {
 		this.outsideState.addFlowerObjects(data.flowers);
 		this.outsideState.addBeehiveObject(data.beehive);
 		this.outsideState.addBees(data.bees);
+		this.outsideState.addEnemies(data.enemies);
 		this.insideState.addBees(data.insideBees);
 		this.switchToOutside(); //
 
