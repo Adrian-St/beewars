@@ -58,7 +58,7 @@ exports.start = () => {
 	for (let j = 0; j < 5; j++) {
 		let tmpBee = new Bee(exports.lastBeeID);
 		tmpBee.type = BeeTypes.INSIDEBEE;
-		exports.bees.push(tmpBee); 
+		exports.bees.push(tmpBee);
 		exports.lastBeeID++;
 	}
 	exports.startTime = new Date();
@@ -68,9 +68,9 @@ exports.start = () => {
 	setInterval(exports.advanceDay, exports.DAY_DURATION);
 	setInterval(exports.spawnEnemy, 60000);
 
-	for (let i = 0; i < insideMapJson.layers[2].objects.length; i++) {
-		const tmpX = insideMapJson.layers[2].objects[i].centerX + insideMapJson.layers[2].objects[i].x;
-		const tmpY = insideMapJson.layers[2].objects[i].centerY + insideMapJson.layers[2].objects[i].y;
+	for (let i = 0; i < insideMapJson.layers[3].objects.length; i++) {
+		const tmpX = insideMapJson.layers[3].objects[i].centerX + insideMapJson.layers[3].objects[i].x;
+		const tmpY = insideMapJson.layers[3].objects[i].centerY + insideMapJson.layers[3].objects[i].y;
 		this.centerPoints.push({x: tmpX, y: tmpY});
 	}
 };
@@ -190,7 +190,7 @@ exports.spawnLarvae = () => {
 		connection.updateBeehive(exports.beehive);
 	} else {
 		console.log('The Queen is too hungry to produce larvae')
-	}	
+	}
 };
 
 exports.spawnBee = () => {

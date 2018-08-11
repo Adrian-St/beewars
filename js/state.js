@@ -14,7 +14,6 @@ class State {
 		};
 		this.multipleBeeSelectionCollection = [];
 		this.stateName = ''; // Gets overridden in subclass
-		this.dayDisplay = null;
 	}
 
 	initialize() {
@@ -26,7 +25,6 @@ class State {
 			bee.sprite.visible = true;
 			if (bee.shadow) bee.shadow.visible = true;
 		});
-		this.dayDisplay.visible = true;
 	}
 
 	disableState() {
@@ -34,7 +32,6 @@ class State {
 			bee.sprite.visible = false;
 			if (bee.shadow) bee.shadow.visible = false;
 		});
-		this.dayDisplay.visible = false;
 	}
 
 	addBees(beeCollection) {
@@ -51,12 +48,6 @@ class State {
 		this.setUpUserInputForBee(bee);
 		this.bees.push(bee);
 		return bee;
-	}
-
-	addTopMenu() {
-		this.dayDisplay = game.add.text(1000, 8, 'Day: 0', {
-			font: 'bold 28pt Raleway'
-		});
 	}
 
 	setUpUserInputForBee(bee) {
@@ -343,16 +334,6 @@ class State {
 		const index = this.bees.indexOf(deletedBee);
 		this.bees.splice(index, 1);
 		Menu.createHiveMenu(Game.beehive.getSendableBeehive(), this.bees.length);
-	}
-
-	dayPassed() {
-		this.bees.forEach(bee => {
-			bee.age++;
-			if (bee.isSelected()) {
-				Menu.createBeeMenu(bee);
-			}
-		});
-		this.dayDisplay.text = 'Day: ' + Game.day;
 	}
 }
 

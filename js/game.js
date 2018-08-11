@@ -12,6 +12,17 @@ class Game {
 		this.insideState = null;
 		this.currentState = '';
 		this.day = 0;
+		this.dayDisplay = null;
+		this.rainDisplay = null;
+		this.rainPointer = null;
+		this.temperatureDisplay = null;
+		this.temperaturePointer = null;
+		this.rainDisplay = null;
+		this.rainDisplayMinOffset = 27;
+		this.rainDisplayMaxOffset = 276;
+		this.temperatureDisplay = null;
+		this.temperatureDisplayMinOffset = 40;
+		this.temperatureDisplayMaxOffset = 288;
 	}
 
 	init() {
@@ -35,12 +46,15 @@ class Game {
 		game.load.spritesheet('flowers', 'assets/map/flowers.png', 64, 64);
 		game.load.spritesheet('beehive', 'assets/map/beehive.png', 128, 160);
 		game.load.spritesheet(
-			'Honeycomb-Tileset-double',
-			'assets/honeycombs/Honeycomb-Tileset-double.png',
-			32,
-			24
+			'Full-Beehive',
+			'assets/honeycombs/Full-Beehive.png',
+			448,
+			136
 		);
-		game.load.spritesheet('switch', 'assets/Menu/button.png', 254, 52);
+		game.load.spritesheet('inside-tree', 'assets/map/inside-tree.png', 32, 32);
+		game.load.spritesheet('Workarea-icons', 'assets/honeycombs/Workarea-icons.png', 100, 72);
+		game.load.spritesheet('inside-button', 'assets/Menu/inside-button.png', 254, 52);
+		game.load.spritesheet('outside-button', 'assets/Menu/button.png', 254, 52);
 		game.load.image('sprite', 'assets/sprites/bees64px-version2.png');
 		game.load.image('wasp', 'assets/sprites/wasp.png');
 		game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
@@ -63,8 +77,19 @@ class Game {
 		this.outsideState = new Outside();
 		this.insideState = new Inside();
 		this.outsideState.initialize();
+		this.addTopMenu();
 
 		Client.registerNewPlayer();
+	}
+
+	addTopMenu() {
+		this.dayDisplay = game.add.text(1000, 8, 'Day: 0', {
+			font: 'bold 28pt Raleway'
+		});
+		this.rainDisplay = game.add.image(320, 6, 'rain-button');
+		this.rainPointer = game.add.sprite(400, 16, 'pointer');
+		this.temperatureDisplay = game.add.image(640, 6, 'temperature-button');
+		this.temperaturePointer = game.add.sprite(700, 16, 'pointer');
 	}
 
 	addProperties(data) {
@@ -186,9 +211,56 @@ class Game {
 	}
 
 	dayPassed() {
-		// This.insideState.dayPassed();
-		this.outsideState.dayPassed();
+		this.insideState.bees.forEach(bee => {
+			bee.age++;
+			if (bee.isSelected()) {
+				Menu.createBeeMenu(bee);
+			}
+		});
+		this.outsideState.bees.forEach(bee => {
+			bee.age++;
+			if (bee.isSelected()) {
+				Menu.createBeeMenu(bee);
+			}
+		});
 		this.day++;
+		this.dayDisplay.text = 'Day: ' + this.day;
+	}
+
+	calculateNormedValue(value, min, max) {
+		return (value - min) / (max - min);
+	}
+
+	calculatePostion(x, y, value) {
+		return x * (1 - value) + y * value;
+	}
+
+	updateWeater(weather) {
+		const normedChanceOfRain = this.calculateNormedValue(
+			weather.chanceOfRain,
+			0,
+			100
+		);
+		this.rainPointer.x = this.calculatePostion(
+			this.rainDisplay.x + this.rainDisplayMinOffset,
+			this.rainDisplay.x + this.rainDisplayMaxOffset,
+			normedChanceOfRain
+		);
+		const normedTemperature = this.calculateNormedValue(
+			weather.temperature,
+			-20,
+			40
+		);
+		this.temperaturePointer.x = this.calculatePostion(
+			this.temperatureDisplay.x + this.temperatureDisplayMinOffset,
+			this.temperatureDisplay.x + this.temperatureDisplayMaxOffset,
+			normedTemperature
+		);
+		if (weather.raining) {
+			this.outsideState.rain.on = true;
+		} else {
+			this.outsideState.rain.on = false;
+		}
 	}
 }
 

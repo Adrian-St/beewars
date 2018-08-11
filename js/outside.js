@@ -16,14 +16,6 @@ class Outside extends State {
 		this.flowers = [];
 		this.wasps = [];
 		this.rain = null;
-		this.rainDisplay = null;
-		this.rainDisplayMinOffset = 27;
-		this.rainDisplayMaxOffset = 276;
-		this.rainPointer = null;
-		this.temperatureDisplay = null;
-		this.temperatureDisplayMinOffset = 40;
-		this.temperatureDisplayMaxOffset = 288;
-		this.temperaturePointer = null;
 		this.frogSprites = null;
 		this.beehivePosition = {
 			x: 0,
@@ -55,10 +47,6 @@ class Outside extends State {
 		this.outsideMap.visible = true;
 		this.outsideButton.visible = true;
 		this.rain.visible = true;
-		this.rainDisplay.visible = true;
-		this.rainPointer.visible = true;
-		this.temperatureDisplay.visible = true;
-		this.temperaturePointer.visible = true;
 	}
 
 	disableState() {
@@ -81,10 +69,6 @@ class Outside extends State {
 		this.outsideMap.visible = false;
 		this.outsideButton.visible = false;
 		this.rain.visible = false;
-		this.rainDisplay.visible = false;
-		this.rainPointer.visible = false;
-		this.temperatureDisplay.visible = false;
-		this.temperaturePointer.visible = false;
 	}
 
 	initialize() {
@@ -118,21 +102,17 @@ class Outside extends State {
 	}
 
 	addTopMenu() {
-		super.addTopMenu();
-		this.outsideButton = game.add.button(
+		//super.addTopMenu();
+		this.outsideButton = Game.add.button(
 			6,
 			6,
-			'switch',
+			'outside-button',
 			Game.switchToInside,
 			Game,
 			1,
 			0,
 			2
 		);
-		this.rainDisplay = game.add.image(320, 6, 'rain-button');
-		this.rainPointer = game.add.sprite(400, 16, 'pointer');
-		this.temperatureDisplay = game.add.image(640, 6, 'temperature-button');
-		this.temperaturePointer = game.add.sprite(700, 16, 'pointer');
 	}
 
 	addFlowers() {
@@ -378,42 +358,6 @@ class Outside extends State {
 		if (document.getElementById('menu').firstChild.id === 'hiveMenu') {
 			Menu.createHiveMenu(Game.beehive, this.bees.length);
 		}
-	}
-
-	updateWeater(weather) {
-		const normedChanceOfRain = this.calculateNormedValue(
-			weather.chanceOfRain,
-			0,
-			100
-		);
-		this.rainPointer.x = this.calculatePostion(
-			this.rainDisplay.x + this.rainDisplayMinOffset,
-			this.rainDisplay.x + this.rainDisplayMaxOffset,
-			normedChanceOfRain
-		);
-		const normedTemperature = this.calculateNormedValue(
-			weather.temperature,
-			-20,
-			40
-		);
-		this.temperaturePointer.x = this.calculatePostion(
-			this.temperatureDisplay.x + this.temperatureDisplayMinOffset,
-			this.temperatureDisplay.x + this.temperatureDisplayMaxOffset,
-			normedTemperature
-		);
-		if (weather.raining) {
-			this.rain.on = true;
-		} else {
-			this.rain.on = false;
-		}
-	}
-
-	calculateNormedValue(value, min, max) {
-		return (value - min) / (max - min);
-	}
-
-	calculatePostion(x, y, value) {
-		return x * (1 - value) + y * value;
 	}
 }
 
