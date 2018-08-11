@@ -80,7 +80,21 @@ Connection.advanceDay = () => {
 	io.emit('dayPassed');
 };
 
-Connection.sendMessage = message => {
+Connection.sendMessageToClients = (message, clients) => {
+	Object.keys(io.sockets.connected).forEach(function(socketID){
+        const socket = io.sockets.connected[socketID];
+        const player = socket.player;
+        if(player){
+        	if(clients.includes(player.id)) Connection.sendMessageToClient(message, socket);
+        } //console.log(io.sockets.connected[socketID])
+    });
+}
+
+Connection.sendMessageToClient = (message, socket) => {
+	socket.emit('showMessage', message);
+};
+
+Connection.broadcastMessage = (message, socket) => {
 	io.emit('showMessage', message);
 };
 

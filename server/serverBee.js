@@ -257,16 +257,16 @@ playerAction {
 		} else if (this.destinationEqualsPosition(Game.centerPoints[0])) {
 			// Maybe use dictionary
 			console.log('Building');
-			Game.handleBuilding();
+			Game.handleBuilding(this);
 		} else if (this.destinationEqualsPosition(Game.centerPoints[1])) {
 			console.log('Nursing');
-			Game.sendMessage('Nursing');
+			Game.sendMessage('Nursing', this.playerActions[0].playerIDs);
 		} else if (this.destinationEqualsPosition(Game.centerPoints[2])) {
 			console.log('Queen');
-			Game.produceGeleeRoyal();
+			Game.produceGeleeRoyal(this);
 		} else if (this.destinationEqualsPosition(Game.centerPoints[3])) {
 			console.log('Cleaning');
-			Game.handleCleaning();
+			Game.handleCleaning(this);
 		} else {
 			console.log('[WARNING] centerPos not found', this.destination);
 		}
