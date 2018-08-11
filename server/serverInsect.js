@@ -54,6 +54,25 @@ class Insect {
 		return Math.sqrt(xDistance * xDistance + yDistance * yDistance);
 	}
 
+	calculateFlownDistancePercentage() {
+		return 1 - this.getTimeLeft(this.flyTimer) / this.flyDuration;
+	}
+
+	calculateNewPosition() {
+		this.x =
+			this.x +
+			(this.destination.x - this.x) * this.calculateFlownDistancePercentage();
+		this.y =
+			this.y +
+			(this.destination.y - this.y) * this.calculateFlownDistancePercentage();
+	}
+
+	getTimeLeft(timeout) {
+		return Math.ceil(
+			timeout._idleStart + timeout._idleTimeout - process.uptime() * 1000
+		);
+	}
+
 	onArriveAtDestination() {
 		console.log('Should be overriden');
 	}
