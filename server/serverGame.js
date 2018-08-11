@@ -300,7 +300,8 @@ exports.handleBuilding = () => {
 		this.beehive.honeycombs += 1;
 		this.beehive.honey -= 10;
 	} else {
-		console.log('Not enough honey for building')
+		console.log('Not enough honey for building');
+		exports.sendMessage('Not enough honey for building');
 	}
 	connection.updateBeehive(this.beehive);
 }
@@ -310,7 +311,8 @@ exports.produceGeleeRoyal = () => {
 		this.beehive.pollen -= 5;
 		this.beehive.geleeRoyal += 1;
 	} else {
-		console.log('Not enough pollen for producing gelee-royal')
+		console.log('Not enough pollen for producing gelee-royal');
+		exports.sendMessage('Not enough pollen for producing gelee-royal');
 	}
 	connection.updateBeehive(this.beehive);
 }
@@ -320,7 +322,12 @@ exports.handleCleaning = () => {
 		this.beehive.freeHoneycombs += 1;
 		this.beehive.dirtyHoneycombs -= 1;
 	} else {
-		console.log('There are no honeycombs to be cleaned')
+		console.log('There are no honeycombs to be cleaned');
+		exports.sendMessage('There are no honeycombs to be cleaned');
 	}
 	connection.updateBeehive(this.beehive);
+}
+
+exports.sendMessage = (message) => {
+	connection.sendMessage(message);
 }

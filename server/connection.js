@@ -80,4 +80,8 @@ Connection.advanceDay = () => {
 	io.emit('dayPassed');
 };
 
+Connection.sendMessage = message => {
+	io.emit('showMessage', message);
+};
+
 module.exports = Connection;

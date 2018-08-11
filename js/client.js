@@ -60,6 +60,10 @@ class Client {
 			this.socket.on('dayPassed', () => {
 				Game.dayPassed();
 			});
+
+			this.socket.on('showMessage', (message) => {
+				Game.showMessage(message);
+			});
 		});
 	}
 

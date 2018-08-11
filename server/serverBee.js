@@ -260,6 +260,7 @@ playerAction {
 			Game.handleBuilding();
 		} else if (this.destinationEqualsPosition(Game.centerPoints[1])) {
 			console.log('Nursing');
+			Game.sendMessage('Nursing');
 		} else if (this.destinationEqualsPosition(Game.centerPoints[2])) {
 			console.log('Queen');
 			Game.produceGeleeRoyal();
