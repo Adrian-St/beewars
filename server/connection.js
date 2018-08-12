@@ -96,7 +96,7 @@ Connection.sendMessageToClient = (message, socket) => {
 	socket.emit('showMessage', message);
 };
 
-Connection.broadcastMessage = (message, socket, roomName) => {
+Connection.broadcastMessage = (message, roomName) => {
 	io.to(roomName).emit('showMessage', message);
 };
 

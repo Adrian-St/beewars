@@ -206,6 +206,8 @@ class Game {
 				this.beehive.freeHoneycombs -= 1;
 				this.beehive.geleeRoyal -= 1;
 				setTimeout(this.spawnBee.bind(this), 60000); // 60 sec
+			} else {
+				connection.broadcastMessage('No honeycombs free', this.roomName)
 			}
 			connection.updateBeehive(this.beehive, this.roomName);
 		} else {
