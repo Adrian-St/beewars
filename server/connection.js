@@ -1,92 +1,94 @@
+const Game = require('./serverGame.js');
 const Connection = {};
+
 let io;
-const game = require('./serverGame.js');
+let gameInstances;
 
 Connection.start = param => {
 	io = param;
-	game.setConnection(Connection);
+	gameInstances = {};
 	io.on('connection', socket => {
-		socket.on('newplayer', () => {
-			if (game.lastPlayerID === 0) {
-				game.start();
-				socket.emit('newGame');
-			}
+		socket.on('newplayer', roomName => {
+			if(!Connection.roomExists(roomName)) Connection.newGame(roomName)
+			socket.join(roomName);
 
-			socket.player = game.newPlayer();
-			socket.emit('gameObjects', game.allObjects());
+			socket.player = gameInstances[roomName].newPlayer();
+			socket.emit('gameObjects', gameInstances[roomName].allObjects());
 
 			socket.on('requestMovement', moveData => {
-				game.handleMovementRequest(socket.player.id, moveData);
+				const currGameInstance = gameInstances[roomName];
+				currGameInstance.handleMovementRequest(socket.player.id, moveData);
 				// The server answers with the (updated) bee
 			});
 
 			socket.on('disconnect', () => {
-				game.players.splice(socket.player.id, 1);
-				io.emit('remove', socket.player.id);
+				const currGameInstance = gameInstances[roomName];
+				if(currGameInstance.removePlayer(socket.player.id) === 0)
+					Connection.removeGameInstance(roomName)
 			});
 		});
 	});
 };
 
-Connection.updateBee = updatedBee => {
-	io.emit('stateOfBee', updatedBee);
+Connection.updateBee = (updatedBee, roomName) => {
+	io.to(roomName).emit('stateOfBee', updatedBee);
 };
 
-Connection.moveBeeToOutside = updatedBee => {
-	io.emit('moveBeeOut', updatedBee);
+Connection.moveBeeToOutside = (updatedBee, roomName) => {
+	io.to(roomName).emit('moveBeeOut', updatedBee);
 };
 
-Connection.moveBee = updatedBee => {
-	io.emit('moveBee', updatedBee);
+Connection.moveBee = (updatedBee, roomName) => {
+	io.to(roomName).emit('moveBee', updatedBee);
 };
 
-Connection.stopBee = updatedBee => {
-	io.emit('stopBee', updatedBee);
+Connection.stopBee = (updatedBee, roomName) => {
+	io.to(roomName).emit('stopBee', updatedBee);
 };
 
-Connection.updateBeehive = updatedBeehive => {
-	io.emit('stateOfBeehive', updatedBeehive);
+Connection.updateBeehive = (updatedBeehive, roomName) => {
+	io.to(roomName).emit('stateOfBeehive', updatedBeehive);
 };
 
-Connection.updateFlower = updatedFlower => {
-	io.emit('stateOfFlower', updatedFlower);
+Connection.updateFlower = (updatedFlower, roomName) => {
+	io.to(roomName).emit('stateOfFlower', updatedFlower);
 };
 
-Connection.spawnNewBee = bee => {
-	io.emit('newBee', bee);
+Connection.spawnNewBee = (bee, roomName) => {
+	io.to(roomName).emit('newBee', bee);
 };
 
-Connection.killBee = bee => {
-	io.emit('deadBee', bee);
+Connection.killBee = (bee, roomName) => {
+	io.to(roomName).emit('deadBee', bee);
 };
 
-Connection.createWasp = wasp => {
-	io.emit('createWasp', wasp);
+Connection.createWasp = (wasp, roomName) => {
+	io.to(roomName).emit('createWasp', wasp);
 };
 
-Connection.updateWasp = wasp => {
-	io.emit('updateWasp', wasp);
+Connection.updateWasp = (wasp, roomName) => {
+	io.to(roomName).emit('updateWasp', wasp);
 };
 
-Connection.removeWasp = wasp => {
-	io.emit('removeWasp', wasp);
+Connection.removeWasp = (wasp, roomName) => {
+	io.to(roomName).emit('removeWasp', wasp);
 };
 
-Connection.updateWeather = weather => {
-	io.emit('updateWeather', weather);
+Connection.updateWeather = (weather, roomName) => {
+	io.to(roomName).emit('updateWeather', weather);
 };
 
-Connection.advanceDay = () => {
-	io.emit('dayPassed');
+Connection.advanceDay = (roomName) => {
+	io.to(roomName).emit('dayPassed');
 };
 
-Connection.sendMessageToClients = (message, clients) => {
-	Object.keys(io.sockets.connected).forEach(function(socketID){
+Connection.sendMessageToClients = (message, clients, roomName) => {
+	Object.keys(io.sockets.adapter.rooms[roomName].sockets).forEach(function(socketID){
         const socket = io.sockets.connected[socketID];
         const player = socket.player;
         if(player){
         	if(clients.includes(player.id)) Connection.sendMessageToClient(message, socket);
-        } //console.log(io.sockets.connected[socketID])
+        }
     });
 }
 
@@ -94,8 +96,31 @@ Connection.sendMessageToClient = (message, socket) => {
 	socket.emit('showMessage', message);
 };
 
-Connection.broadcastMessage = (message, socket) => {
-	io.emit('showMessage', message);
+Connection.broadcastMessage = (message, socket, roomName) => {
+	io.to(roomName).emit('showMessage', message);
 };
+
+
+Connection.newGame = roomName => {
+	if(!Connection.roomExists(roomName)) {
+		let game = new Game(roomName);
+		game.setConnection(Connection);
+		game.start();
+		gameInstances[roomName] = game;
+		console.log("create room: ", roomName);
+	}
+};
+
+Connection.roomExists = roomName => {
+	return  (!(gameInstances === undefined)) && (!(gameInstances[roomName] === undefined))
+};
+
+Connection.game = roomName => {
+	gameInstances[roomName]
+}
+
+Connection.removeGameInstance = roomName => {
+	delete gameInstances[roomName];
+}
 
 module.exports = Connection;

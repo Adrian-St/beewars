@@ -1,5 +1,6 @@
 class Insect {
-	constructor(id) {
+	constructor(id, game) {
+		this.game = game;
 		this.age = 0;
 		this.id = id;
 		this.x = this.randomInt(100, 400);

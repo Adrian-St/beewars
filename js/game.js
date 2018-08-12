@@ -189,7 +189,7 @@ class Game {
 	}
 
 	dayPassed() {
-		// This.insideState.dayPassed();
+		this.insideState.dayPassed();
 		this.outsideState.dayPassed();
 		this.day++;
 	}

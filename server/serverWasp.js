@@ -3,8 +3,8 @@ const Insect = require('./serverInsect.js');
 const { Bee, BeeTypes } = require('./serverBee.js');
 
 class Wasp extends Insect {
-	constructor(id) {
-		super(id);
+	constructor(id, game) {
+		super(id, game);
 		this.health = 300;
 		this.attackTimer = null;
 		this.speed = 3;
@@ -24,14 +24,14 @@ class Wasp extends Insect {
 	flyToNearestFlower(excludedFlower) {
 		const flower = this.findNearestFlower(excludedFlower);
 		this.startFlyTimer(flower);
-		Game.waspStartsFlying(this);
+		this.game.waspStartsFlying(this);
 	}
 
 	findNearestFlower(excludedFlower) {
 		let nearestFlower =
-			Game.flowers[0] === excludedFlower ? Game.flowers[1] : Game.flowers[0];
+			this.game.flowers[0] === excludedFlower ? this.game.flowers[1] : this.game.flowers[0];
 		let closestDistance = this.calculateDistance(nearestFlower);
-		Game.flowers.forEach(flower => {
+		this.game.flowers.forEach(flower => {
 			if (flower === excludedFlower) return;
 			const distance = this.calculateDistance(flower);
 			if (distance < closestDistance) {
@@ -67,7 +67,7 @@ class Wasp extends Insect {
 				bee.flyTimer === null
 			);
 		}.bind(this);
-		return Game.bees.filter(filterFunction);
+		return this.game.bees.filter(filterFunction);
 	}
 
 	fightBees() {
@@ -100,7 +100,7 @@ class Wasp extends Insect {
 	}
 
 	die() {
-		Game.removeWasp(this);
+		this.game.removeWasp(this);
 	}
 
 	onArriveAtDestination() {
@@ -111,7 +111,7 @@ class Wasp extends Insect {
 		this.y = this.destination.y;
 		this.flower = this.destination;
 		this.setDestination(null);
-		Game.waspArrivedAtFlower(this);
+		this.game.waspArrivedAtFlower(this);
 		this.startAttackTimer();
 	}
 

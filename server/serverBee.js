@@ -12,8 +12,8 @@ const BeeTypes = {
 };
 
 class Bee extends Insect {
-	constructor(id) {
-		super(id);
+	constructor(id, game) {
+		super(id, game);
 		this.status = Bee.STATES.IDLE;
 		this.health = 100;
 		this.energy = 100;
@@ -60,17 +60,17 @@ playerAction {
 	}
 
 	die() {
-		Game.removeBee(this);
+		this.game.removeBee(this);
 	}
 
 	leaveBeehive() {
 		this.type = BeeTypes.OUTSIDEBEE;
 		this.cancelAllTimeEvents();
-		this.x = Game.beehive.x;
-		this.y = Game.beehive.y;
+		this.x = this.game.beehive.x;
+		this.y = this.game.beehive.y;
 		this.playerActions = [];
 		// Synchronize
-		Game.moveBeeToOutside(this);
+		this.game.moveBeeToOutside(this);
 	}
 
 	reduceHealth(amount) {
@@ -79,7 +79,7 @@ playerAction {
 			this.health = 0;
 			this.die();
 		} else {
-			Game.reduceHealth(this);
+			this.game.reduceHealth(this);
 		}
 	}
 
@@ -106,10 +106,10 @@ playerAction {
 					indexOfOldPlayerAction
 				);
 			}
-			playerAction.id = Game.lastActionId;
+			playerAction.id = this.game.lastActionId;
 			playerAction.playerIDs = [playerAction.playerID];
 			this.playerActions.push(playerAction);
-			Game.lastActionId++;
+			this.game.lastActionId++;
 		} else if (indexOfOldPlayerAction !== indexOfExistingAction) {
 			this.playerActions[indexOfExistingAction].timestamp =
 				playerAction.timestamp;
@@ -154,7 +154,7 @@ playerAction {
 		this.playerActions = this.playerActions.map(action => {
 			action.weight = action.playerIDs.reduce((total, playerID) => {
 				return (
-					total + Game.players.find(player => player.id === playerID).experience
+					total + this.game.players.find(player => player.id === playerID).experience
 				);
 			}, 0);
 			return action;
@@ -170,9 +170,9 @@ playerAction {
 		this.resetFlyTimer();
 		let actualDestination = destination;
 		if (this.type === BeeTypes.OUTSIDEBEE) {
-			for (let i = 0; i < Game.frogs.length; i++) {
-				if (Game.frogs[i].collidesWithPath(this, destination)) {
-					actualDestination = Game.frogs[i].calculateActualDestination(
+			for (let i = 0; i < this.game.frogs.length; i++) {
+				if (this.game.frogs[i].collidesWithPath(this, destination)) {
+					actualDestination = this.game.frogs[i].calculateActualDestination(
 						this,
 						destination
 					);
@@ -225,16 +225,16 @@ playerAction {
 	}
 
 	isInBeehive() {
-		return this.x === Game.beehive.x && this.y === Game.beehive.y;
+		return this.x === this.game.beehive.x && this.y === this.game.beehive.y;
 	}
 
 	onIdleForTooLong() {
-		Game.handleBeeIsIdleForTooLong(this.id);
+		this.game.handleBeeIsIdleForTooLong(this.id);
 	}
 
 	onActivateBee() {
 		this.status = Bee.STATES.IDLE;
-		Game.updateBee(this);
+		this.game.updateBee(this);
 	}
 
 	onArriveAtDestination() {
@@ -243,44 +243,44 @@ playerAction {
 			console.log('[WARNING] destination is null but it shouldnt');
 
 		if (this.type === BeeTypes.OUTSIDEBEE) {
-			if (this.destinationEqualsPosition(Game.beehive)) {
+			if (this.destinationEqualsPosition(this.game.beehive)) {
 				this.restoreHealth();
-				Game.returnNectar(this);
-			} else if (Game.isFrogPosition(this.destination.x, this.destination.y)) {
+				this.game.returnNectar(this);
+			} else if (this.game.isFrogPosition(this.destination.x, this.destination.y)) {
 				this.die();
 				return;
 			} else {
-				const flower = Game.getFlowerForPosition(this.destination);
+				const flower = this.game.getFlowerForPosition(this.destination);
 				if (!flower) console.log('[WARNING] no flower found for this position');
-				Game.addNectarToBee(this, flower);
+				this.game.addNectarToBee(this, flower);
 			}
-		} else if (this.destinationEqualsPosition(Game.centerPoints[0])) {
+		} else if (this.destinationEqualsPosition(this.game.centerPoints[0])) {
 			// Maybe use dictionary
 			console.log('Building');
-			Game.handleBuilding(this);
-		} else if (this.destinationEqualsPosition(Game.centerPoints[1])) {
+			this.game.handleBuilding(this);
+		} else if (this.destinationEqualsPosition(this.game.centerPoints[1])) {
 			console.log('Nursing');
-			Game.sendMessage('Nursing', this.playerActions[0].playerIDs);
-		} else if (this.destinationEqualsPosition(Game.centerPoints[2])) {
+			this.game.sendMessage('Nursing', this.playerActions[0].playerIDs);
+		} else if (this.destinationEqualsPosition(this.game.centerPoints[2])) {
 			console.log('Queen');
-			Game.produceGeleeRoyal(this);
-		} else if (this.destinationEqualsPosition(Game.centerPoints[3])) {
+			this.game.produceGeleeRoyal(this);
+		} else if (this.destinationEqualsPosition(this.game.centerPoints[3])) {
 			console.log('Cleaning');
-			Game.handleCleaning(this);
+			this.game.handleCleaning(this);
 		} else {
 			console.log('[WARNING] centerPos not found', this.destination);
 		}
 
 		this.calculateNewPosition();
 		this.resetFlyTimer();
-		Game.calculatePlayerExperienceAfterBeeArrived(this);
+		this.game.calculatePlayerExperienceAfterBeeArrived(this);
 		this.x = this.destination.x;
 		this.y = this.destination.y;
 		this.setDestination(null);
 		this.setInactive();
 		this.startIdleTimer();
-		Game.clearPlayerActionsForBee(this);
-		Game.updateBee(this);
+		this.game.clearPlayerActionsForBee(this);
+		this.game.updateBee(this);
 	}
 
 	destinationEqualsPosition(pos) {
