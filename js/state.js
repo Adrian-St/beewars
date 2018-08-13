@@ -155,7 +155,6 @@ class State {
 			bee.sprite.y - barWidth,
 			image
 		);
-		console.log(bee.innerProgressBar);
 		bee.innerProgressBar.inputEnabled = false;
 		if (type === 0) {
 			bee.innerProgressBar.width = barWidth;

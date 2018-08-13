@@ -80,7 +80,6 @@ class Game {
 			const tmpY =  insideMapJson.layers[3].objects[i].y + insideMapJson.layers[3].objects[i].height/2 - offset;
 			this.centerPoints.push({x: tmpX, y: tmpY});
 		}
-		console.log(this.centerPoints);
 	};
 
 	spawnEnemy() {
@@ -208,14 +207,14 @@ class Game {
 			this.beehive.geleeRoyal -= 1;
 			if (this.beehive.freeHoneycombs > 0){
 				this.beehive.freeHoneycombs -= 1;
-				this.beehive.geleeRoyal -= 1;
 				setTimeout(this.spawnBee.bind(this), 60000); // 60 sec
 			} else {
-				connection.broadcastMessage('No honeycombs free', this.roomName)
+				connection.broadcastMessage('No honeycombs free', this.roomName);
 			}
 			connection.updateBeehive(this.beehive, this.roomName);
 		} else {
-			console.log('The Queen is too hungry to produce larvae')
+			console.log('The Queen is too hungry to produce larvae');
+			connection.broadcastMessage('The Queen is too hungry to produce larvae', this.roomName);
 		}	
 	};
 
@@ -231,6 +230,10 @@ class Game {
 
 	moveBeeToOutside(bee) {
 		connection.moveBeeToOutside(bee.getSendableBee(), this.roomName);
+		if(this.insideBees().length === 1) 
+			connection.broadcastMessage('Only one bee inside the hive', this.roomName);
+		if (this.insideBees().length === 0) 
+			connection.broadcastMessage('No more bees inside', this.roomName);
 	};
 
 	addNectarToBee(bee, flower) {
@@ -291,6 +294,8 @@ class Game {
 		this.bees.splice(index, 1);
 		bee.cancelAllTimeEvents();
 		connection.killBee(bee.getSendableBee(), this.roomName);
+		if(this.bees.length === 0)
+			connection.broadcastMessage('Game Over', this.roomName);
 		//delete bee;
 	};
 
