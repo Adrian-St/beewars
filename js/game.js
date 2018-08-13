@@ -53,13 +53,26 @@ class Game {
 			136
 		);
 		game.load.spritesheet('inside-tree', 'assets/map/inside-tree.png', 32, 32);
-		game.load.spritesheet('Workarea-icons', 'assets/honeycombs/Workarea-icons.png', 100, 72);
-		game.load.spritesheet('inside-button', 'assets/Menu/inside-button.png', 254, 52);
+		game.load.spritesheet(
+			'Workarea-icons',
+			'assets/honeycombs/Workarea-icons.png',
+			100,
+			72
+		);
+		game.load.spritesheet(
+			'inside-button',
+			'assets/Menu/inside-button.png',
+			254,
+			52
+		);
 		game.load.spritesheet('outside-button', 'assets/Menu/button.png', 254, 52);
 		game.load.image('sprite', 'assets/sprites/bee32px.png');
 		game.load.image('wasp', 'assets/sprites/wasp.png');
 		game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
-		game.load.image('message-background', 'assets/sprites/message-background.png');
+		game.load.image(
+			'message-background',
+			'assets/sprites/message-background.png'
+		);
 		game.load.spritesheet('rain', 'assets/sprites/rain.png', 17, 17);
 		game.load.spritesheet('frog', 'assets/sprites/frog.png', 64, 64);
 		game.load.spritesheet(
@@ -262,37 +275,37 @@ class Game {
 
 	showMessage(message) {
 		this.createMessage(message);
-		setTimeout(this.destroyMessage.bind(this), 4000); // destroy message after 4 sec
+		setTimeout(this.destroyMessage.bind(this), 4000); // Destroy message after 4 sec
 	}
 
 	createMessage(message, w = 600, h = 50) {
-	    this.destroyMessage();
+		this.destroyMessage();
 
-        this.msgBox = game.add.group();
-        var back = game.add.sprite(0, 0, 'message-background');
-        var text = game.add.text(0, 0, message);
-        text.wordWrap = true;
-        text.wordWrapWidth = w * .9;
-        text.setStyle({font: "22px Arial"});
+		this.msgBox = game.add.group();
+		const back = game.add.sprite(0, 0, 'message-background');
+		const text = game.add.text(0, 0, message);
+		text.wordWrap = true;
+		text.wordWrapWidth = w * 0.9;
+		text.setStyle({ font: '22px Arial' });
 
-        back.width = w;
-        back.height = h;
+		back.width = w;
+		back.height = h;
 
-        this.msgBox.add(back);
-        this.msgBox.add(text);
+		this.msgBox.add(back);
+		this.msgBox.add(text);
 
-        this.msgBox.x = game.width / 2 - this.msgBox.width / 2;
-        this.msgBox.y = 75;
+		this.msgBox.x = game.width / 2 - this.msgBox.width / 2;
+		this.msgBox.y = 75;
 
-        text.x = back.width / 2 - text.width / 2;
-        text.y = back.height / 2 - text.height / 2;
-    }
+		text.x = back.width / 2 - text.width / 2;
+		text.y = back.height / 2 - text.height / 2;
+	}
 
-    destroyMessage() {
-    	if (this.msgBox) {
-            this.msgBox.destroy();
-        }
-    }
+	destroyMessage() {
+		if (this.msgBox) {
+			this.msgBox.destroy();
+		}
+	}
 }
 
 export default new Game();

@@ -28,7 +28,7 @@ class Inside extends State {
 		this.graphics = Game.add.graphics(0, 0);
 		this.addTopMenu();
 	}
-	
+
 	enableState() {
 		super.enableState();
 
@@ -77,45 +77,56 @@ class Inside extends State {
 		this.insideGraphics = Game.add.graphics(0, 0);
 		this.insideMap.addTilesetImage('Full-Beehive');
 		this.insideMap.objects['Inner Beehive'].forEach((object, index) => {
-			const offset = 128 //Caused by difference in map generator, needs to be changed on server site too!
-			this.insideWorkareas[object.name] = Game.add.sprite(object.x, object.y - offset, 'Full-Beehive', index);
+			const offset = 128; // Caused by difference in map generator, needs to be changed on server site too!
+			this.insideWorkareas[object.name] = Game.add.sprite(
+				object.x,
+				object.y - offset,
+				'Full-Beehive',
+				index
+			);
 			this.insideWorkareas[object.name].inputEnabled = true;
-			this.insideWorkareas[object.name].events.onInputUp.add(this.getWorkarea, this);
+			this.insideWorkareas[object.name].events.onInputUp.add(
+				this.getWorkarea,
+				this
+			);
 		});
 	}
 
 	addBeehiveDisplay() {
 		const xPosition = 800;
 		this.beehiveDisplay = {
-			pollen:	this.createText(xPosition, 100),
+			pollen: this.createText(xPosition, 100),
 			honey: this.createText(xPosition, 150),
 			honeycombs: this.createText(xPosition, 200),
 			freeHoneycombs: this.createText(xPosition, 250),
 			dirtyHoneycombs: this.createText(xPosition, 300),
 			occupiedHoneycombs: this.createText(xPosition, 350),
-			geleeRoyal: this.createText(xPosition, 400)}
+			geleeRoyal: this.createText(xPosition, 400)
+		};
 	}
 
-	createText(x,y) {
+	createText(x, y) {
 		return Game.add.text(x, y, '', {
 			font: 'bold 28pt Raleway'
-		})
+		});
 	}
 
 	updateBeehiveDisplay(beehive) {
 		this.beehiveDisplay.pollen.text = 'Pollen: ' + beehive.pollen;
 		this.beehiveDisplay.honey.text = 'Honey: ' + beehive.honey;
 		this.beehiveDisplay.honeycombs.text = 'Honeycombs: ' + beehive.honeycombs;
-		this.beehiveDisplay.freeHoneycombs.text = ' - Free: ' + beehive.freeHoneycombs;
-		this.beehiveDisplay.dirtyHoneycombs.text = ' - Dirty: ' + beehive.dirtyHoneycombs;
-		this.beehiveDisplay.occupiedHoneycombs.text = ' - Occupied: ' + beehive.occupiedHoneycombs;
+		this.beehiveDisplay.freeHoneycombs.text =
+			' - Free: ' + beehive.freeHoneycombs;
+		this.beehiveDisplay.dirtyHoneycombs.text =
+			' - Dirty: ' + beehive.dirtyHoneycombs;
+		this.beehiveDisplay.occupiedHoneycombs.text =
+			' - Occupied: ' + beehive.occupiedHoneycombs;
 		this.beehiveDisplay.geleeRoyal.text = 'Gelee Royal: ' + beehive.geleeRoyal;
 	}
 
 	addTopMenu() {
-		//super.addTopMenu();
-		this.insideButton
-		 = Game.add.button(
+		// Super.addTopMenu();
+		this.insideButton = Game.add.button(
 			6,
 			6,
 			'inside-button',

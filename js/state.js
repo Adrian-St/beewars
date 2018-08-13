@@ -20,9 +20,8 @@ class State {
 	}
 
 	isActive() {
-		return (Game.currentState === this)
+		return Game.currentState === this;
 	}
-
 
 	enableState() {
 		this.bees.forEach(bee => {
@@ -208,14 +207,7 @@ class State {
 	deactivateBee(bee, seconds) {
 		bee.status = Bee.STATES.INACTIVE;
 
-		this.createProgressBar(
-			bee,
-			'progressbar',
-			50,
-			10,
-			seconds,
-			0
-		);
+		this.createProgressBar(bee, 'progressbar', 50, 10, seconds, 0);
 		Game.time.events.add(
 			Phaser.Timer.SECOND * seconds,
 			() => {
@@ -326,10 +318,10 @@ class State {
 	}
 
 	activateBee(bee) {
-		if(bee.progressProgressBar) {
+		if (bee.progressProgressBar) {
 			bee.innerProgressBar.destroy();
 			bee.innerProgressBar = null;
-		}	
+		}
 		return bee;
 	}
 

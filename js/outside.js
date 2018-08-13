@@ -101,7 +101,7 @@ class Outside extends State {
 	}
 
 	addTopMenu() {
-		//super.addTopMenu();
+		// Super.addTopMenu();
 		this.outsideButton = Game.add.button(
 			6,
 			6,
@@ -232,7 +232,7 @@ class Outside extends State {
 
 	addNewBee(serverBee) {
 		const addedBee = super.addNewBee(serverBee);
-		if (!(this.isActive())) addedBee.sprite.visible = false;
+		if (!this.isActive()) addedBee.sprite.visible = false;
 	}
 
 	addFlowerObjects(flowers) {
@@ -313,7 +313,7 @@ class Outside extends State {
 		const sprite = game.add.sprite(serverWasp.x, serverWasp.y, 'wasp');
 		sprite.anchor.setTo(0.5);
 		const wasp = new Wasp(serverWasp, sprite);
-		if(!this.isActive()) wasp.sprite.visible = false;
+		if (!this.isActive()) wasp.sprite.visible = false;
 		this.wasps.push(wasp);
 	}
 

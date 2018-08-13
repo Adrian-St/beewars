@@ -31,8 +31,14 @@ class Weather {
 	startSimulation() {
 		this.updateTendencies();
 		this.updateWeather();
-		this.tendencyTimer = setInterval(this.updateTendencies.bind(this), 5 * this.game.DAY_DURATION);
-		this.weatherTimer = setInterval(this.updateWeather.bind(this), this.game.DAY_DURATION);
+		this.tendencyTimer = setInterval(
+			this.updateTendencies.bind(this),
+			5 * this.game.DAY_DURATION
+		);
+		this.weatherTimer = setInterval(
+			this.updateWeather.bind(this),
+			this.game.DAY_DURATION
+		);
 	}
 
 	updateTendencies() {

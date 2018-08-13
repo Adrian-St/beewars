@@ -1,4 +1,3 @@
-const Game = require('./serverGame.js');
 const Insect = require('./serverInsect.js');
 const { Bee, BeeTypes } = require('./serverBee.js');
 
@@ -30,7 +29,9 @@ class Wasp extends Insect {
 
 	findNearestFlower(excludedFlower) {
 		let nearestFlower =
-			this.game.flowers[0] === excludedFlower ? this.game.flowers[1] : this.game.flowers[0];
+			this.game.flowers[0] === excludedFlower
+				? this.game.flowers[1]
+				: this.game.flowers[0];
 		let closestDistance = this.calculateDistance(nearestFlower);
 		this.game.flowers.forEach(flower => {
 			if (flower === excludedFlower) return;
@@ -88,7 +89,7 @@ class Wasp extends Insect {
 
 	attack(bee) {
 		bee.reduceHealth(this.attackPower);
-		console.log('attack')
+		console.log('attack');
 	}
 
 	takeDamage(bee) {

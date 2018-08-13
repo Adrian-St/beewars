@@ -1,4 +1,3 @@
-
 const Insect = require('./serverInsect.js');
 
 const STATES = {
@@ -154,7 +153,8 @@ playerAction {
 		this.playerActions = this.playerActions.map(action => {
 			action.weight = action.playerIDs.reduce((total, playerID) => {
 				return (
-					total + this.game.players.find(player => player.id === playerID).experience
+					total +
+					this.game.players.find(player => player.id === playerID).experience
 				);
 			}, 0);
 			return action;
@@ -246,7 +246,9 @@ playerAction {
 			if (this.destinationEqualsPosition(this.game.beehive)) {
 				this.restoreHealth();
 				this.game.returnNectar(this);
-			} else if (this.game.isFrogPosition(this.destination.x, this.destination.y)) {
+			} else if (
+				this.game.isFrogPosition(this.destination.x, this.destination.y)
+			) {
 				this.die();
 				return;
 			} else {

@@ -10,7 +10,7 @@ class Wasp {
 		this.tween = null;
 		this.shadow = null;
 		this.shadowTween = null;
-		if(serverWasp.target) this.startTween(serverWasp.target);
+		if (serverWasp.target) this.startTween(serverWasp.target);
 	}
 
 	initializeTween() {

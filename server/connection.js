@@ -1,4 +1,5 @@
 const Game = require('./serverGame.js');
+
 const Connection = {};
 
 let io;
@@ -9,7 +10,7 @@ Connection.start = param => {
 	gameInstances = {};
 	io.on('connection', socket => {
 		socket.on('newplayer', roomName => {
-			if(!Connection.roomExists(roomName)) Connection.newGame(roomName)
+			if (!Connection.roomExists(roomName)) Connection.newGame(roomName);
 			socket.join(roomName);
 
 			socket.player = gameInstances[roomName].newPlayer();
@@ -23,8 +24,8 @@ Connection.start = param => {
 
 			socket.on('disconnect', () => {
 				const currGameInstance = gameInstances[roomName];
-				if(currGameInstance.removePlayer(socket.player.id) === 0)
-					Connection.removeGameInstance(roomName)
+				if (currGameInstance.removePlayer(socket.player.id) === 0)
+					Connection.removeGameInstance(roomName);
 			});
 		});
 	});
@@ -78,19 +79,20 @@ Connection.updateWeather = (weather, roomName) => {
 	io.to(roomName).emit('updateWeather', weather);
 };
 
-Connection.advanceDay = (roomName) => {
+Connection.advanceDay = roomName => {
 	io.to(roomName).emit('dayPassed');
 };
 
 Connection.sendMessageToClients = (message, clients, roomName) => {
-	Object.keys(io.sockets.adapter.rooms[roomName].sockets).forEach(function(socketID){
-        const socket = io.sockets.connected[socketID];
-        const player = socket.player;
-        if(player){
-        	if(clients.includes(player.id)) Connection.sendMessageToClient(message, socket);
-        }
-    });
-}
+	Object.keys(io.sockets.adapter.rooms[roomName].sockets).forEach(socketID => {
+		const socket = io.sockets.connected[socketID];
+		const player = socket.player;
+		if (player) {
+			if (clients.includes(player.id))
+				Connection.sendMessageToClient(message, socket);
+		}
+	});
+};
 
 Connection.sendMessageToClient = (message, socket) => {
 	socket.emit('showMessage', message);
@@ -100,27 +102,28 @@ Connection.broadcastMessage = (message, roomName) => {
 	io.to(roomName).emit('showMessage', message);
 };
 
-
 Connection.newGame = roomName => {
-	if(!Connection.roomExists(roomName)) {
-		let game = new Game(roomName);
+	if (!Connection.roomExists(roomName)) {
+		const game = new Game(roomName);
 		game.setConnection(Connection);
 		game.start();
 		gameInstances[roomName] = game;
-		console.log("create room: ", roomName);
+		console.log('create room: ', roomName);
 	}
 };
 
 Connection.roomExists = roomName => {
-	return  (!(gameInstances === undefined)) && (!(gameInstances[roomName] === undefined))
+	return (
+		!(gameInstances === undefined) && !(gameInstances[roomName] === undefined)
+	);
 };
 
 Connection.game = roomName => {
-	gameInstances[roomName]
-}
+	return gameInstances[roomName];
+};
 
 Connection.removeGameInstance = roomName => {
 	delete gameInstances[roomName];
-}
+};
 
 module.exports = Connection;

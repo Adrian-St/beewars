@@ -5,7 +5,7 @@ class Client {
 		this.room = 'room' + Math.floor(Math.random() * 10);
 		this.socket = io.connect();
 
-		console.log(this.room)
+		console.log(this.room);
 
 		this.socket.on('gameObjects', data => {
 			Game.addProperties(data);
@@ -65,7 +65,7 @@ class Client {
 				Game.dayPassed();
 			});
 
-			this.socket.on('showMessage', (message) => {
+			this.socket.on('showMessage', message => {
 				Game.showMessage(message);
 			});
 		});
