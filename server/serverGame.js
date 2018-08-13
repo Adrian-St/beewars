@@ -213,6 +213,7 @@ class Game {
 			this.beehive.geleeRoyal -= 1;
 			if (this.beehive.freeHoneycombs > 0) {
 				this.beehive.freeHoneycombs -= 1;
+				this.beehive.occupiedHoneycombs += 1;
 				setTimeout(this.spawnBee.bind(this), 60000); // 60 sec
 			} else {
 				connection.broadcastMessage('No honeycombs free', this.roomName);
@@ -229,7 +230,7 @@ class Game {
 	spawnBee() {
 		const newBee = new Bee(this.lastBeeID, this);
 		this.lastBeeID++;
-		// This.beehive.freeHoneycombs += 1;
+		this.beehive.occupiedHoneycombs -= 1;
 		this.beehive.dirtyHoneycombs += 1;
 		this.bees.push(newBee);
 		connection.spawnNewBee(newBee.getSendableBee(), this.roomName);
