@@ -2,7 +2,11 @@ import Game from './game.js';
 
 class Client {
 	constructor() {
+		this.room = 'room' + Math.floor(Math.random() * 10);
 		this.socket = io.connect();
+
+		console.log(this.room)
+
 		this.socket.on('gameObjects', data => {
 			Game.addProperties(data);
 
@@ -60,11 +64,15 @@ class Client {
 			this.socket.on('dayPassed', () => {
 				Game.dayPassed();
 			});
+
+			this.socket.on('showMessage', (message) => {
+				Game.showMessage(message);
+			});
 		});
 	}
 
 	registerNewPlayer() {
-		this.socket.emit('newplayer');
+		this.socket.emit('newplayer', this.room);
 	}
 
 	requestMovement(moveData) {

@@ -1,4 +1,3 @@
-const Game = require('./serverGame.js');
 const { Bee, BeeTypes } = require('./serverBee.js');
 
 const chanceMax = 100;
@@ -13,7 +12,8 @@ const TENDENCIES = {
 };
 
 class Weather {
-	constructor() {
+	constructor(game) {
+		this.game = game;
 		this.chanceOfRain = 50;
 		this.temperature = 10;
 		this.rainTendency = Weather.TENDENCIES.NORMAL;
@@ -31,8 +31,8 @@ class Weather {
 	startSimulation() {
 		this.updateTendencies();
 		this.updateWeather();
-		this.tendencyTimer = setInterval(this.updateTendencies.bind(this), 5 * Game.DAY_DURATION);
-		this.weatherTimer = setInterval(this.updateWeather.bind(this), Game.DAY_DURATION);
+		this.tendencyTimer = setInterval(this.updateTendencies.bind(this), 5 * this.game.DAY_DURATION);
+		this.weatherTimer = setInterval(this.updateWeather.bind(this), this.game.DAY_DURATION);
 	}
 
 	updateTendencies() {
@@ -55,7 +55,7 @@ class Weather {
 	updateWeather() {
 		this.updateRain();
 		this.updateTemperature();
-		Game.updateWeather(this);
+		this.game.updateWeather(this);
 	}
 
 	updateRain() {
@@ -120,7 +120,7 @@ class Weather {
 
 	rain() {
 		// Damages all bees that are outside
-		Game.bees.forEach(bee => {
+		this.game.bees.forEach(bee => {
 			if (bee.isInBeehive() || bee.type === BeeTypes.INSIDEBEE) return;
 			bee.reduceHealth(RAIN_DAMAGE);
 		}, this);
@@ -137,7 +137,7 @@ class Weather {
 
   burn() {
     //Damages all flying bees
-    Game.bees.forEach((bee) => {
+    this.game.bees.forEach((bee) => {
       if(bee.flyTimer != null) {
         bee.reduceHealth(5);
       }

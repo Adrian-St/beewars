@@ -133,7 +133,6 @@ class Inside extends State {
 	}
 
 	getWorkarea(area) {
-		console.log(area.centerX + ' ' + area.centerY);
 		this.requestGoToPosition(area.centerX, area.centerY);
 	}
 
