@@ -10,7 +10,7 @@ class Beehive {
 		this.freeHoneycombs = 5;
 		this.dirtyHoneycombs = 0;
 		this.occupiedHoneycombs = 0;
-		this.geleeRoyal = 10;
+		this.geleeRoyal = 5;
 		this.x = beehiveJson.x + beehiveJson.width / 2 + 30;
 		this.y = beehiveJson.y - beehiveJson.height / 2 + 50;
 	}

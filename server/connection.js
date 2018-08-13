@@ -4,6 +4,7 @@ const Connection = {};
 
 let io;
 let gameInstances;
+let highscore = 0;
 
 Connection.start = param => {
 	io = param;
@@ -23,9 +24,11 @@ Connection.start = param => {
 			});
 
 			socket.on('disconnect', () => {
-				const currGameInstance = gameInstances[roomName];
-				if (currGameInstance.removePlayer(socket.player.id) === 0)
-					Connection.removeGameInstance(roomName);
+				if (Connection.roomExists(roomName)) {
+					const currGameInstance = gameInstances[roomName];
+					if (currGameInstance.removePlayer(socket.player.id) === 0)
+						Connection.removeGameInstance(roomName);
+				}
 			});
 		});
 	});
@@ -102,6 +105,12 @@ Connection.broadcastMessage = (message, roomName) => {
 	io.to(roomName).emit('showMessage', message);
 };
 
+Connection.gameOver = (roomName, score) => {
+	if (score > highscore) highscore = score;
+	io.to(roomName).emit('gameOver', { score, highscore });
+	Connection.removeGameInstance(roomName);
+};
+
 Connection.newGame = roomName => {
 	if (!Connection.roomExists(roomName)) {
 		const game = new Game(roomName);
@@ -123,7 +132,10 @@ Connection.game = roomName => {
 };
 
 Connection.removeGameInstance = roomName => {
-	delete gameInstances[roomName];
+	if (Connection.roomExists(roomName)) {
+		gameInstances[roomName].roomName = 'deletedRoom';
+		delete gameInstances[roomName];
+	}
 };
 
 module.exports = Connection;

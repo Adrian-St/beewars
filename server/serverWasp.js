@@ -89,7 +89,6 @@ class Wasp extends Insect {
 
 	attack(bee) {
 		bee.reduceHealth(this.attackPower);
-		console.log('attack');
 	}
 
 	takeDamage(bee) {

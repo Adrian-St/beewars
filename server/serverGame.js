@@ -16,6 +16,7 @@ class Game {
 		this.DAY_DURATION = 5000;
 		this.STARTING_BEES_INSIDE = 3;
 		this.STARTING_BEES_OUTSIDE = 3;
+		this.day = 0;
 		this.lastPlayerID = 0;
 		this.lastBeeID = 0;
 		this.lastFlowerID = 0;
@@ -203,6 +204,7 @@ class Game {
 		this.enemies.forEach(wasp => {
 			wasp.increaseAge();
 		});
+		this.day++;
 		connection.advanceDay(this.roomName);
 	}
 
@@ -217,7 +219,6 @@ class Game {
 			}
 			connection.updateBeehive(this.beehive, this.roomName);
 		} else {
-			console.log('The Queen is too hungry to produce larvae');
 			connection.broadcastMessage(
 				'The Queen is too hungry to produce larvae',
 				this.roomName
@@ -301,8 +302,7 @@ class Game {
 		this.bees.splice(index, 1);
 		bee.cancelAllTimeEvents();
 		connection.killBee(bee.getSendableBee(), this.roomName);
-		if (this.bees.length === 0)
-			connection.broadcastMessage('Game Over', this.roomName);
+		this.checkGameOver();
 		// Delete bee;
 	}
 
@@ -320,7 +320,6 @@ class Game {
 			this.beehive.honeycombs += 1;
 			this.beehive.honey -= 10;
 		} else {
-			console.log('Not enough honey for building');
 			this.sendMessage(
 				'Not enough honey for building',
 				workingBee.playerActions[0].playerIDs
@@ -334,7 +333,6 @@ class Game {
 			this.beehive.pollen -= 5;
 			this.beehive.geleeRoyal += 1;
 		} else {
-			console.log('Not enough pollen for producing gelee-royal');
 			this.sendMessage(
 				'Not enough pollen for producing gelee-royal',
 				workingBee.playerActions[0].playerIDs
@@ -348,7 +346,6 @@ class Game {
 			this.beehive.freeHoneycombs += 1;
 			this.beehive.dirtyHoneycombs -= 1;
 		} else {
-			console.log('There are no honeycombs to be cleaned');
 			this.sendMessage(
 				'There are no honeycombs to be cleaned',
 				workingBee.playerActions[0].playerIDs
@@ -364,6 +361,15 @@ class Game {
 	removePlayer(playerID) {
 		this.players.splice(playerID, 1);
 		return this.players.length;
+	}
+
+	checkGameOver() {
+		if (
+			this.bees.length === 0 &&
+			this.beehive.occupiedHoneycombs === 0 &&
+			this.beehive.geleeRoyal === 0
+		)
+			connection.gameOver(this.roomName, this.day);
 	}
 }
 

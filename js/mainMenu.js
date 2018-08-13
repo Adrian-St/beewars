@@ -12,7 +12,7 @@ class MainMenu {
 
 		txt.events.onInputUp.add(() => {
 			document.getElementById('menu').style.visibility = 'visible';
-			game.state.start('Game');
+			game.state.start('Game', true, true);
 		});
 	}
 }

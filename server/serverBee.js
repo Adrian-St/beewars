@@ -257,15 +257,12 @@ playerAction {
 				this.game.addNectarToBee(this, flower);
 			}
 		} else if (this.destinationEqualsPosition(this.game.centerPoints[0])) {
-			console.log('Queen');
+			console.log('Queen'); // TODO
 		} else if (this.destinationEqualsPosition(this.game.centerPoints[1])) {
-			console.log('Gelee Royal');
 			this.game.produceGeleeRoyal(this);
 		} else if (this.destinationEqualsPosition(this.game.centerPoints[2])) {
-			console.log('Building');
 			this.game.handleBuilding(this);
 		} else if (this.destinationEqualsPosition(this.game.centerPoints[3])) {
-			console.log('Cleaning');
 			this.game.handleCleaning(this);
 		} else {
 			console.log('[WARNING] centerPos not found', this.destination);

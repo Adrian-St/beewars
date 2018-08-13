@@ -1,7 +1,8 @@
 import Game from './game.js';
 
 class Client {
-	constructor() {
+
+	startConnection() {
 		this.room = 'room' + Math.floor(Math.random() * 2);
 		this.socket = io.connect();
 
@@ -67,6 +68,18 @@ class Client {
 
 			this.socket.on('showMessage', message => {
 				Game.showMessage(message);
+			});
+
+			this.socket.on('gameOver', scores => {
+				// This.socket.emit('leaveGame');
+				this.socket.disconnect();
+				Game.state.start(
+					'GameOver',
+					true,
+					true,
+					scores.score,
+					scores.highscore
+				);
 			});
 		});
 	}

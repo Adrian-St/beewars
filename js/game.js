@@ -6,27 +6,9 @@ import Inside from './inside.js';
 import Outside from './outside.js';
 
 class Game {
-	constructor() {
-		this.beehive = {}; // The attributes from beehive are used in inside and outside but the sprite is only shown outside
-		this.outsideState = null;
-		this.insideState = null;
-		this.currentState = null;
-		this.day = 0;
-		this.msgBox = null;
-		this.dayDisplay = null;
-		this.rainDisplay = null;
-		this.rainPointer = null;
-		this.temperatureDisplay = null;
-		this.temperaturePointer = null;
-		this.rainDisplay = null;
-		this.rainDisplayMinOffset = 27;
-		this.rainDisplayMaxOffset = 276;
-		this.temperatureDisplay = null;
-		this.temperatureDisplayMinOffset = 40;
-		this.temperatureDisplayMaxOffset = 288;
-	}
 
 	init() {
+		this.resetVariables();
 		game.stage.disableVisibilityChange = true;
 	}
 
@@ -94,7 +76,28 @@ class Game {
 		this.outsideState.initialize();
 		this.addTopMenu();
 		document.getElementById('menu').style.display = 'block';
+		Client.startConnection();
 		Client.registerNewPlayer();
+	}
+
+	resetVariables() {
+		this.beehive = {}; // The attributes from beehive are used in inside and outside but the sprite is only shown outside
+		this.outsideState = null;
+		this.insideState = null;
+		this.currentState = null;
+		this.day = 0;
+		this.msgBox = null;
+		this.dayDisplay = null;
+		this.rainDisplay = null;
+		this.rainPointer = null;
+		this.temperatureDisplay = null;
+		this.temperaturePointer = null;
+		this.rainDisplay = null;
+		this.rainDisplayMinOffset = 27;
+		this.rainDisplayMaxOffset = 276;
+		this.temperatureDisplay = null;
+		this.temperatureDisplayMinOffset = 40;
+		this.temperatureDisplayMaxOffset = 288;
 	}
 
 	addTopMenu() {
