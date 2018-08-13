@@ -12,6 +12,7 @@ class Bee {
 		this.nectar = serverBee.nectar;
 		this.capacity = serverBee.capacity;
 		this.sprite = sprite;
+		this.innerProgressBar = null;
 		this.tween = null;
 		this.shadow = null;
 		this.shadowTween = null;
@@ -25,7 +26,7 @@ class Bee {
 		this.shadow.anchor.set(0.5);
 		this.shadow.tint = 0x000000;
 		this.shadow.alpha = 0.6;
-		this.shadow.scale.setTo(1.1, 1.1);
+		this.shadow.scale.setTo(1.3, 1.3);
 		this.sprite.bringToTop();
 	}
 

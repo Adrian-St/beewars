@@ -14,7 +14,6 @@ class Inside extends State {
 		this.insideGraphics = null; // For drawing the borders of the hive
 
 		this.initialize();
-		this.stateName = 'INSIDE';
 	}
 
 	initialize() {
@@ -24,11 +23,12 @@ class Inside extends State {
 		this.addBackground();
 		this.addBeehive();
 		this.addWorkAreas();
+		this.addBeehiveDisplay();
 
 		this.graphics = Game.add.graphics(0, 0);
 		this.addTopMenu();
 	}
-
+	
 	enableState() {
 		super.enableState();
 
@@ -36,6 +36,9 @@ class Inside extends State {
 		this.insideButton.visible = true;
 		this.insideLayers.forEach(layer => {
 			layer.visible = true;
+		});
+		Object.keys(this.insideWorkareas).forEach(key => {
+			this.insideWorkareas[key].visible = true;
 		});
 		this.insideGraphics.visible = true;
 	}
@@ -48,84 +51,98 @@ class Inside extends State {
 		this.insideLayers.forEach(layer => {
 			layer.visible = false;
 		});
+		Object.keys(this.insideWorkareas).forEach(key => {
+			this.insideWorkareas[key].visible = false;
+		});
 		this.insideGraphics.visible = false;
 	}
 
 	addBackground() {
 		// Part of this could be in State
-		// this.insideMap.addTilesetImage('Honeycomb-Background'); // this is not part of the map yet
+		this.insideMap.addTilesetImage('Honeycomb-Background');
 		this.insideMap.addTilesetImage('grass');
 		this.insideLayers.push(this.insideMap.createLayer('Grass'));
+		this.insideMap.addTilesetImage('inside-tree');
+		this.insideLayers.push(this.insideMap.createLayer('Tree'));
 	}
 
 	addBeehive() {
-		this.insideMap.addTilesetImage('Honeycomb-Tileset-double');
+		this.insideMap.addTilesetImage('Workarea-icons');
 		this.insideLayers.push(this.insideMap.createLayer('Honeycombs'));
-		this.insideLayers[1].resizeWorld();
-		this.insideLayers[1].inputEnabled = true;
-		this.insideLayers[1].events.onInputUp.add(this.getWorkarea, this);
+		this.insideLayers[2].inputEnabled = true;
+		this.insideLayers[2].events.onInputUp.add(this.clickedOnBackground, this);
 	}
 
 	addWorkAreas() {
 		this.insideGraphics = Game.add.graphics(0, 0);
-		this.insideMap.objects['Inner Beehive'].forEach(object => {
-			const points = [object.polygon.length];
-			for (let i = 0; i < object.polygon.length; i++) {
-				points[i] = {
-					x: object.x + object.polygon[i][0],
-					y: object.y + object.polygon[i][1]
-				};
-			}
-			this.insideWorkareas[object.name] = new Phaser.Polygon(points);
-			this.insideGraphics.lineStyle(10, 0xffd900, 1);
-			this.insideGraphics.drawPolygon(this.insideWorkareas[object.name].points);
+		this.insideMap.addTilesetImage('Full-Beehive');
+		this.insideMap.objects['Inner Beehive'].forEach((object, index) => {
+			const offset = 128 //Caused by difference in map generator, needs to be changed on server site too!
+			this.insideWorkareas[object.name] = Game.add.sprite(object.x, object.y - offset, 'Full-Beehive', index);
+			this.insideWorkareas[object.name].inputEnabled = true;
+			this.insideWorkareas[object.name].events.onInputUp.add(this.getWorkarea, this);
 		});
+	}
 
-		this.insideWorkareaCenters.Building = { x: 480, y: 435 }; // This need improvement
-		this.insideWorkareaCenters.Nursing = { x: 483, y: 252 };
-		this.insideWorkareaCenters.Queen = { x: 493, y: 130 };
-		this.insideWorkareaCenters.Cleaning = { x: 481, y: 565 };
+	addBeehiveDisplay() {
+		const xPosition = 800;
+		this.beehiveDisplay = {
+			pollen:	this.createText(xPosition, 100),
+			honey: this.createText(xPosition, 150),
+			honeycombs: this.createText(xPosition, 200),
+			freeHoneycombs: this.createText(xPosition, 250),
+			dirtyHoneycombs: this.createText(xPosition, 300),
+			occupiedHoneycombs: this.createText(xPosition, 350),
+			geleeRoyal: this.createText(xPosition, 400)}
+	}
+
+	createText(x,y) {
+		return Game.add.text(x, y, '', {
+			font: 'bold 28pt Raleway'
+		})
+	}
+
+	updateBeehiveDisplay(beehive) {
+		this.beehiveDisplay.pollen.text = 'Pollen: ' + beehive.pollen;
+		this.beehiveDisplay.honey.text = 'Honey: ' + beehive.honey;
+		this.beehiveDisplay.honeycombs.text = 'Honeycombs: ' + beehive.honeycombs;
+		this.beehiveDisplay.freeHoneycombs.text = ' - Free: ' + beehive.freeHoneycombs;
+		this.beehiveDisplay.dirtyHoneycombs.text = ' - Dirty: ' + beehive.dirtyHoneycombs;
+		this.beehiveDisplay.occupiedHoneycombs.text = ' - Occupied: ' + beehive.occupiedHoneycombs;
+		this.beehiveDisplay.geleeRoyal.text = 'Gelee Royal: ' + beehive.geleeRoyal;
 	}
 
 	addTopMenu() {
-		super.addTopMenu();
-		this.insideButton = Game.add.button(
+		//super.addTopMenu();
+		this.insideButton
+		 = Game.add.button(
 			6,
 			6,
-			'switch',
+			'inside-button',
 			Game.switchToOutside,
 			Game,
-			2,
 			1,
-			0
+			0,
+			2
 		);
 	}
 
 	addNewBee(serverBee) {
 		const addedBee = super.addNewBee(serverBee);
-		if (Game.currentState === 'OUTSIDE') addedBee.sprite.visible = false;
+		if (!this.isActive()) addedBee.sprite.visible = false;
 	}
 
-	getWorkarea(layer, pointer) {
-		console.log('click');
-		let clickedOnBeeHive = false;
-		Object.keys(this.insideWorkareas).forEach(key => {
-			const area = this.insideWorkareas[key];
-			if (area.contains(pointer.worldX, pointer.worldY)) {
-				console.log(this.insideWorkareaCenters[key]);
-				const destination = this.insideWorkareaCenters[key];
-				this.requestGoToPosition(destination.x, destination.y);
-				clickedOnBeeHive = true;
-			}
-		});
+	getWorkarea(area) {
+		console.log(area.centerX + ' ' + area.centerY);
+		this.requestGoToPosition(area.centerX, area.centerY);
+	}
 
-		if (!clickedOnBeeHive) {
-			// It was click on the background
-			Menu.createHiveMenu(Game.beehive, this.bees.length);
-			this.deactivateAllOtherShadows({});
-			this.stopAllOtherShadowTweens({});
-			this.graphics.clear();
-		}
+	clickedOnBackground() {
+		// It was click on the background
+		Menu.createHiveMenu(Game.beehive, this.bees.length);
+		this.deactivateAllOtherShadows({});
+		this.stopAllOtherShadowTweens({});
+		this.graphics.clear();
 	}
 
 	requestGoToPosition(x, y) {

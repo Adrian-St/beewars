@@ -13,28 +13,31 @@ class State {
 			y: 0
 		};
 		this.multipleBeeSelectionCollection = [];
-		this.stateName = ''; // Gets overridden in subclass
-		this.dayDisplay = null;
 	}
 
 	initialize() {
 		this.graphics = Game.add.graphics(0, 0);
 	}
 
+	isActive() {
+		return (Game.currentState === this)
+	}
+
+
 	enableState() {
 		this.bees.forEach(bee => {
 			bee.sprite.visible = true;
 			if (bee.shadow) bee.shadow.visible = true;
+			if (bee.innerProgressBar) bee.innerProgressBar.visible = true;
 		});
-		this.dayDisplay.visible = true;
 	}
 
 	disableState() {
 		this.bees.forEach(bee => {
 			bee.sprite.visible = false;
 			if (bee.shadow) bee.shadow.visible = false;
+			if (bee.innerProgressBar) bee.innerProgressBar.visible = false;
 		});
-		this.dayDisplay.visible = false;
 	}
 
 	addBees(beeCollection) {
@@ -51,12 +54,6 @@ class State {
 		this.setUpUserInputForBee(bee);
 		this.bees.push(bee);
 		return bee;
-	}
-
-	addTopMenu() {
-		this.dayDisplay = game.add.text(1000, 8, 'Day: 0', {
-			font: 'bold 28pt Raleway'
-		});
 	}
 
 	setUpUserInputForBee(bee) {
@@ -150,38 +147,38 @@ class State {
 		}
 	}
 
-	createProgressBar(x, y, image, barWidth, barHeight, seconds, type) {
+	createProgressBar(bee, image, barWidth, barHeight, seconds, type) {
 		// Type: 0 = decreasing | 1 = increasing
 
-		const innerProgressBar = Game.add.sprite(
-			x - barWidth / 2,
-			y - barWidth,
+		bee.innerProgressBar = Game.add.sprite(
+			bee.sprite.x - barWidth / 2,
+			bee.sprite.y - barWidth,
 			image
 		);
-		innerProgressBar.inputEnabled = false;
+		console.log(bee.innerProgressBar);
+		bee.innerProgressBar.inputEnabled = false;
 		if (type === 0) {
-			innerProgressBar.width = barWidth;
+			bee.innerProgressBar.width = barWidth;
 		} else if (type === 1) {
-			innerProgressBar.width = 0;
+			bee.innerProgressBar.width = 0;
 		}
 
-		innerProgressBar.height = barHeight;
-		innerProgressBar.progress = barWidth / seconds;
-		if (Game.currentState !== this.stateName) innerProgressBar.visible = false;
+		bee.innerProgressBar.height = barHeight;
+		bee.innerProgressBar.progress = barWidth / seconds;
+		if (!this.isActive()) bee.innerProgressBar.visible = false;
 
 		Game.time.events.repeat(
 			Phaser.Timer.SECOND,
 			seconds,
 			() => {
-				this.updateProgressBar(innerProgressBar, type);
+				this.updateProgressBar(bee.innerProgressBar, type);
 			},
 			this
 		);
 	}
 
 	updateProgressBar(progressBar, type) {
-		if (Game.currentState === this.stateName) progressBar.visible = true;
-		else progressBar.visible = false;
+		if (!progressBar) return;
 		if (type === 0) {
 			progressBar.width -= progressBar.progress;
 		} else if (type === 1) {
@@ -213,8 +210,7 @@ class State {
 		bee.status = Bee.STATES.INACTIVE;
 
 		this.createProgressBar(
-			bee.sprite.x,
-			bee.sprite.y,
+			bee,
 			'progressbar',
 			50,
 			10,
@@ -331,7 +327,10 @@ class State {
 	}
 
 	activateBee(bee) {
-		console.log('bee is free');
+		if(bee.progressProgressBar) {
+			bee.innerProgressBar.destroy();
+			bee.innerProgressBar = null;
+		}	
 		return bee;
 	}
 
@@ -343,16 +342,6 @@ class State {
 		const index = this.bees.indexOf(deletedBee);
 		this.bees.splice(index, 1);
 		Menu.createHiveMenu(Game.beehive.getSendableBeehive(), this.bees.length);
-	}
-
-	dayPassed() {
-		this.bees.forEach(bee => {
-			bee.age++;
-			if (bee.isSelected()) {
-				Menu.createBeeMenu(bee);
-			}
-		});
-		this.dayDisplay.text = 'Day: ' + Game.day;
 	}
 }
 

@@ -15,6 +15,8 @@ class Game {
 
 	constructor(roomName) {
 		this.DAY_DURATION = 5000;
+		this.STARTING_BEES_INSIDE = 3;
+		this.STARTING_BEES_OUTSIDE = 3;
 		this.lastPlayerID = 0;
 		this.lastBeeID = 0;
 		this.lastFlowerID = 0;
@@ -53,13 +55,13 @@ class Game {
 			this.frogs.push(tmpFrog);
 			this.lastFrogID++;
 		}
-		for (let i = 0; i < 5; i++) {
+		for (let i = 0; i < this.STARTING_BEES_INSIDE; i++) {
 			let tmpBee = new Bee(this.lastBeeID, this);
 			tmpBee.type = BeeTypes.OUTSIDEBEE;
 			this.bees.push(tmpBee);
 			this.lastBeeID++;
 		}
-		for (let j = 0; j < 5; j++) {
+		for (let j = 0; j < this.STARTING_BEES_OUTSIDE; j++) {
 			let tmpBee = new Bee(this.lastBeeID, this);
 			tmpBee.type = BeeTypes.INSIDEBEE;
 			this.bees.push(tmpBee); 
@@ -70,13 +72,15 @@ class Game {
 		this.weather.startSimulation();
 		setInterval(this.spawnLarvae.bind(this), 15000);
 		setInterval(this.advanceDay.bind(this), this.DAY_DURATION);
-		setInterval(this.spawnEnemy.bind(this), 60000);
+		setInterval(this.spawnEnemy.bind(this), 6 * this.DAY_DURATION);
 
-		for (let i = 0; i < insideMapJson.layers[2].objects.length; i++) {
-			const tmpX = insideMapJson.layers[2].objects[i].centerX + insideMapJson.layers[2].objects[i].x;
-			const tmpY = insideMapJson.layers[2].objects[i].centerY + insideMapJson.layers[2].objects[i].y;
+		const offset = 128; //Caused by difference in map generator, needs to be changed on client site too!
+		for (let i = 0; i < insideMapJson.layers[3].objects.length; i++) {
+			const tmpX =  insideMapJson.layers[3].objects[i].x + insideMapJson.layers[3].objects[i].width/2;
+			const tmpY =  insideMapJson.layers[3].objects[i].y + insideMapJson.layers[3].objects[i].height/2 - offset;
 			this.centerPoints.push({x: tmpX, y: tmpY});
 		}
+		console.log(this.centerPoints);
 	};
 
 	spawnEnemy() {

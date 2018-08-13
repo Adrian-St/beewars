@@ -34,7 +34,7 @@ class Client {
 			});
 
 			this.socket.on('stateOfBeehive', beehive => {
-				Game.outsideState.updateBeehive(beehive);
+				Game.updateBeehive(beehive);
 			});
 
 			this.socket.on('newBee', bee => {
@@ -58,7 +58,7 @@ class Client {
 			});
 
 			this.socket.on('updateWeather', weather => {
-				Game.outsideState.updateWeater(weather);
+				Game.updateWeater(weather);
 			});
 
 			this.socket.on('dayPassed', () => {

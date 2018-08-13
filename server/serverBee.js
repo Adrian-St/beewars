@@ -1,4 +1,4 @@
-const Game = require('./serverGame.js');
+
 const Insect = require('./serverInsect.js');
 
 const STATES = {
@@ -255,15 +255,13 @@ playerAction {
 				this.game.addNectarToBee(this, flower);
 			}
 		} else if (this.destinationEqualsPosition(this.game.centerPoints[0])) {
-			// Maybe use dictionary
+			console.log('Queen');
+		} else if (this.destinationEqualsPosition(this.game.centerPoints[1])) {
+			console.log('Gelee Royal');
+			this.game.produceGeleeRoyal(this);
+		} else if (this.destinationEqualsPosition(this.game.centerPoints[2])) {
 			console.log('Building');
 			this.game.handleBuilding(this);
-		} else if (this.destinationEqualsPosition(this.game.centerPoints[1])) {
-			console.log('Nursing');
-			this.game.sendMessage('Nursing', this.playerActions[0].playerIDs);
-		} else if (this.destinationEqualsPosition(this.game.centerPoints[2])) {
-			console.log('Queen');
-			this.game.produceGeleeRoyal(this);
 		} else if (this.destinationEqualsPosition(this.game.centerPoints[3])) {
 			console.log('Cleaning');
 			this.game.handleCleaning(this);

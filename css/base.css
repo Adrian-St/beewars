@@ -80,7 +80,7 @@ canvas {
   padding-right: 0;
   margin-left: auto;
   margin-right: auto;
-  display: block;
+  display: none;
   padding: 4px 8px;
   height: 52px;
   width: 1216px;
