@@ -2,7 +2,7 @@ import Game from './game.js';
 
 class Client {
 	constructor() {
-		this.room = 'room' + Math.floor(Math.random() * 10);
+		this.room = 'room' + Math.floor(Math.random() * 2);
 		this.socket = io.connect();
 
 		console.log(this.room);
