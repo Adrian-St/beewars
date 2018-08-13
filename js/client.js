@@ -1,7 +1,6 @@
 import Game from './game.js';
 
 class Client {
-
 	startConnection() {
 		this.room = 'room' + Math.floor(Math.random() * 2);
 		this.socket = io.connect();

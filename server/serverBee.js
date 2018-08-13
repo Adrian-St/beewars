@@ -116,7 +116,10 @@ playerAction {
 				playerAction.playerID
 			);
 			if (indexOfOldPlayerAction !== -1)
-				this.removeOldPlayerAction(playerAction.playerID, indexOfOldPlayerAction);
+				this.removeOldPlayerAction(
+					playerAction.playerID,
+					indexOfOldPlayerAction
+				);
 		}
 		this.calculateWeightsForActions();
 

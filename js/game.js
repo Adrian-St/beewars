@@ -6,7 +6,6 @@ import Inside from './inside.js';
 import Outside from './outside.js';
 
 class Game {
-
 	init() {
 		this.resetVariables();
 		game.stage.disableVisibilityChange = true;
