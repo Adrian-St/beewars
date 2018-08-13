@@ -10,7 +10,7 @@ class Game {
 		this.beehive = {}; // The attributes from beehive are used in inside and outside but the sprite is only shown outside
 		this.outsideState = null;
 		this.insideState = null;
-		this.currentState = '';
+		this.currentState = null;
 		this.day = 0;
 		this.dayDisplay = null;
 		this.rainDisplay = null;
@@ -55,7 +55,7 @@ class Game {
 		game.load.spritesheet('Workarea-icons', 'assets/honeycombs/Workarea-icons.png', 100, 72);
 		game.load.spritesheet('inside-button', 'assets/Menu/inside-button.png', 254, 52);
 		game.load.spritesheet('outside-button', 'assets/Menu/button.png', 254, 52);
-		game.load.image('sprite', 'assets/sprites/bees64px-version2.png');
+		game.load.image('sprite', 'assets/sprites/bee32px.png');
 		game.load.image('wasp', 'assets/sprites/wasp.png');
 		game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
 		game.load.spritesheet('rain', 'assets/sprites/rain.png', 17, 17);
@@ -78,7 +78,7 @@ class Game {
 		this.insideState = new Inside();
 		this.outsideState.initialize();
 		this.addTopMenu();
-
+		document.getElementById('menu').style.display = 'block';
 		Client.registerNewPlayer();
 	}
 
@@ -117,36 +117,15 @@ class Game {
 	}
 
 	switchToInside() {
-		this.currentState = 'INSIDE';
+		this.currentState = this.insideState;
 		this.outsideState.disableState();
 		this.insideState.enableState();
 	}
 
 	switchToOutside() {
-		this.currentState = 'OUTSIDE';
+		this.currentState = this.outsideState;
 		this.insideState.disableState();
 		this.outsideState.enableState();
-	}
-
-	deactivateBee(bee, seconds) {
-		bee.status = Bee.STATES.INACTIVE;
-
-		this.createProgressBar(
-			bee.sprite.x,
-			bee.sprite.y,
-			'progressbar',
-			50,
-			10,
-			seconds,
-			0
-		);
-		this.time.events.add(
-			Phaser.Timer.SECOND * seconds,
-			() => {
-				this.activateBee(bee);
-			},
-			this
-		);
 	}
 
 	onTweenRunning() {
@@ -212,13 +191,13 @@ class Game {
 	}
 
 	dayPassed() {
-		this.insideState.bees.forEach(bee => {
+		this.outsideState.bees.forEach(bee => {
 			bee.age++;
 			if (bee.isSelected()) {
 				Menu.createBeeMenu(bee);
 			}
 		});
-		this.outsideState.bees.forEach(bee => {
+		this.insideState.bees.forEach(bee => {
 			bee.age++;
 			if (bee.isSelected()) {
 				Menu.createBeeMenu(bee);
@@ -226,6 +205,21 @@ class Game {
 		});
 		this.day++;
 		this.dayDisplay.text = 'Day: ' + this.day;
+	}
+
+	updateBeehive(beehive) {
+		this.beehive.pollen = beehive.pollen;
+		this.beehive.honey = beehive.honey;
+		this.beehive.honeycombs = beehive.honeycombs;
+		this.beehive.freeHoneycombs = beehive.freeHoneycombs;
+		this.beehive.dirtyHoneycombs = beehive.dirtyHoneycombs;
+		this.beehive.occupiedHoneycombs = beehive.occupiedHoneycombs;
+		this.beehive.geleeRoyal = beehive.geleeRoyal;
+
+		this.insideState.updateBeehiveDisplay(beehive);
+		if (document.getElementById('menu').firstChild.id === 'hiveMenu') {
+			Menu.createHiveMenu(this.beehive, this.currentState.bees.length);
+		}
 	}
 
 	calculateNormedValue(value, min, max) {

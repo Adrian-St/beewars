@@ -30,7 +30,7 @@ class Client {
 			});
 
 			this.socket.on('stateOfBeehive', beehive => {
-				Game.outsideState.updateBeehive(beehive);
+				Game.updateBeehive(beehive);
 			});
 
 			this.socket.on('newBee', bee => {

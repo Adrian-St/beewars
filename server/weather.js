@@ -5,6 +5,7 @@ const chanceMax = 100;
 const chanceMin = 0;
 const temperatureMin = -20;
 const temperatureMax = 40;
+const RAIN_DAMAGE = 5;
 const TENDENCIES = {
 	DECREASE: 0,
 	NORMAL: 1,
@@ -30,8 +31,8 @@ class Weather {
 	startSimulation() {
 		this.updateTendencies();
 		this.updateWeather();
-		this.tendencyTimer = setInterval(this.updateTendencies.bind(this), 30000);
-		this.weatherTimer = setInterval(this.updateWeather.bind(this), 3000);
+		this.tendencyTimer = setInterval(this.updateTendencies.bind(this), 5 * Game.DAY_DURATION);
+		this.weatherTimer = setInterval(this.updateWeather.bind(this), Game.DAY_DURATION);
 	}
 
 	updateTendencies() {
@@ -71,7 +72,6 @@ class Weather {
 		if (this.chanceOfRain >= chanceMax) {
 			this.chanceOfRain = chanceMax;
 			this.rainTendency = Weather.TENDENCIES.DECREASE;
-			console.log(this.rainTendency);
 		}
 		if (this.chanceOfRain <= chanceMin) {
 			this.chanceOfRain = chanceMin;
@@ -122,7 +122,7 @@ class Weather {
 		// Damages all bees that are outside
 		Game.bees.forEach(bee => {
 			if (bee.isInBeehive() || bee.type === BeeTypes.INSIDEBEE) return;
-			bee.reduceHealth(5);
+			bee.reduceHealth(RAIN_DAMAGE);
 		}, this);
 	}
 

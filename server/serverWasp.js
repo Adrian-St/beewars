@@ -10,6 +10,7 @@ class Wasp extends Insect {
 		this.speed = 3;
 		this.flower = null;
 		this.attackPower = 25;
+		this.age = 25;
 	}
 
 	cancelAllTimeEvents() {

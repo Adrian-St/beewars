@@ -12,6 +12,7 @@ class Bee {
 		this.nectar = serverBee.nectar;
 		this.capacity = serverBee.capacity;
 		this.sprite = sprite;
+		this.innerProgressBar = null;
 		this.tween = null;
 		this.shadow = null;
 		this.shadowTween = null;

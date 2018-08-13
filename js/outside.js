@@ -24,7 +24,6 @@ class Outside extends State {
 		this.outsideButton = null;
 		this.outsideMap = null;
 		this.outsideLayers = [];
-		this.stateName = 'OUTSIDE';
 	}
 
 	enableState() {
@@ -184,6 +183,7 @@ class Outside extends State {
 
 	addBeehiveObject(beehive) {
 		Game.beehive = new Beehive(beehive, this.beehiveSprite);
+		Game.insideState.updateBeehiveDisplay(beehive);
 	}
 
 	addEnemies(waspCollection) {
@@ -232,7 +232,7 @@ class Outside extends State {
 
 	addNewBee(serverBee) {
 		const addedBee = super.addNewBee(serverBee);
-		if (Game.currentState === 'INSIDE') addedBee.sprite.visible = false;
+		if (!(this.isActive())) addedBee.sprite.visible = false;
 	}
 
 	addFlowerObjects(flowers) {
@@ -313,6 +313,7 @@ class Outside extends State {
 		const sprite = game.add.sprite(serverWasp.x, serverWasp.y, 'wasp');
 		sprite.anchor.setTo(0.5);
 		const wasp = new Wasp(serverWasp, sprite);
+		if(!this.isActive()) wasp.sprite.visible = false;
 		this.wasps.push(wasp);
 	}
 
@@ -343,20 +344,6 @@ class Outside extends State {
 			'flowerMenu-' + flowerToBeUpdated.id
 		) {
 			Menu.createFlowerMenu(flowerToBeUpdated);
-		}
-	}
-
-	updateBeehive(beehive) {
-		Game.beehive.pollen = beehive.pollen;
-		Game.beehive.honey = beehive.honey;
-		Game.beehive.honeycombs = beehive.honeycombs;
-		Game.beehive.freeHoneycombs = beehive.freeHoneycombs;
-		Game.beehive.dirtyHoneycombs = beehive.dirtyHoneycombs;
-		Game.beehive.occupiedHoneycombs = beehive.occupiedHoneycombs;
-		Game.beehive.geleeRoyal = beehive.geleeRoyal;
-
-		if (document.getElementById('menu').firstChild.id === 'hiveMenu') {
-			Menu.createHiveMenu(Game.beehive, this.bees.length);
 		}
 	}
 }

@@ -256,13 +256,13 @@ playerAction {
 			}
 		} else if (this.destinationEqualsPosition(Game.centerPoints[0])) {
 			// Maybe use dictionary
-			console.log('Building');
-			Game.handleBuilding();
+			console.log('Queen');
 		} else if (this.destinationEqualsPosition(Game.centerPoints[1])) {
-			console.log('Nursing');
+			console.log('Gelee Royal');
+			Game.produceGeleeRoyal();
 		} else if (this.destinationEqualsPosition(Game.centerPoints[2])) {
 			console.log('Queen');
-			Game.produceGeleeRoyal();
+			Game.handleBuilding();
 		} else if (this.destinationEqualsPosition(Game.centerPoints[3])) {
 			console.log('Cleaning');
 			Game.handleCleaning();

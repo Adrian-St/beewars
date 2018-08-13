@@ -14,7 +14,6 @@ class Inside extends State {
 		this.insideGraphics = null; // For drawing the borders of the hive
 
 		this.initialize();
-		this.stateName = 'INSIDE';
 	}
 
 	initialize() {
@@ -24,11 +23,12 @@ class Inside extends State {
 		this.addBackground();
 		this.addBeehive();
 		this.addWorkAreas();
+		this.addBeehiveDisplay();
 
 		this.graphics = Game.add.graphics(0, 0);
 		this.addTopMenu();
 	}
-
+	
 	enableState() {
 		super.enableState();
 
@@ -69,7 +69,6 @@ class Inside extends State {
 	addBeehive() {
 		this.insideMap.addTilesetImage('Workarea-icons');
 		this.insideLayers.push(this.insideMap.createLayer('Honeycombs'));
-		this.insideLayers[2].resizeWorld();
 		this.insideLayers[2].inputEnabled = true;
 		this.insideLayers[2].events.onInputUp.add(this.clickedOnBackground, this);
 	}
@@ -78,15 +77,40 @@ class Inside extends State {
 		this.insideGraphics = Game.add.graphics(0, 0);
 		this.insideMap.addTilesetImage('Full-Beehive');
 		this.insideMap.objects['Inner Beehive'].forEach((object, index) => {
-			console.log(object);
-			const offset = 80 //Caused by difference in map generator
+			const offset = 128 //Caused by difference in map generator, needs to be changed on server site too!
 			this.insideWorkareas[object.name] = Game.add.sprite(object.x, object.y - offset, 'Full-Beehive', index);
 			this.insideWorkareas[object.name].inputEnabled = true;
 			this.insideWorkareas[object.name].events.onInputUp.add(this.getWorkarea, this);
 		});
-		console.log(this.insideWorkareas);
 	}
 
+	addBeehiveDisplay() {
+		const xPosition = 800;
+		this.beehiveDisplay = {
+			pollen:	this.createText(xPosition, 100),
+			honey: this.createText(xPosition, 150),
+			honeycombs: this.createText(xPosition, 200),
+			freeHoneycombs: this.createText(xPosition, 250),
+			dirtyHoneycombs: this.createText(xPosition, 300),
+			occupiedHoneycombs: this.createText(xPosition, 350),
+			geleeRoyal: this.createText(xPosition, 400)}
+	}
+
+	createText(x,y) {
+		return Game.add.text(x, y, '', {
+			font: 'bold 28pt Raleway'
+		})
+	}
+
+	updateBeehiveDisplay(beehive) {
+		this.beehiveDisplay.pollen.text = 'Pollen: ' + beehive.pollen;
+		this.beehiveDisplay.honey.text = 'Honey: ' + beehive.honey;
+		this.beehiveDisplay.honeycombs.text = 'Honeycombs: ' + beehive.honeycombs;
+		this.beehiveDisplay.freeHoneycombs.text = ' - Free: ' + beehive.freeHoneycombs;
+		this.beehiveDisplay.dirtyHoneycombs.text = ' - Dirty: ' + beehive.dirtyHoneycombs;
+		this.beehiveDisplay.occupiedHoneycombs.text = ' - Occupied: ' + beehive.occupiedHoneycombs;
+		this.beehiveDisplay.geleeRoyal.text = 'Gelee Royal: ' + beehive.geleeRoyal;
+	}
 
 	addTopMenu() {
 		//super.addTopMenu();
@@ -105,11 +129,11 @@ class Inside extends State {
 
 	addNewBee(serverBee) {
 		const addedBee = super.addNewBee(serverBee);
-		if (Game.currentState === 'OUTSIDE') addedBee.sprite.visible = false;
+		if (!this.isActive()) addedBee.sprite.visible = false;
 	}
 
 	getWorkarea(area) {
-		console.log(area);
+		console.log(area.centerX + ' ' + area.centerY);
 		this.requestGoToPosition(area.centerX, area.centerY);
 	}
 

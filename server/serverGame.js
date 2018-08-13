@@ -5,7 +5,9 @@ const Frog = require('./serverFrog.js')
 const Player = require('./player.js');
 const Weather = require('./weather.js');
 
-exports.DAY_DURATION = 5000;
+exports.DAY_DURATION = 10000;
+exports.STARTING_BEES_INSIDE = 3;
+exports.STARTING_BEES_OUTSIDE = 3;
 
 let connection; // = require('./connection.js');
 exports.beehive = require('./serverBeehive.js');
@@ -49,13 +51,13 @@ exports.start = () => {
 		exports.frogs.push(tmpFrog);
 		exports.lastFrogID++;
 	}
-	for (let i = 0; i < 5; i++) {
+	for (let i = 0; i < 3; i++) {
 		let tmpBee = new Bee(exports.lastBeeID);
 		tmpBee.type = BeeTypes.OUTSIDEBEE;
 		exports.bees.push(tmpBee);
 		exports.lastBeeID++;
 	}
-	for (let j = 0; j < 5; j++) {
+	for (let j = 0; j < 3; j++) {
 		let tmpBee = new Bee(exports.lastBeeID);
 		tmpBee.type = BeeTypes.INSIDEBEE;
 		exports.bees.push(tmpBee);
@@ -66,13 +68,15 @@ exports.start = () => {
 	exports.weather.startSimulation();
 	setInterval(exports.spawnLarvae, 15000);
 	setInterval(exports.advanceDay, exports.DAY_DURATION);
-	setInterval(exports.spawnEnemy, 60000);
+	setInterval(exports.spawnEnemy, 6 * exports.DAY_DURATION);
 
+	const offset = 128; //Caused by difference in map generator, needs to be changed on client site too!
 	for (let i = 0; i < insideMapJson.layers[3].objects.length; i++) {
-		const tmpX = insideMapJson.layers[3].objects[i].centerX + insideMapJson.layers[3].objects[i].x;
-		const tmpY = insideMapJson.layers[3].objects[i].centerY + insideMapJson.layers[3].objects[i].y;
+		const tmpX =  insideMapJson.layers[3].objects[i].x + insideMapJson.layers[3].objects[i].width/2;
+		const tmpY =  insideMapJson.layers[3].objects[i].y + insideMapJson.layers[3].objects[i].height/2 - offset;
 		this.centerPoints.push({x: tmpX, y: tmpY});
 	}
+	console.log(this.centerPoints);
 };
 
 exports.spawnEnemy = () => {
@@ -128,7 +132,7 @@ exports.insideBees = () => {
 };
 
 exports.beesWithUpdatedPosition = (bees) => {
-	return bees.map(bee => 
+	return bees.map(bee =>
 		{
 			if(bee.destination) bee.calculateNewPosition();
 			return bee.getSendableBee();
@@ -136,7 +140,7 @@ exports.beesWithUpdatedPosition = (bees) => {
 }
 
 exports.waspsWithUpdatedPosition = () => {
-	return exports.enemies.map(wasp => 
+	return exports.enemies.map(wasp =>
 		{
 			if(wasp.destination) wasp.calculateNewPosition();
 			return wasp.getSendableWasp();
@@ -201,6 +205,7 @@ exports.spawnLarvae = () => {
 		exports.beehive.geleeRoyal -= 1;
 		if (exports.beehive.freeHoneycombs > 0){
 			exports.beehive.freeHoneycombs -= 1;
+			exports.beehive.occupiedHoneycombs += 1;
 			exports.beehive.geleeRoyal -= 1;
 			setTimeout(exports.spawnBee, 60000); // 60 sec
 		}
@@ -214,7 +219,7 @@ exports.spawnBee = () => {
 	console.log('new bee');
 	const newBee = new Bee(exports.lastBeeID);
 	exports.lastBeeID++;
-	exports.beehive.freeHoneycombs += 1;
+	exports.beehive.occupiedHoneycombs -= 1;
 	exports.beehive.dirtyHoneycombs += 1;
 	exports.bees.push(newBee);
 	connection.spawnNewBee(newBee);
