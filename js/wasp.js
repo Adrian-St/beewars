@@ -28,7 +28,7 @@ class Wasp {
 			) *
 			10 *
 			this.speed;
-
+		
 		this.initializeTween();
 		this.tween.to(destination, duration);
 		this.tween.start();

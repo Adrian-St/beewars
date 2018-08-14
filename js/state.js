@@ -3,8 +3,8 @@ import Menu from './menu.js';
 import Bee from './bee.js';
 import Game from './game.js';
 
-const barWidth = 50;
-const barHeight = 10;
+const barWidth = 25;
+const barHeight = 8;
 const progressbarOffset = {
 	x: barWidth / 2,
 	y: barWidth

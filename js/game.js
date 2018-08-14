@@ -47,7 +47,7 @@ class Game {
 			52
 		);
 		game.load.spritesheet('outside-button', '/assets/Menu/button.png', 254, 52);
-		game.load.image('sprite', '/assets/sprites/bee32px.png');
+		game.load.image('sprite', '/assets/sprites/bee32px-with-border.png');
 		game.load.image('wasp', '/assets/sprites/wasp.png');
 		game.load.image('progressbar', '/assets/sprites/innerProgessBar.png');
 		game.load.image(
@@ -168,6 +168,11 @@ class Game {
 			bee.shadow.destroy();
 			bee.shadow = null;
 		}
+		if(bee.innerProgressBar) {
+			bee.innerProgressBar.destroy();
+			bee.innerProgressBar = null;
+		}
+		bee.status === Bee.STATES.IDLE
 		this.outsideState.setUpUserInputForBee(bee);
 		this.outsideState.bees.push(bee);
 		this.insideState.bees.splice(index, 1);

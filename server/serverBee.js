@@ -65,6 +65,7 @@ playerAction {
 	leaveBeehive() {
 		this.type = BeeTypes.OUTSIDEBEE;
 		this.cancelAllTimeEvents();
+		this.status = Bee.STATES.IDLE;
 		this.x = this.game.beehive.x;
 		this.y = this.game.beehive.y;
 		this.playerActions = [];
