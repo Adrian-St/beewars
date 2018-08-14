@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <script src="/socket.io/socket.io.js"></script>
-  <script type="text/javascript" src="js/phaser.min.js"></script>
+  <script type="text/javascript" src="/js/phaser.min.js"></script>
   <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway" />
   <link rel="stylesheet" type="text/css" href="/css/base.css" />
   <title>Bee Wars - the Game</title>
@@ -18,19 +18,18 @@
     <button id='test-button-active'>Switch to outside</button>
     <button id='rain'></button>
     <button id='temperature'></button>
+    </div>
   -->
-  </div>
-
-  <div id='game'></div>
+  <div id='game' data-room=<%= room %>></div>
   <div id='menu'></div>
   <div id='gameover'></div>
 </body>
-<script src="js/main.js" type="module"></script>
-<script src="js/bee.js" type="module"></script>
-<script src="js/wasp.js" type="module"></script>
-<script src="js/flower.js" type="module"></script>
-<script src="js/beehive.js" type="module"></script>
-<script src="js/game.js" type="module"></script>
-<script src="js/client.js" type="module"></script>
-<script src="js/menu.js" type="module"></script>
+<script src="/js/main.js" type="module"></script>
+<script src="/js/bee.js" type="module"></script>
+<script src="/js/wasp.js" type="module"></script>
+<script src="/js/flower.js" type="module"></script>
+<script src="/js/beehive.js" type="module"></script>
+<script src="/js/game.js" type="module"></script>
+<script src="/js/client.js" type="module"></script>
+<script src="/js/menu.js" type="module"></script>
 </html>

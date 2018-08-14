@@ -5,11 +5,15 @@
     "test": "xo"
   },
   "dependencies": {
+    "body-parser": "^1.18.3",
+    "ejs": "^2.6.1",
     "express": "^4.15.2",
+    "express-helpers": "^1.3.2",
     "font-awesome": "^4.7.0",
     "phaser": "^3.6.0",
     "prettier": "^1.13.5",
-    "socket.io": "^1.7.3"
+    "socket.io": "^1.7.3",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "xo": "^0.21.1"

@@ -1,5 +1,4 @@
 import Game from './game.js';
-import MainMenu from './mainMenu.js';
 import GameOverScreen from './gameOverScreen.js';
 
 export const game = new Phaser.Game(
@@ -9,6 +8,5 @@ export const game = new Phaser.Game(
 	document.getElementById('game')
 );
 game.state.add('Game', Game);
-game.state.add('MainMenu', MainMenu);
 game.state.add('GameOver', GameOverScreen);
-game.state.start('MainMenu', true, true);
+game.state.start('Game');

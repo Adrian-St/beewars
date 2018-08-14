@@ -82,8 +82,8 @@ Connection.updateWeather = (weather, roomName) => {
 	io.to(roomName).emit('updateWeather', weather);
 };
 
-Connection.advanceDay = roomName => {
-	io.to(roomName).emit('dayPassed');
+Connection.advanceDay = (day, roomName) => {
+	io.to(roomName).emit('dayPassed', day);
 };
 
 Connection.sendMessageToClients = (message, clients, roomName) => {

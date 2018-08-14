@@ -1,6 +1,3 @@
-$fa-font-path:"../node_modules/font-awesome/fonts";
-@import "../node_modules/font-awesome/css/font-awesome";
-
 body {
   background-color: #000000;
 }
@@ -11,6 +8,101 @@ canvas {
   margin-left: auto;
   margin-right: auto;
   display: block;
+}
+
+#header {
+  text-align: center;
+  display: block;
+  font-family: railway;
+  font-weight: bold;
+  font-size: 72px;
+  margin-bottom: 40px;
+}
+
+#game-container {
+  box-sizing: border-box;
+  padding-top: 60px;
+  padding-bottom: 60px;
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  width: 1280px;
+  height: 704px;
+  background-image: url("../assets/Menu/menu-background.png");
+}
+
+.menu-button {
+  text-decoration: none;
+  text-align: center;
+  vertical-align: middle;
+  margin: 20px auto;
+  display:block;
+  height: auto;
+  width: 600px;
+  padding: 40px;
+  background-color: #b17220;
+  color: black;
+  font-family: railway;
+  font-weight: bold;
+  font-size: 24px;
+  border-radius: 6px;
+  border: solid 2px black;
+}
+
+.menu-button:hover {
+  background-color: #a16210;
+  cursor: pointer;
+}
+
+.menu-button:active {
+  background-color: #a16210;
+  cursor: pointer;
+  box-shadow: 2px 2px 2px 2px #915200 inset;
+}
+
+.list {
+  vertical-align: middle;
+  margin: 20px auto;
+  height: auto;
+  margin-bottom: 80px;
+  width: 600px;
+  background-color: rgba(255,255,255,0.3);
+}
+
+.list > li > a {
+  text-decoration: none;
+  color: black;
+  font-family: railway;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.form-header {
+  background-color: rgba(255,255,255,0.3);
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 10px;
+  display:block;
+  color: black;
+  font-family: railway;
+  font-weight: bold;
+  font-size: 24px;
+  width: 600px;
+}
+
+.form-input {
+  margin: 0 auto;
+  display:block;
+  box-sizing: border-box;
+  padding: 10px;
+  color: black;
+  font-family: railway;
+  font-weight: bold;
+  font-size: 24px;
+  height: auto;
+  width: 600px;
 }
 
 .test-container {

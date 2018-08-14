@@ -205,7 +205,7 @@ class Game {
 			wasp.increaseAge();
 		});
 		this.day++;
-		connection.advanceDay(this.roomName);
+		connection.advanceDay(this.day, this.roomName);
 	}
 
 	spawnLarvae() {

@@ -2,7 +2,7 @@ import Game from './game.js';
 
 class Client {
 	startConnection() {
-		this.room = 'room' + Math.floor(Math.random() * 2);
+		this.room = document.getElementById('game').dataset.room;
 		this.socket = io.connect();
 
 		console.log(this.room);
@@ -61,8 +61,8 @@ class Client {
 				Game.updateWeater(weather);
 			});
 
-			this.socket.on('dayPassed', () => {
-				Game.dayPassed();
+			this.socket.on('dayPassed', (day) => {
+				Game.dayPassed(day);
 			});
 
 			this.socket.on('showMessage', message => {

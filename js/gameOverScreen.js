@@ -35,7 +35,7 @@ class GameOverScreen {
 
 		menuText.events.onInputUp.add(() => {
 			document.getElementById('gameover').style.visibility = 'visible';
-			game.state.start('MainMenu', true, true);
+			//game.state.start('MainMenu', true, true);
 		});
 	}
 }

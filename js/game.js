@@ -14,59 +14,59 @@ class Game {
 	preload() {
 		game.load.tilemap(
 			'map',
-			'assets/map/outside_map.json',
+			'/assets/map/outside_map.json',
 			null,
 			Phaser.Tilemap.TILED_JSON
 		);
 		game.load.tilemap(
 			'inside_map',
-			'assets/map/inside_map.json',
+			'/assets/map/inside_map.json',
 			null,
 			Phaser.Tilemap.TILED_JSON
 		);
-		game.load.spritesheet('grass', 'assets/map/grass.png', 32, 32);
-		game.load.spritesheet('flowers', 'assets/map/flowers.png', 64, 64);
-		game.load.spritesheet('beehive', 'assets/map/beehive.png', 128, 160);
+		game.load.spritesheet('grass', '/assets/map/grass.png', 32, 32);
+		game.load.spritesheet('flowers', '/assets/map/flowers.png', 64, 64);
+		game.load.spritesheet('beehive', '/assets/map/beehive.png', 128, 160);
 		game.load.spritesheet(
 			'Full-Beehive',
-			'assets/honeycombs/Full-Beehive.png',
+			'/assets/honeycombs/Full-Beehive.png',
 			448,
 			136
 		);
-		game.load.spritesheet('inside-tree', 'assets/map/inside-tree.png', 32, 32);
+		game.load.spritesheet('inside-tree', '/assets/map/inside-tree.png', 32, 32);
 		game.load.spritesheet(
 			'Workarea-icons',
-			'assets/honeycombs/Workarea-icons.png',
+			'/assets/honeycombs/Workarea-icons.png',
 			100,
 			72
 		);
 		game.load.spritesheet(
 			'inside-button',
-			'assets/Menu/inside-button.png',
+			'/assets/Menu/inside-button.png',
 			254,
 			52
 		);
-		game.load.spritesheet('outside-button', 'assets/Menu/button.png', 254, 52);
-		game.load.image('sprite', 'assets/sprites/bee32px.png');
-		game.load.image('wasp', 'assets/sprites/wasp.png');
-		game.load.image('progressbar', 'assets/sprites/innerProgessBar.png');
+		game.load.spritesheet('outside-button', '/assets/Menu/button.png', 254, 52);
+		game.load.image('sprite', '/assets/sprites/bee32px.png');
+		game.load.image('wasp', '/assets/sprites/wasp.png');
+		game.load.image('progressbar', '/assets/sprites/innerProgessBar.png');
 		game.load.image(
 			'message-background',
-			'assets/sprites/message-background.png'
+			'/assets/sprites/message-background.png'
 		);
-		game.load.spritesheet('rain', 'assets/sprites/rain.png', 17, 17);
-		game.load.spritesheet('frog', 'assets/sprites/frog.png', 64, 64);
+		game.load.spritesheet('rain', '/assets/sprites/rain.png', 17, 17);
+		game.load.spritesheet('frog', '/assets/sprites/frog.png', 64, 64);
 		game.load.spritesheet(
 			'Honeycomb-Background',
-			'assets/map/Honeycomb-Background.png',
+			'/assets/map/Honeycomb-Background.png',
 			64,
 			64
 		);
-		game.load.image('tree', 'assets/map/tree.png');
-		game.load.image('river', 'assets/map/river.png');
-		game.load.image('rain-button', 'assets/Menu/rain-button.png');
-		game.load.image('temperature-button', 'assets/Menu/temperature-button.png');
-		game.load.image('pointer', 'assets/Menu/pointer.png');
+		game.load.image('tree', '/assets/map/tree.png');
+		game.load.image('river', '/assets/map/river.png');
+		game.load.image('rain-button', '/assets/Menu/rain-button.png');
+		game.load.image('temperature-button', '/assets/Menu/temperature-button.png');
+		game.load.image('pointer', '/assets/Menu/pointer.png');
 	}
 
 	create() {
@@ -207,7 +207,7 @@ class Game {
 		this.outsideState.removeBee(bee);
 	}
 
-	dayPassed() {
+	dayPassed(day) {
 		this.outsideState.bees.forEach(bee => {
 			bee.age++;
 			if (bee.isSelected()) {
@@ -220,7 +220,7 @@ class Game {
 				Menu.createBeeMenu(bee);
 			}
 		});
-		this.day++;
+		this.day = day;
 		this.dayDisplay.text = 'Day: ' + this.day;
 	}
 

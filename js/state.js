@@ -3,6 +3,13 @@ import Menu from './menu.js';
 import Bee from './bee.js';
 import Game from './game.js';
 
+const barWidth = 50;
+const barHeight = 10;
+const progressbarOffset = {
+	x: barWidth / 2,
+	y: barWidth
+}
+
 class State {
 	constructor() {
 		this.bees = [];
@@ -128,6 +135,7 @@ class State {
 			const temp = leftX + i * allBees[i].sprite.width;
 			allBees[i].sprite.position.x = temp;
 			if (allBees[i].shadow) allBees[i].shadow.position.x = temp;
+			if (allBees[i].innerProgressBar) allBees[i].innerProgressBar.position.x = temp - progressbarOffset.x;
 		}
 	}
 
@@ -138,20 +146,25 @@ class State {
 				currBee.sprite.position,
 				this.multipleBeeSelectionPosition
 			);
-			if (currBee.shadow)
+			if (currBee.shadow) {
 				currBee.shadow.position = Object.assign(
-					currBee.sprite.position,
+					currBee.shadow.position,
 					this.multipleBeeSelectionPosition
 				);
+			}
+			if (currBee.innerProgressBar) {
+				currBee.innerProgressBar.x = this.multipleBeeSelectionPosition.x - progressbarOffset.x;
+				currBee.innerProgressBar.y = this.multipleBeeSelectionPosition.y - progressbarOffset.y;
+			}
 		}
 	}
 
-	createProgressBar(bee, image, barWidth, barHeight, seconds, type) {
+	createProgressBar(bee, image, seconds, type) {
 		// Type: 0 = decreasing | 1 = increasing
 
 		bee.innerProgressBar = Game.add.sprite(
-			bee.sprite.x - barWidth / 2,
-			bee.sprite.y - barWidth,
+			bee.sprite.x - progressbarOffset.x,
+			bee.sprite.y - progressbarOffset.y,
 			image
 		);
 		bee.innerProgressBar.inputEnabled = false;
@@ -207,7 +220,7 @@ class State {
 	deactivateBee(bee, seconds) {
 		bee.status = Bee.STATES.INACTIVE;
 
-		this.createProgressBar(bee, 'progressbar', 50, 10, seconds, 0);
+		this.createProgressBar(bee, 'progressbar', seconds, 0);
 		Game.time.events.add(
 			Phaser.Timer.SECOND * seconds,
 			() => {

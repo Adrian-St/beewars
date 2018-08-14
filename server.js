@@ -1,20 +1,54 @@
 const http = require('http');
 const path = require('path');
 const express = require('express');
-
 const app = express();
+const bodyParser = require("body-parser");
+const helpers = require('express-helpers')(app);
 const server = http.createServer(app);
 const io = require('socket.io').listen(server);
 const connection = require('./server/connection.js');
+const rooms = [];
+const uuidv1 = require('uuid/v1');
 
-connection.start(io);
-
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use('/css', express.static(path.join(__dirname, 'css')));
 app.use('/js', express.static(path.join(__dirname, 'js')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
+connection.start(io);
+
 app.get('/', (req, res) => {
-	res.sendFile(path.join(__dirname, 'index.html'));
+	res.render('index');
+});
+
+app.get('/games/new', (req, res) => {
+  res.render('new_game');
+});
+
+app.post('/games', (req, res) => {
+	const name = req.body.identifier
+	let room = rooms.find((room) => room.name == name);
+	if(!room) {
+		room = {
+			key: uuidv1(),
+			name: name};
+		rooms.push(room);
+	}
+	res.redirect('/games/' + room.key);
+});
+
+app.get('/games/:id', (req, res) => {
+	res.render('game', {room: req.params.id});
+});
+
+app.get('/games', (req, res) => {
+	res.render('games', {rooms: rooms});
+});
+
+app.get('/instructions', (req, res) => {
+	res.render('instructions');
 });
 
 server.listen(process.env.PORT || 8081, () => {
