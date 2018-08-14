@@ -115,6 +115,16 @@ canvas {
   display: block;
 }
 
+.instruction-container {
+  width: 75%; 
+  margin: 0 auto;
+}
+
+.instruction-paragraph {
+  font-size: 30px;
+  font-weight: bold;
+}
+
 #test-button {
   height: 40px;
   width: 200px;
