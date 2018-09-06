@@ -95,7 +95,7 @@ class Game {
 		this.enemies.push(wasp);
 		this.lastWaspID++;
 		connection.createWasp(wasp.getSendableWasp(), this.roomName);
-		wasp.flyToNearestFlower();
+		wasp.flyToFlower();
 	}
 
 	newPlayer() {

@@ -21,27 +21,17 @@ class Wasp extends Insect {
 		return this.speed;
 	}
 
-	flyToNearestFlower(excludedFlower) {
+	flyToFlower(excludedFlower) {
 		const flower = this.findNearestFlower(excludedFlower);
 		this.startFlyTimer(flower);
 		this.game.waspStartsFlying(this);
 	}
 
 	findNearestFlower(excludedFlower) {
-		let nearestFlower =
-			this.game.flowers[0] === excludedFlower
-				? this.game.flowers[1]
-				: this.game.flowers[0];
-		let closestDistance = this.calculateDistance(nearestFlower);
-		this.game.flowers.forEach(flower => {
-			if (flower === excludedFlower) return;
-			const distance = this.calculateDistance(flower);
-			if (distance < closestDistance) {
-				closestDistance = distance;
-				nearestFlower = flower;
-			}
-		}, this);
-		return nearestFlower;
+		// Refactored to fly to random flower
+		let flowers = this.game.flowers.filter((flower) => { return flower !== excludedFlower });
+		let flower = flowers[Math.floor(Math.random()*flowers.length)];
+		return flower;
 	}
 
 	startAttackTimer() {
@@ -78,7 +68,7 @@ class Wasp extends Insect {
 		const bees = this.findBeesOnFlower();
 		if (bees.length === 0) {
 			this.resetAttackTimer();
-			this.flyToNearestFlower(this.flower);
+			this.flyToFlower(this.flower);
 			return;
 		}
 		this.attack(this.getRandomBee(bees));
