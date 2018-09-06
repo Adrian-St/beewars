@@ -47,7 +47,7 @@ class Game {
 			52
 		);
 		game.load.spritesheet('outside-button', '/assets/Menu/button.png', 254, 52);
-		game.load.image('sprite', '/assets/sprites/bee32px-with-border.png');
+		game.load.spritesheet('sprite', '/assets/sprites/bee-with-borders.png', 32, 32);
 		game.load.spritesheet('wasp', '/assets/sprites/wasp-with-borders.png', 32, 32);
 		game.load.image('progressbar', '/assets/sprites/innerProgessBar.png');
 		game.load.image(
@@ -185,11 +185,11 @@ class Game {
 		if (bee.shadowTween) {
 			bee.stopShadowTween();
 		}
-
-		bee.startTween({ x: action.target.x, y: action.target.y });
+		const offset = Date.now() - action.timestamp;
+		bee.startTween({ x: action.target.x, y: action.target.y }, offset);
 
 		if (bee.shadow) {
-			bee.startShadowTween({ x: action.target.x, y: action.target.y });
+			bee.startShadowTween({ x: action.target.x, y: action.target.y }, offset);
 		}
 	}
 

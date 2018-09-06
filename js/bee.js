@@ -1,40 +1,46 @@
 import { game } from './main.js';
 import Game from './game.js';
+import Insect from './insect.js';
 
-class Bee {
+class Bee extends Insect {
 	constructor(serverBee, sprite) {
-		this.id = serverBee.id;
+		super(serverBee, sprite);
 		this.age = serverBee.age;
 		this.status = serverBee.status;
-		this.health = serverBee.health;
 		this.energy = serverBee.energy;
 		this.pollen = serverBee.pollen;
 		this.nectar = serverBee.nectar;
 		this.capacity = serverBee.capacity;
-		this.sprite = sprite;
 		this.innerProgressBar = null;
-		this.tween = null;
-		this.shadow = null;
-		this.shadowTween = null;
 		this.playerActions = [];
 		this.type = serverBee.type;
+		this.shadow = null;
+		this.shadowTween = null;
+		this.shadowAnimation = null;
 		if (serverBee.target) this.startTween(serverBee.target);
 	}
 
 	activateShadow() {
-		this.shadow = game.add.sprite(this.sprite.x, this.sprite.y, 'sprite');
+		let graphics = new Phaser.Graphics(0, 0);
+		graphics.lineStyle(5, 0xFFFF00, 0.8);
+		// draw a circle
+		graphics.drawCircle(0, 0, 36);
+		let texture = graphics.generateTexture()
+		this.shadow = game.add.sprite(this.sprite.x, this.sprite.y, texture);
 		this.shadow.anchor.set(0.5);
-		this.shadow.tint = 0x000000;
-		this.shadow.alpha = 0.6;
-		this.shadow.scale.setTo(1.3, 1.3);
 		this.sprite.bringToTop();
 	}
 
 	deactivateShadow() {
+		if(this.shadowAnimation) {
+			this.shadowAnimation.stop(true);
+			this.shadowAnimation = null;
+		}
 		if (this.shadow) {
 			this.shadow.destroy();
 			this.shadow = null;
 		}
+		this.stopShadowTween();
 	}
 
 	isSelected() {
@@ -49,36 +55,15 @@ class Bee {
 		return (this.pollen + this.nectar) / 100 + 1;
 	}
 
-	startTween(destination) {
-		const beeSpeed = this.calculateBeeSpeed();
-		const duration =
-			Phaser.Math.distance(
-				this.sprite.position.x,
-				this.sprite.position.y,
-				destination.x,
-				destination.y
-			) *
-			10 *
-			beeSpeed;
-
-		this.initializeTween();
-		this.tween.to(destination, duration);
-		this.tween.start();
-		this.tween.onUpdateCallback(Game.onTweenRunning, Game);
-	}
-
-	stopTween() {
-		if (this.tween) {
-			this.tween.stop();
-			this.tween = null;
-		}
+	calculateSpeed() {
+		return this.calculateBeeSpeed();
 	}
 
 	initializeShadowTween() {
 		this.shadowTween = game.add.tween(this.shadow);
 	}
 
-	startShadowTween(destination) {
+	startShadowTween(destination, offset = 0) {
 		const beeSpeed = this.calculateBeeSpeed();
 		const duration =
 			Phaser.Math.distance(
@@ -88,7 +73,8 @@ class Bee {
 				destination.y
 			) *
 			10 *
-			beeSpeed;
+			beeSpeed - offset;
+
 		this.initializeShadowTween();
 		this.shadowTween.to(destination, duration);
 		this.shadowTween.start();
@@ -98,6 +84,17 @@ class Bee {
 		if (this.shadowTween) {
 			this.shadowTween.stop();
 			this.shadowTween = null;
+		}
+	}
+
+	stopAnimation() {
+		super.stopAnimation();
+		if(this.shadow) {
+			this.shadow.angle = 0;
+		}
+		if(this.shadowAnimation) {
+			this.shadowAnimation.stop(true);
+			this.shadowAnimation = null
 		}
 	}
 

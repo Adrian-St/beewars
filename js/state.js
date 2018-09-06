@@ -311,8 +311,10 @@ class State {
 		if (beeToBeUpdated.status === Bee.STATES.INACTIVE) {
 			// Bee was blocked
 			if (bee.status === Bee.STATES.IDLE) this.activateBee(beeToBeUpdated); // Bee is free now
-		} else if (bee.status === Bee.STATES.INACTIVE)
+		} else if (bee.status === Bee.STATES.INACTIVE) {
 			this.deactivateBee(beeToBeUpdated, 4); // Bee is now blocked
+			beeToBeUpdated.stopAnimation();
+		}
 		beeToBeUpdated.age = bee.age;
 		beeToBeUpdated.status = bee.status;
 		beeToBeUpdated.health = bee.health;
