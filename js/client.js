@@ -61,7 +61,7 @@ class Client {
 				Game.updateWeater(weather);
 			});
 
-			this.socket.on('dayPassed', (day) => {
+			this.socket.on('dayPassed', day => {
 				Game.dayPassed(day);
 			});
 

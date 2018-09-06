@@ -34,40 +34,40 @@ class Insect {
 		this.tween.onUpdateCallback(Game.onTweenRunning, Game);
 	}
 
-  stopAnimation() {
-    this.sprite.angle = 0;
-    if(this.animation) {
-      this.animation.stop(true);
-      this.animation = null;
-    }  
-  }
+	stopAnimation() {
+		this.sprite.angle = 0;
+		if (this.animation) {
+			this.animation.stop(true);
+			this.animation = null;
+		}
+	}
 
-  stopTween() {
+	stopTween() {
 		if (this.tween) {
-      this.sprite.angle = 0;
-      if (this.shadow) this.shadow.angle = 0;
+			this.sprite.angle = 0;
+			if (this.shadow) this.shadow.angle = 0;
 			this.tween.stop();
 			this.tween = null;
 		}
 	}
 
-  calculateSpeed() {
-    throw new Error('calculateSpeed must be implemented by subclasses!');
-  }
+	calculateSpeed() {
+		throw new Error('calculateSpeed must be implemented by subclasses!');
+	}
 
 	calculateAngle(destination) {
 		const direction = this.makeVector(this.sprite, destination);
-		const up = {x: 0, y: -1};
+		const up = { x: 0, y: -1 };
 		const cosAlpha = this.cosAlpha(up, direction);
 		let angle = this.degrees(Math.acos(cosAlpha));
-		if(direction.x < 0 ) {
+		if (direction.x < 0) {
 			angle = 360 - angle;
 		}
 		return angle;
 	}
 
 	degrees(radians) {
-  	return radians * 180 / Math.PI;
+		return (radians * 180) / Math.PI;
 	}
 
 	cosAlpha(v1, v2) {

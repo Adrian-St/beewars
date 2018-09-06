@@ -1,5 +1,4 @@
 import { game } from './main.js';
-import Game from './game.js';
 import Insect from './insect.js';
 
 class Bee extends Insect {
@@ -21,18 +20,18 @@ class Bee extends Insect {
 	}
 
 	activateShadow() {
-		let graphics = new Phaser.Graphics(0, 0);
-		graphics.lineStyle(5, 0xFFFF00, 0.8);
-		// draw a circle
+		const graphics = new Phaser.Graphics(0, 0);
+		graphics.lineStyle(5, 0xffff00, 0.8);
+		// Draw a circle
 		graphics.drawCircle(0, 0, 36);
-		let texture = graphics.generateTexture()
+		const texture = graphics.generateTexture();
 		this.shadow = game.add.sprite(this.sprite.x, this.sprite.y, texture);
 		this.shadow.anchor.set(0.5);
 		this.sprite.bringToTop();
 	}
 
 	deactivateShadow() {
-		if(this.shadowAnimation) {
+		if (this.shadowAnimation) {
 			this.shadowAnimation.stop(true);
 			this.shadowAnimation = null;
 		}
@@ -72,8 +71,9 @@ class Bee extends Insect {
 				destination.x,
 				destination.y
 			) *
-			10 *
-			beeSpeed - offset;
+				10 *
+				beeSpeed -
+			offset;
 
 		this.initializeShadowTween();
 		this.shadowTween.to(destination, duration);
@@ -89,12 +89,12 @@ class Bee extends Insect {
 
 	stopAnimation() {
 		super.stopAnimation();
-		if(this.shadow) {
+		if (this.shadow) {
 			this.shadow.angle = 0;
 		}
-		if(this.shadowAnimation) {
+		if (this.shadowAnimation) {
 			this.shadowAnimation.stop(true);
-			this.shadowAnimation = null
+			this.shadowAnimation = null;
 		}
 	}
 

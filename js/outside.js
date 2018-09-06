@@ -324,8 +324,7 @@ class Outside extends State {
 
 		if (serverWasp.moving) {
 			wasp.startTween({ x: serverWasp.target.x, y: serverWasp.target.y });
-		}
-		else {
+		} else {
 			wasp.stopAnimation();
 		}
 	}

@@ -8,7 +8,7 @@ const barHeight = 8;
 const progressbarOffset = {
 	x: barWidth / 2,
 	y: barWidth
-}
+};
 
 class State {
 	constructor() {
@@ -135,7 +135,8 @@ class State {
 			const temp = leftX + i * allBees[i].sprite.width;
 			allBees[i].sprite.position.x = temp;
 			if (allBees[i].shadow) allBees[i].shadow.position.x = temp;
-			if (allBees[i].innerProgressBar) allBees[i].innerProgressBar.position.x = temp - progressbarOffset.x;
+			if (allBees[i].innerProgressBar)
+				allBees[i].innerProgressBar.position.x = temp - progressbarOffset.x;
 		}
 	}
 
@@ -153,8 +154,10 @@ class State {
 				);
 			}
 			if (currBee.innerProgressBar) {
-				currBee.innerProgressBar.x = this.multipleBeeSelectionPosition.x - progressbarOffset.x;
-				currBee.innerProgressBar.y = this.multipleBeeSelectionPosition.y - progressbarOffset.y;
+				currBee.innerProgressBar.x =
+					this.multipleBeeSelectionPosition.x - progressbarOffset.x;
+				currBee.innerProgressBar.y =
+					this.multipleBeeSelectionPosition.y - progressbarOffset.y;
 			}
 		}
 	}

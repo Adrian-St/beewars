@@ -1,5 +1,5 @@
 const Insect = require('./serverInsect.js');
-const { Bee, BeeTypes } = require('./serverBee.js');
+const { BeeTypes } = require('./serverBee.js');
 
 class Wasp extends Insect {
 	constructor(id, game) {
@@ -29,8 +29,10 @@ class Wasp extends Insect {
 
 	findNearestFlower(excludedFlower) {
 		// Refactored to fly to random flower
-		let flowers = this.game.flowers.filter((flower) => { return flower !== excludedFlower });
-		let flower = flowers[Math.floor(Math.random()*flowers.length)];
+		const flowers = this.game.flowers.filter(flower => {
+			return flower !== excludedFlower;
+		});
+		const flower = flowers[Math.floor(Math.random() * flowers.length)];
 		return flower;
 	}
 

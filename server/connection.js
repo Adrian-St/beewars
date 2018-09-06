@@ -89,7 +89,7 @@ Connection.advanceDay = (day, roomName) => {
 Connection.sendMessageToClients = (message, clients, roomName) => {
 	Object.keys(io.sockets.adapter.rooms[roomName].sockets).forEach(socketID => {
 		const socket = io.sockets.connected[socketID];
-		const player = socket.player;
+		const { player } = socket;
 		if (player) {
 			if (clients.includes(player.id))
 				Connection.sendMessageToClient(message, socket);

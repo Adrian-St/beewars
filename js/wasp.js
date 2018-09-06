@@ -1,4 +1,3 @@
-import { game } from './main.js';
 import Game from './game.js';
 import Insect from './insect.js';
 
@@ -15,7 +14,7 @@ class Wasp extends Insect {
 	}
 
 	calculateSpeed() {
-		return this.speed
+		return this.speed;
 	}
 }
 

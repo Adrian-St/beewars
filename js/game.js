@@ -47,8 +47,18 @@ class Game {
 			52
 		);
 		game.load.spritesheet('outside-button', '/assets/Menu/button.png', 254, 52);
-		game.load.spritesheet('sprite', '/assets/sprites/bee-with-borders.png', 32, 32);
-		game.load.spritesheet('wasp', '/assets/sprites/wasp-with-borders.png', 32, 32);
+		game.load.spritesheet(
+			'sprite',
+			'/assets/sprites/bee-with-borders.png',
+			32,
+			32
+		);
+		game.load.spritesheet(
+			'wasp',
+			'/assets/sprites/wasp-with-borders.png',
+			32,
+			32
+		);
 		game.load.image('progressbar', '/assets/sprites/innerProgessBar.png');
 		game.load.image(
 			'message-background',
@@ -65,7 +75,10 @@ class Game {
 		game.load.image('tree', '/assets/map/tree.png');
 		game.load.image('river', '/assets/map/river.png');
 		game.load.image('rain-button', '/assets/Menu/rain-button.png');
-		game.load.image('temperature-button', '/assets/Menu/temperature-button.png');
+		game.load.image(
+			'temperature-button',
+			'/assets/Menu/temperature-button.png'
+		);
 		game.load.image('pointer', '/assets/Menu/pointer.png');
 	}
 
@@ -168,11 +181,11 @@ class Game {
 			bee.shadow.destroy();
 			bee.shadow = null;
 		}
-		if(bee.innerProgressBar) {
+		if (bee.innerProgressBar) {
 			bee.innerProgressBar.destroy();
 			bee.innerProgressBar = null;
 		}
-		bee.status === Bee.STATES.IDLE
+		bee.status = Bee.STATES.IDLE;
 		this.outsideState.setUpUserInputForBee(bee);
 		this.outsideState.bees.push(bee);
 		this.insideState.bees.splice(index, 1);

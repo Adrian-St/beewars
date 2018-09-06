@@ -35,7 +35,7 @@ class GameOverScreen {
 
 		menuText.events.onInputUp.add(() => {
 			document.getElementById('gameover').style.visibility = 'visible';
-			window.location.replace("/");
+			window.location.replace('/');
 		});
 	}
 }

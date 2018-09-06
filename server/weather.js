@@ -1,4 +1,4 @@
-const { Bee, BeeTypes } = require('./serverBee.js');
+const { BeeTypes } = require('./serverBee.js');
 
 const chanceMax = 100;
 const chanceMin = 0;
