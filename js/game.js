@@ -48,7 +48,7 @@ class Game {
 		);
 		game.load.spritesheet('outside-button', '/assets/Menu/button.png', 254, 52);
 		game.load.image('sprite', '/assets/sprites/bee32px-with-border.png');
-		game.load.image('wasp', '/assets/sprites/wasp.png');
+		game.load.spritesheet('wasp', '/assets/sprites/wasp-with-borders.png', 32, 32);
 		game.load.image('progressbar', '/assets/sprites/innerProgessBar.png');
 		game.load.image(
 			'message-background',

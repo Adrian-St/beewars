@@ -310,7 +310,7 @@ class Outside extends State {
 	}
 
 	createWasp(serverWasp) {
-		const sprite = game.add.sprite(serverWasp.x, serverWasp.y, 'wasp');
+		const sprite = game.add.sprite(serverWasp.x, serverWasp.y, 'wasp', 0);
 		sprite.anchor.setTo(0.5);
 		const wasp = new Wasp(serverWasp, sprite);
 		if (!this.isActive()) wasp.sprite.visible = false;
@@ -324,6 +324,9 @@ class Outside extends State {
 
 		if (serverWasp.moving) {
 			wasp.startTween({ x: serverWasp.target.x, y: serverWasp.target.y });
+		}
+		else {
+			wasp.stopTween();
 		}
 	}
 
