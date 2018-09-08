@@ -1,5 +1,6 @@
 import { game } from './main.js';
 import Insect from './insect.js';
+import Game from './game.js';
 
 class Bee extends Insect {
 	constructor(serverBee, sprite) {
@@ -60,6 +61,11 @@ class Bee extends Insect {
 
 	initializeShadowTween() {
 		this.shadowTween = game.add.tween(this.shadow);
+	}
+
+	startTween(destination, offset = 0) {
+		super.startTween(destination, offset)
+		this.tween.onUpdateCallback(Game.onTweenRunning, Game);
 	}
 
 	startShadowTween(destination, offset = 0) {

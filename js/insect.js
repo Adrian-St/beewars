@@ -31,7 +31,6 @@ class Insect {
 		this.animation.play(25, true);
 		this.sprite.angle = this.calculateAngle(destination);
 		this.tween.start();
-		this.tween.onUpdateCallback(Game.onTweenRunning, Game);
 	}
 
 	stopAnimation() {

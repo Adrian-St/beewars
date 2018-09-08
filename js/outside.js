@@ -321,7 +321,7 @@ class Outside extends State {
 		const wasp = this.waspForId(serverWasp.id);
 		wasp.health = serverWasp.health;
 		wasp.speed = serverWasp.speed;
-
+	
 		if (serverWasp.moving) {
 			wasp.startTween({ x: serverWasp.target.x, y: serverWasp.target.y });
 		} else {
