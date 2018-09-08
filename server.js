@@ -9,9 +9,8 @@ const helpers = require('express-helpers')(app);
 
 const server = http.createServer(app);
 const io = require('socket.io').listen(server);
-const connection = require('./server/connection.js');
-
-const rooms = [];
+const connection = require('./server/connection.js').Connection;
+const gameLabels = require('./server/connection.js').getGameLabels;
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -31,16 +30,8 @@ app.get('/games/new', (req, res) => {
 });
 
 app.post('/games', (req, res) => {
-	const name = req.body.identifier;
-	let room = rooms.find(room => room.name === name);
-	if (!room) {
-		room = {
-			key: uuidv1(),
-			name
-		};
-		rooms.push(room);
-	}
-	res.redirect('/games/' + room.key);
+	const label = req.body.identifier;
+	res.redirect('/games/' + label + '-' +uuidv1());
 });
 
 app.get('/games/:id', (req, res) => {
@@ -48,7 +39,7 @@ app.get('/games/:id', (req, res) => {
 });
 
 app.get('/games', (req, res) => {
-	res.render('games', { rooms });
+	res.render('games', {labels: gameLabels() });
 });
 
 app.get('/instructions', (req, res) => {
@@ -58,3 +49,4 @@ app.get('/instructions', (req, res) => {
 server.listen(process.env.PORT || 8081, () => {
 	console.log('Listening on ' + server.address().port);
 });
+

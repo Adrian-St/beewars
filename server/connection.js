@@ -3,12 +3,12 @@ const Game = require('./serverGame.js');
 const Connection = {};
 
 let io;
-let gameInstances;
+let gameInstances = {};
+let gameLabels = [];
 let highscore = 0;
 
 Connection.start = param => {
 	io = param;
-	gameInstances = {};
 	io.on('connection', socket => {
 		socket.on('newplayer', roomName => {
 			if (!Connection.roomExists(roomName)) Connection.newGame(roomName);
@@ -117,6 +117,10 @@ Connection.newGame = roomName => {
 		game.setConnection(Connection);
 		game.start();
 		gameInstances[roomName] = game;
+		gameLabels.push({
+			label: labelForName(roomName),
+			name: roomName
+		});
 		console.log('create room: ', roomName);
 	}
 };
@@ -134,8 +138,24 @@ Connection.game = roomName => {
 Connection.removeGameInstance = roomName => {
 	if (Connection.roomExists(roomName)) {
 		gameInstances[roomName].roomName = 'deletedRoom';
+		// Remove the room from the list of active rooms
+		const index = gameLabels.indexOf(labelObjectForName(roomName));
+		if (index !== -1) gameLabels.splice(index, 1);
 		delete gameInstances[roomName];
 	}
 };
 
-module.exports = Connection;
+function labelForName(roomName) {
+	// The lable is the name until the first '-'
+	return roomName.substr(0, roomName.indexOf('-'));
+}
+
+function labelObjectForName(roomName) {
+	return gameLabels.find(labelObject => labelObject.name === roomName);
+}
+
+function getGameLabels() {
+	return gameLabels;
+}
+
+module.exports = { Connection, getGameLabels };

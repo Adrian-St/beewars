@@ -12,8 +12,8 @@
   <div id='game-container'>
     <h1 id='header'>Open Games</h1>
     <ul class='list'>
-      <% for(let i = 0; i < rooms.length; i++) { %>
-          <li><%- link_to(rooms[i].name, '/games/' + rooms[i].key) %></li>
+      <% for(let i = 0; i < labels.length; i++) { %>
+          <li><%- link_to(labels[i].label, '/games/' + labels[i].name) %></li>
       <% } %>
     </ul>
     <a href='/' class='menu-button'>Back</a>
