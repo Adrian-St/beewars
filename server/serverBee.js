@@ -192,6 +192,7 @@ playerAction {
 	stopFlying() {
 		this.resetFlyTimer();
 		this.startIdleTimer();
+		this.destination = null;
 	}
 
 	resetFlyTimer() {

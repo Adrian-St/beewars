@@ -11,7 +11,7 @@ class Bee extends Insect {
 		this.nectar = serverBee.nectar;
 		this.capacity = serverBee.capacity;
 		this.innerProgressBar = null;
-		this.playerActions = [];
+		this.playerActions = serverBee.playerActions;
 		this.type = serverBee.type;
 		this.shadow = null;
 		this.shadowTween = null;
