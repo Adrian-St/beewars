@@ -116,10 +116,10 @@ class Game {
 		};
 	}
 
-	calculatePlayerExperienceAfterBeeArrived(bee) {
-		const positiveContributer = bee.playerActions[0].playerIDs;
-		positiveContributer.forEach(playerID =>
-			this.raiseExperienceForPlayer(playerID, 0.1)
+	calculatePlayerExperienceAfterBeeArrived(bee, value = 0.1) {
+		const contributer = bee.playerActions[0].playerIDs;
+		contributer.forEach(playerID =>
+			this.raiseExperienceForPlayer(playerID, value)
 		);
 	}
 
@@ -248,11 +248,16 @@ class Game {
 			connection.broadcastMessage('No more bees inside', this.roomName);
 	}
 
-	addNectarToBee(bee, flower) {
-		bee.pollen += 10;
-		flower.pollen -= 10;
-		bee.nectar += 10;
-		flower.nectar -= 10;
+	addNectarToBee(bee, flower, value = 10) {
+		if(bee.capacity >= bee.pollen + bee.nectar + 2 * value) {
+			bee.pollen += value;
+			flower.pollen -= value;
+			bee.nectar += value;
+			flower.nectar -= value;
+		} else {
+			console.log("Bee is full");
+			this.calculatePlayerExperienceAfterBeeArrived(bee, -0.2);
+		}
 		connection.updateFlower(flower, this.roomName);
 		connection.updateBee(bee.getSendableBee(), this.roomName);
 	}
