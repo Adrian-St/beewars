@@ -1,5 +1,4 @@
 import { game } from './main.js';
-import Game from './game.js';
 
 class Insect {
 	constructor(serverInsect, sprite) {

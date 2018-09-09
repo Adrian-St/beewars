@@ -5,7 +5,6 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const uuidv1 = require('uuid/v1');
-const helpers = require('express-helpers')(app);
 
 const server = http.createServer(app);
 const io = require('socket.io').listen(server);
@@ -31,7 +30,7 @@ app.get('/games/new', (req, res) => {
 
 app.post('/games', (req, res) => {
 	const label = req.body.identifier;
-	res.redirect('/games/' + label + '-' +uuidv1());
+	res.redirect('/games/' + label + '-' + uuidv1());
 });
 
 app.get('/games/:id', (req, res) => {
@@ -39,7 +38,7 @@ app.get('/games/:id', (req, res) => {
 });
 
 app.get('/games', (req, res) => {
-	res.render('games', {labels: gameLabels() });
+	res.render('games', { labels: gameLabels() });
 });
 
 app.get('/instructions', (req, res) => {
@@ -49,4 +48,3 @@ app.get('/instructions', (req, res) => {
 server.listen(process.env.PORT || 8081, () => {
 	console.log('Listening on ' + server.address().port);
 });
-

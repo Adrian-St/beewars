@@ -3,8 +3,8 @@ const Game = require('./serverGame.js');
 const Connection = {};
 
 let io;
-let gameInstances = {};
-let gameLabels = [];
+const gameInstances = {};
+const gameLabels = [];
 let highscore = 0;
 
 Connection.start = param => {

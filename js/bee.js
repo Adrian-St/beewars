@@ -64,7 +64,7 @@ class Bee extends Insect {
 	}
 
 	startTween(destination, offset = 0) {
-		super.startTween(destination, offset)
+		super.startTween(destination, offset);
 		this.tween.onUpdateCallback(Game.onTweenRunning, Game);
 	}
 

@@ -48,6 +48,12 @@ class Game {
 		);
 		game.load.spritesheet('outside-button', '/assets/Menu/button.png', 254, 52);
 		game.load.spritesheet(
+			'quit-button',
+			'/assets/Menu/quit-button.png',
+			100,
+			52
+		);
+		game.load.spritesheet(
 			'sprite',
 			'/assets/sprites/bee-with-borders.png',
 			32,
@@ -110,16 +116,26 @@ class Game {
 		this.temperatureDisplay = null;
 		this.temperatureDisplayMinOffset = 40;
 		this.temperatureDisplayMaxOffset = 288;
+		this.quitButton = null;
 	}
 
 	addTopMenu() {
-		this.dayDisplay = game.add.text(1000, 8, 'Day: 0', {
+		this.dayDisplay = game.add.text(1020, 8, 'Day: 0', {
 			font: 'bold 28pt Raleway'
 		});
-		this.rainDisplay = game.add.image(320, 6, 'rain-button');
-		this.rainPointer = game.add.sprite(400, 16, 'pointer');
-		this.temperatureDisplay = game.add.image(640, 6, 'temperature-button');
-		this.temperaturePointer = game.add.sprite(700, 16, 'pointer');
+		this.rainDisplay = game.add.image(380, 6, 'rain-button');
+		this.rainPointer = game.add.sprite(460, 16, 'pointer');
+		this.temperatureDisplay = game.add.image(700, 6, 'temperature-button');
+		this.temperaturePointer = game.add.sprite(760, 16, 'pointer');
+		this.quitButton = this.add.button(
+			6,
+			6,
+			'quit-button',
+			() => window.location.replace('/'),
+			2,
+			1,
+			0
+		);
 	}
 
 	addProperties(data) {

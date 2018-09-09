@@ -127,7 +127,7 @@ class Inside extends State {
 	addTopMenu() {
 		// Super.addTopMenu();
 		this.insideButton = Game.add.button(
-			6,
+			112,
 			6,
 			'inside-button',
 			Game.switchToOutside,
