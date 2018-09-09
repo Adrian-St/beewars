@@ -8,6 +8,27 @@ class Menu {
 		return text;
 	}
 
+	static createProgressBar(title, max, current) {
+
+		const div = document.createElement('DIV');
+		/*
+		<div id="myProgress">
+  			<div id="myBar"></div>
+		</div>
+		*/
+		const myProgress = document.createElement('DIV');
+		const myBar = document.createElement('DIV');
+		myProgress.setAttribute("id", "myProgress");
+		myBar.setAttribute("id", "myBar");
+		myBar.style.width = (current/max)*100 + '%';
+		myProgress.appendChild(myBar);
+		
+		div.appendChild(this.createTextField(title, ""));
+		div.appendChild(myProgress);
+
+		return div;
+	}
+
 	static createHeading(title, element) {
 		const heading = document.createElement('P');
 		heading.style.fontFamily = 'Raleway';
@@ -78,7 +99,7 @@ class Menu {
 
 		const health = this.createTextField('Heath: ', bee.health);
 
-		const status = this.createTextField('Status: ', bee.status);
+		const capacity = this.createProgressBar('Capacity:', bee.capacity, bee.pollen + bee.nectar);
 
 		const subMenu = this.createSubmenu(
 			heading,
@@ -86,7 +107,7 @@ class Menu {
 			nectar,
 			pollen,
 			age,
-			status
+			capacity
 		);
 
 		const beeMenu = this.createMenu('beeMenu-' + bee.id, subMenu);
