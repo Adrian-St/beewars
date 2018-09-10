@@ -26,7 +26,7 @@ class Insect {
 
 		this.animation = this.sprite.animations.add('fly', null, 25);
 		this.initializeTween();
-		this.tween.to(destination, duration - offset);
+		this.tween.to(destination, duration);
 		this.animation.play(25, true);
 		this.sprite.angle = this.calculateAngle(destination);
 		this.tween.start();

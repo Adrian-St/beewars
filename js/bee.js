@@ -40,7 +40,6 @@ class Bee extends Insect {
 			this.shadow.destroy();
 			this.shadow = null;
 		}
-		this.stopShadowTween();
 	}
 
 	isSelected() {
@@ -63,12 +62,12 @@ class Bee extends Insect {
 		this.shadowTween = game.add.tween(this.shadow);
 	}
 
-	startTween(destination, offset = 0) {
-		super.startTween(destination, offset);
+	startTween(destination) {
+		super.startTween(destination);
 		this.tween.onUpdateCallback(Game.onTweenRunning, Game);
 	}
 
-	startShadowTween(destination, offset = 0) {
+	startShadowTween(destination) {
 		const beeSpeed = this.calculateBeeSpeed();
 		const duration =
 			Phaser.Math.distance(
@@ -78,8 +77,7 @@ class Bee extends Insect {
 				destination.y
 			) *
 				10 *
-				beeSpeed -
-			offset;
+				beeSpeed;
 
 		this.initializeShadowTween();
 		this.shadowTween.to(destination, duration);
@@ -95,9 +93,6 @@ class Bee extends Insect {
 
 	stopAnimation() {
 		super.stopAnimation();
-		if (this.shadow) {
-			this.shadow.angle = 0;
-		}
 		if (this.shadowAnimation) {
 			this.shadowAnimation.stop(true);
 			this.shadowAnimation = null;
