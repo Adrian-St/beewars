@@ -254,7 +254,10 @@ playerAction {
 				return;
 			} else {
 				const flower = this.game.getFlowerForPosition(this.destination);
-				if (!flower) console.log('[WARNING] no flower found for this position');
+				if (!flower) {
+					console.log('[WARNING] no flower found for this position', this.destination);
+					return;
+				}
 				this.game.addNectarToBee(this, flower);
 			}
 		} else if (this.destinationEqualsPosition(this.game.centerPoints[0])) {

@@ -20,6 +20,10 @@ class Insect {
 		return true;
 	}
 
+	die() {	// Override in subclass
+		return;
+	}
+
 	randomInt(low, high) {
 		return Math.floor(Math.random() * (high - low) + low);
 	}

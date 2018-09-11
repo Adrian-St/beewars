@@ -175,6 +175,7 @@ class Game {
 
 	handleMovementRequest(playerId, moveData) {
 		const bee = this.beeForId(moveData.beeID);
+		if (!bee) return;
 		if (bee.status === Bee.STATES.INACTIVE) {
 			console.log('Bee is beesy');
 		} else {
