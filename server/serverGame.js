@@ -180,13 +180,13 @@ class Game {
 		} else {
 			moveData.playerID = playerId;
 			const result = bee.performAction(moveData);
-			if (result === 'changed') {
-				bee.startFlying(bee.playerActions[0].target);
-				connection.moveBee(bee.getSendableBee(), this.roomName);
-			} else if (result === 'stop') {
+			if (result === 'stop') {
 				bee.stopFlying();
 				connection.stopBee(bee.getSendableBee(), this.roomName);
-			}
+			} else {
+				bee.startFlying(bee.playerActions[0].target);
+				connection.moveBee(bee.getSendableBee(), this.roomName);
+			} 
 		}
 	}
 

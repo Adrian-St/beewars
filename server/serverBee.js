@@ -133,11 +133,6 @@ playerAction {
 				return 'stop';
 			}
 		}
-		if (this.playerActions[0] === previousAction && this.flyTimer !== null) {
-			return 'unchanged';
-		}
-
-		return 'changed';
 	}
 
 	removeOldPlayerAction(playerID, indexOfOldPlayerAction) {

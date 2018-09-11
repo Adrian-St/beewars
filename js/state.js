@@ -255,7 +255,6 @@ class State {
 		// Draw all lines with alpha = 0.5
 		this.graphics.lineStyle(10, 0xffd900, 0.7);
 		bee.playerActions.forEach(action => {
-			console.log(action)
 			this.graphics.moveTo(bee.sprite.x, bee.sprite.y);
 			this.graphics.lineTo(action.target.x, action.target.y);
 		});
