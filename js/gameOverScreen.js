@@ -9,6 +9,7 @@ class GameOverScreen {
 	create() {
 		document.getElementById('gameover').style.visibility = 'hidden';
 		document.getElementById('game').style.visibility = 'visible';
+		document.getElementById('menu').style.visibility = 'hidden';
 		game.stage.disableVisibilityChange = true;
 		game.stage.backgroundColor = '#FFFFFF';
 
