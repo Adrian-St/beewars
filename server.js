@@ -5,7 +5,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const uuidv1 = require('uuid/v1');
-const helpers = require('express-helpers')(app); // the linter complains, but this is needed for the ejs files
+const helpers = require('express-helpers')(app); // The linter complains, but this is needed for the ejs files
 
 const server = http.createServer(app);
 const io = require('socket.io').listen(server);

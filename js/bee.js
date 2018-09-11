@@ -76,8 +76,8 @@ class Bee extends Insect {
 				destination.x,
 				destination.y
 			) *
-				10 *
-				beeSpeed;
+			10 *
+			beeSpeed;
 
 		this.initializeShadowTween();
 		this.shadowTween.to(destination, duration);

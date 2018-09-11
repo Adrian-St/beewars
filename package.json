@@ -40,10 +40,11 @@
           "node"
         ]
       },
-      {"files": "server.js",
-      "env": [
-      "node"
-      ]
+      {
+        "files": "server.js",
+        "env": [
+          "node"
+        ]
       }
     ],
     "rules": {
