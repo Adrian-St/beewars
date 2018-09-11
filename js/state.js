@@ -259,10 +259,13 @@ class State {
 			this.graphics.lineTo(action.target.x, action.target.y);
 		});
 		// Draw the chosen playerAction with aplha = 1
-		if(bee.tween && bee.playerActions.length > 0){
+		if (bee.tween && bee.playerActions.length > 0) {
 			this.graphics.lineStyle(10, 0xffd900, 1);
 			this.graphics.moveTo(bee.sprite.x, bee.sprite.y);
-			this.graphics.lineTo(bee.playerActions[0].target.x, bee.playerActions[0].target.y);
+			this.graphics.lineTo(
+				bee.playerActions[0].target.x,
+				bee.playerActions[0].target.y
+			);
 		}
 	}
 

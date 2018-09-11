@@ -43,8 +43,11 @@ class Game {
 	start() {
 		const offset = 128; // Caused by difference in map generator, needs to be changed on client site too!
 		const firstLayer = insideMapJson.layers[3].objects[0];
-		this.defaultAreaTopLeft = {x:firstLayer.x, y: firstLayer.y - offset};
-		this.defaultAreaBottomRight = {x: firstLayer.x + firstLayer.width, y: firstLayer.y + firstLayer.height - offset};
+		this.defaultAreaTopLeft = { x: firstLayer.x, y: firstLayer.y - offset };
+		this.defaultAreaBottomRight = {
+			x: firstLayer.x + firstLayer.width,
+			y: firstLayer.y + firstLayer.height - offset
+		};
 
 		for (let i = 0; i < outsideMapJson.layers[3].objects.length; i++) {
 			const tmpFlower = new Flower(this.lastFlowerID);
@@ -66,7 +69,12 @@ class Game {
 			this.lastFrogID++;
 		}
 		for (let i = 0; i < this.STARTING_BEES_INSIDE; i++) {
-			const tmpBee = new Bee(this.lastBeeID, this, this.defaultAreaTopLeft, this.defaultAreaBottomRight);
+			const tmpBee = new Bee(
+				this.lastBeeID,
+				this,
+				this.defaultAreaTopLeft,
+				this.defaultAreaBottomRight
+			);
 			tmpBee.type = BeeTypes.INSIDEBEE;
 			this.bees.push(tmpBee);
 			this.lastBeeID++;
@@ -181,10 +189,12 @@ class Game {
 
 	handleMovementRequest(playerId, moveData) {
 		const bee = this.beeForId(moveData.beeID);
-		if(!bee) return;
+		if (!bee) return;
 
 		// Remove "defaultAreaActions" of bee
-		bee.playerActions = bee.playerActions.filter(action => !action.defaultAreaAction)
+		bee.playerActions = bee.playerActions.filter(
+			action => !action.defaultAreaAction
+		);
 
 		if (bee.status === Bee.STATES.INACTIVE) {
 			console.log('Bee is beesy');
@@ -197,7 +207,7 @@ class Game {
 			} else {
 				bee.startFlying(bee.playerActions[0].target);
 				connection.moveBee(bee.getSendableBee(), this.roomName);
-			} 
+			}
 		}
 	}
 
@@ -239,7 +249,12 @@ class Game {
 	}
 
 	spawnBee() {
-		const newBee = new Bee(this.lastBeeID, this, this.defaultAreaTopLeft, this.defaultAreaBottomRight);
+		const newBee = new Bee(
+			this.lastBeeID,
+			this,
+			this.defaultAreaTopLeft,
+			this.defaultAreaBottomRight
+		);
 		this.lastBeeID++;
 		this.beehive.occupiedHoneycombs -= 1;
 		this.beehive.dirtyHoneycombs += 1;

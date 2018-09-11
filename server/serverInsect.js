@@ -1,5 +1,10 @@
 class Insect {
-	constructor(id, game, topLeft = { x:100, y:100 } , bottomRight = { x:400, y:400 }) {
+	constructor(
+		id,
+		game,
+		topLeft = { x: 100, y: 100 },
+		bottomRight = { x: 400, y: 400 }
+	) {
 		this.game = game;
 		this.age = 0;
 		this.id = id;
@@ -20,7 +25,7 @@ class Insect {
 		return true;
 	}
 
-	die() {	
+	die() {
 		throw new Error('die must be implemented by subclasses!');
 	}
 

@@ -11,7 +11,12 @@ const BeeTypes = {
 };
 
 class Bee extends Insect {
-	constructor(id, game, topLeft = { x:100, y:100 } , bottomRight = { x:400, y:400 } ) {
+	constructor(
+		id,
+		game,
+		topLeft = { x: 100, y: 100 },
+		bottomRight = { x: 400, y: 400 }
+	) {
 		super(id, game, topLeft, bottomRight);
 		this.status = Bee.STATES.IDLE;
 		this.health = 100;
@@ -151,10 +156,8 @@ class Bee extends Insect {
 		this.playerActions = this.playerActions.map(action => {
 			action.weight = action.playerIDs.reduce((total, playerID) => {
 				const player = this.game.players.find(player => player.id === playerID);
-				if(player)
-					return total + player.experience;
-				else
-					return 0;
+				if (player) return total + player.experience;
+				return 0;
 			}, 0);
 			return action;
 		});
@@ -235,7 +238,8 @@ class Bee extends Insect {
 	onActivateBee() {
 		this.status = Bee.STATES.IDLE;
 		this.game.updateBee(this);
-		if (this.type === BeeTypes.INSIDEBEE) this.game.handleMovementRequest(-1, this.createDefaultAreaAction())
+		if (this.type === BeeTypes.INSIDEBEE)
+			this.game.handleMovementRequest(-1, this.createDefaultAreaAction());
 	}
 
 	onArriveAtDestination() {
@@ -255,7 +259,10 @@ class Bee extends Insect {
 			} else {
 				const flower = this.game.getFlowerForPosition(this.destination);
 				if (!flower) {
-					console.log('[WARNING] no flower found for this position', this.destination);
+					console.log(
+						'[WARNING] no flower found for this position',
+						this.destination
+					);
 					return;
 				}
 				this.game.addNectarToBee(this, flower);
@@ -285,16 +292,16 @@ class Bee extends Insect {
 		return this.destination.x === pos.x && this.destination.y === pos.y;
 	}
 
-	createDefaultAreaAction(){
+	createDefaultAreaAction() {
 		return {
-			"id": this.game.lastActionId ++,
-			"timestamp": Date.now(),
-			"target": this.getRandomTarget(),
-			"beeID": this.id,
-			"playerIDs": [-1],
-			"weight": 0,
-			"stop": false,
-			"defaultAreaAction": true,
+			id: this.game.lastActionId++,
+			timestamp: Date.now(),
+			target: this.getRandomTarget(),
+			beeID: this.id,
+			playerIDs: [-1],
+			weight: 0,
+			stop: false,
+			defaultAreaAction: true
 		};
 	}
 
