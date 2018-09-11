@@ -75,12 +75,12 @@ class Outside extends State {
 
 		this.outsideMap = Game.add.tilemap('map');
 		this.addBackground();
+		this.graphics = Game.add.graphics(0, 0);
 		this.addFlowers();
 		this.addFrogs();
 		this.addRain();
 		this.addBeehive();
 		this.addTopMenu();
-		this.graphics = Game.add.graphics(0, 0);
 	}
 
 	addBackground() {
