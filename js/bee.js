@@ -113,18 +113,6 @@ class Bee extends Insect {
 			capacity: this.capacity
 		};
 	}
-
-	getActions() {
-		// This gets all of the playerActions from one Bee and removes the "stop" Actions
-		return this.playerActions
-			.map(action => {
-				if (!action.stop) {
-					return { x: action.target.x, y: action.target.y };
-				}
-				return null;
-			})
-			.filter(el => el);
-	}
 }
 
 const STATES = {

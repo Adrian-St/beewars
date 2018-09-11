@@ -252,11 +252,18 @@ class State {
 
 	showAllActions(bee) {
 		this.graphics.clear();
-		bee.getActions().forEach(action => {
+		// Draw all lines with alpha = 0.5
+		this.graphics.lineStyle(10, 0xffd900, 0.7);
+		bee.playerActions.forEach(action => {
+			this.graphics.moveTo(bee.sprite.x, bee.sprite.y);
+			this.graphics.lineTo(action.target.x, action.target.y);
+		});
+		// Draw the chosen playerAction with aplha = 1
+		if(bee.tween && bee.playerActions.length > 0){
 			this.graphics.lineStyle(10, 0xffd900, 1);
 			this.graphics.moveTo(bee.sprite.x, bee.sprite.y);
-			this.graphics.lineTo(action.x, action.y);
-		});
+			this.graphics.lineTo(bee.playerActions[0].target.x, bee.playerActions[0].target.y);
+		}
 	}
 
 	stopAllOtherShadowTweens(bee) {
