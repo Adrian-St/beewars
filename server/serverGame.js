@@ -73,7 +73,7 @@ class Game {
 		this.startTime = new Date();
 		this.weather = new Weather(this);
 		this.weather.startSimulation();
-		setInterval(this.spawnLarvae.bind(this), 15000);
+		setInterval(this.spawnLarvae.bind(this), 3 * this.DAY_DURATION);
 		setInterval(this.advanceDay.bind(this), this.DAY_DURATION);
 		setInterval(this.spawnEnemy.bind(this), 6 * this.DAY_DURATION);
 
@@ -249,13 +249,13 @@ class Game {
 	}
 
 	addNectarToBee(bee, flower, value = 10) {
-		if(bee.capacity >= bee.pollen + bee.nectar + 2 * value) {
+		if (bee.capacity >= bee.pollen + bee.nectar + 2 * value) {
 			bee.pollen += value;
 			flower.pollen -= value;
 			bee.nectar += value;
 			flower.nectar -= value;
 		} else {
-			console.log("Bee is full");
+			console.log('Bee is full');
 			this.calculatePlayerExperienceAfterBeeArrived(bee, -0.2);
 		}
 		connection.updateFlower(flower, this.roomName);

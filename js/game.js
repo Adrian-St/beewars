@@ -214,11 +214,10 @@ class Game {
 		if (bee.shadowTween) {
 			bee.stopShadowTween();
 		}
-		const offset = Date.now() - action.timestamp;
-		bee.startTween({ x: action.target.x, y: action.target.y }, offset);
+		bee.startTween({ x: action.target.x, y: action.target.y });
 
 		if (bee.shadow) {
-			bee.startShadowTween({ x: action.target.x, y: action.target.y }, offset);
+			bee.startShadowTween({ x: action.target.x, y: action.target.y });
 		}
 	}
 
