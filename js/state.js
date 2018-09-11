@@ -323,7 +323,7 @@ class State {
 			if (bee.status === Bee.STATES.IDLE) this.activateBee(beeToBeUpdated); // Bee is free now
 		} else if (bee.status === Bee.STATES.INACTIVE) {
 			this.deactivateBee(beeToBeUpdated, 4); // Bee is now blocked
-			beeToBeUpdated.stopAnimation();
+			this.graphics.clear();
 		}
 		beeToBeUpdated.age = bee.age;
 		beeToBeUpdated.status = bee.status;

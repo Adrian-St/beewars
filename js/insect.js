@@ -11,6 +11,7 @@ class Insect {
 
 	initializeTween() {
 		this.tween = game.add.tween(this.sprite);
+		this.tween.onComplete.add(this.stopAnimation, this);
 	}
 
 	startTween(destination, offset = 0) {
