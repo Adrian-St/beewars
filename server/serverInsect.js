@@ -2,14 +2,14 @@ class Insect {
 	constructor(
 		id,
 		game,
-		topLeft = { x: 100, y: 100 },
-		bottomRight = { x: 400, y: 400 }
+		x = 0,
+		y = 0
 	) {
 		this.game = game;
 		this.age = 0;
 		this.id = id;
-		this.x = this.randomInt(topLeft.x, bottomRight.x);
-		this.y = this.randomInt(topLeft.y, bottomRight.y);
+		this.x = x;
+		this.y = y;
 		this.flyTimer = null;
 		this.destination = null;
 		this.flyDuration = 0;
@@ -27,10 +27,6 @@ class Insect {
 
 	die() {
 		throw new Error('die must be implemented by subclasses!');
-	}
-
-	randomInt(low, high) {
-		return Math.floor(Math.random() * (high - low) + low);
 	}
 
 	startFlyTimer(destination) {

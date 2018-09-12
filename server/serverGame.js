@@ -69,18 +69,22 @@ class Game {
 			this.lastFrogID++;
 		}
 		for (let i = 0; i < this.STARTING_BEES_INSIDE; i++) {
+			const tmpX = this.randomInt(this.defaultAreaTopLeft.x, this.defaultAreaBottomRight.x);
+			const tmpY = this.randomInt(this.defaultAreaTopLeft.y, this.defaultAreaBottomRight.y);
 			const tmpBee = new Bee(
 				this.lastBeeID,
 				this,
-				this.defaultAreaTopLeft,
-				this.defaultAreaBottomRight
+				tmpX,
+				tmpY
 			);
 			tmpBee.type = BeeTypes.INSIDEBEE;
 			this.bees.push(tmpBee);
 			this.lastBeeID++;
 		}
 		for (let j = 0; j < this.STARTING_BEES_OUTSIDE; j++) {
-			const tmpBee = new Bee(this.lastBeeID, this);
+			const tmpX = this.randomInt(100, 400);
+			const tmpY = this.randomInt(100, 400);
+			const tmpBee = new Bee(this.lastBeeID, this, tmpX, tmpY);
 			tmpBee.type = BeeTypes.OUTSIDEBEE;
 			this.bees.push(tmpBee);
 			this.lastBeeID++;
@@ -105,7 +109,9 @@ class Game {
 	}
 
 	spawnEnemy() {
-		const wasp = new Wasp(this.lastWaspID, this);
+		const tmpX = this.randomInt(100, 400);
+		const tmpY = this.randomInt(100, 400);
+		const wasp = new Wasp(this.lastWaspID, this, tmpX, tmpY);
 		this.enemies.push(wasp);
 		this.lastWaspID++;
 		connection.createWasp(wasp.getSendableWasp(), this.roomName);
@@ -249,11 +255,13 @@ class Game {
 	}
 
 	spawnBee() {
+		const tmpX = this.randomInt(this.defaultAreaTopLeft.x, this.defaultAreaBottomRight.x);
+		const tmpY = this.randomInt(this.defaultAreaTopLeft.y, this.defaultAreaBottomRight.y);
 		const newBee = new Bee(
 			this.lastBeeID,
 			this,
-			this.defaultAreaTopLeft,
-			this.defaultAreaBottomRight
+			tmpX,
+			tmpY,
 		);
 		this.lastBeeID++;
 		this.beehive.occupiedHoneycombs -= 1;
@@ -393,6 +401,11 @@ class Game {
 	removePlayer(playerID) {
 		this.players.splice(playerID, 1);
 		return this.players.length;
+	}
+
+
+	randomInt(low, high) {
+		return Math.floor(Math.random() * (high - low) + low);
 	}
 
 	checkGameOver() {

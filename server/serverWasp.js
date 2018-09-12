@@ -2,8 +2,8 @@ const Insect = require('./serverInsect.js');
 const { BeeTypes } = require('./serverBee.js');
 
 class Wasp extends Insect {
-	constructor(id, game) {
-		super(id, game);
+	constructor(id, game, x = 0, y = 0) {
+		super(id, game, x, y);
 		this.health = 300;
 		this.attackTimer = null;
 		this.speed = 3;
