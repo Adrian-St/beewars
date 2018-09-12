@@ -11,9 +11,10 @@ class Insect {
 
 	initializeTween() {
 		this.tween = game.add.tween(this.sprite);
+		this.tween.onComplete.add(this.stopAnimation, this);
 	}
 
-	startTween(destination, offset = 0) {
+	startTween(destination) {
 		const duration =
 			Phaser.Math.distance(
 				this.sprite.position.x,

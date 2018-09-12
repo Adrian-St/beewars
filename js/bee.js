@@ -46,10 +46,6 @@ class Bee extends Insect {
 		return !(this.shadow === null);
 	}
 
-	initializeTween() {
-		this.tween = game.add.tween(this.sprite);
-	}
-
 	calculateBeeSpeed() {
 		return (this.pollen + this.nectar) / 100 + 1;
 	}

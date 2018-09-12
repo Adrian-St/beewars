@@ -30,6 +30,8 @@ class Game {
 		this.enemies = [];
 		this.weather = {};
 		this.centerPoints = [];
+		this.defaultAreaTopLeft = null;
+		this.defaultAreaBottomRight = null;
 		this.beehive = new Beehive();
 		this.roomName = roomName; // This is used to distinguish between multiple gameInstances
 	}
@@ -39,6 +41,14 @@ class Game {
 	}
 
 	start() {
+		const offset = 128; // Caused by difference in map generator, needs to be changed on client site too!
+		const firstLayer = insideMapJson.layers[3].objects[0];
+		this.defaultAreaTopLeft = { x: firstLayer.x, y: firstLayer.y - offset };
+		this.defaultAreaBottomRight = {
+			x: firstLayer.x + firstLayer.width,
+			y: firstLayer.y + firstLayer.height - offset
+		};
+
 		for (let i = 0; i < outsideMapJson.layers[3].objects.length; i++) {
 			const tmpFlower = new Flower(this.lastFlowerID);
 			tmpFlower.x = outsideMapJson.layers[3].objects[i].x;
@@ -59,14 +69,23 @@ class Game {
 			this.lastFrogID++;
 		}
 		for (let i = 0; i < this.STARTING_BEES_INSIDE; i++) {
-			const tmpBee = new Bee(this.lastBeeID, this);
-			tmpBee.type = BeeTypes.OUTSIDEBEE;
+			const tmpX = this.randomInt(this.defaultAreaTopLeft.x, this.defaultAreaBottomRight.x);
+			const tmpY = this.randomInt(this.defaultAreaTopLeft.y, this.defaultAreaBottomRight.y);
+			const tmpBee = new Bee(
+				this.lastBeeID,
+				this,
+				tmpX,
+				tmpY
+			);
+			tmpBee.type = BeeTypes.INSIDEBEE;
 			this.bees.push(tmpBee);
 			this.lastBeeID++;
 		}
 		for (let j = 0; j < this.STARTING_BEES_OUTSIDE; j++) {
-			const tmpBee = new Bee(this.lastBeeID, this);
-			tmpBee.type = BeeTypes.INSIDEBEE;
+			const tmpX = this.randomInt(100, 400);
+			const tmpY = this.randomInt(100, 400);
+			const tmpBee = new Bee(this.lastBeeID, this, tmpX, tmpY);
+			tmpBee.type = BeeTypes.OUTSIDEBEE;
 			this.bees.push(tmpBee);
 			this.lastBeeID++;
 		}
@@ -77,7 +96,6 @@ class Game {
 		setInterval(this.advanceDay.bind(this), this.DAY_DURATION);
 		setInterval(this.spawnEnemy.bind(this), 6 * this.DAY_DURATION);
 
-		const offset = 128; // Caused by difference in map generator, needs to be changed on client site too!
 		for (let i = 0; i < insideMapJson.layers[3].objects.length; i++) {
 			const tmpX =
 				insideMapJson.layers[3].objects[i].x +
@@ -91,7 +109,9 @@ class Game {
 	}
 
 	spawnEnemy() {
-		const wasp = new Wasp(this.lastWaspID, this);
+		const tmpX = this.randomInt(100, 400);
+		const tmpY = this.randomInt(100, 400);
+		const wasp = new Wasp(this.lastWaspID, this, tmpX, tmpY);
 		this.enemies.push(wasp);
 		this.lastWaspID++;
 		connection.createWasp(wasp.getSendableWasp(), this.roomName);
@@ -176,6 +196,12 @@ class Game {
 	handleMovementRequest(playerId, moveData) {
 		const bee = this.beeForId(moveData.beeID);
 		if (!bee) return;
+
+		// Remove "defaultAreaActions" of bee
+		bee.playerActions = bee.playerActions.filter(
+			action => !action.defaultAreaAction
+		);
+
 		if (bee.status === Bee.STATES.INACTIVE) {
 			console.log('Bee is beesy');
 		} else {
@@ -187,7 +213,7 @@ class Game {
 			} else {
 				bee.startFlying(bee.playerActions[0].target);
 				connection.moveBee(bee.getSendableBee(), this.roomName);
-			} 
+			}
 		}
 	}
 
@@ -215,7 +241,7 @@ class Game {
 			if (this.beehive.freeHoneycombs > 0) {
 				this.beehive.freeHoneycombs -= 1;
 				this.beehive.occupiedHoneycombs += 1;
-				setTimeout(this.spawnBee.bind(this), 10 * this.DAY_DURATION); // 50 sec
+				setTimeout(this.spawnBee.bind(this), 60000); // 60 sec
 			} else {
 				connection.broadcastMessage('No honeycombs free', this.roomName);
 			}
@@ -229,7 +255,14 @@ class Game {
 	}
 
 	spawnBee() {
-		const newBee = new Bee(this.lastBeeID, this);
+		const tmpX = this.randomInt(this.defaultAreaTopLeft.x, this.defaultAreaBottomRight.x);
+		const tmpY = this.randomInt(this.defaultAreaTopLeft.y, this.defaultAreaBottomRight.y);
+		const newBee = new Bee(
+			this.lastBeeID,
+			this,
+			tmpX,
+			tmpY,
+		);
 		this.lastBeeID++;
 		this.beehive.occupiedHoneycombs -= 1;
 		this.beehive.dirtyHoneycombs += 1;
@@ -368,6 +401,11 @@ class Game {
 	removePlayer(playerID) {
 		this.players.splice(playerID, 1);
 		return this.players.length;
+	}
+
+
+	randomInt(low, high) {
+		return Math.floor(Math.random() * (high - low) + low);
 	}
 
 	checkGameOver() {

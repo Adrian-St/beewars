@@ -11,8 +11,13 @@ const BeeTypes = {
 };
 
 class Bee extends Insect {
-	constructor(id, game) {
-		super(id, game);
+	constructor(
+		id,
+		game,
+		x = 0,
+		y = 0
+	) {
+		super(id, game, x, y);
 		this.status = Bee.STATES.IDLE;
 		this.health = 100;
 		this.energy = 100;
@@ -27,16 +32,17 @@ class Bee extends Insect {
 	}
 
 	/* Schema of a playerAction
-playerAction {
-  id: int,
-  timestamp: long,
-  target: position,
-  beeID: int,
-  playerIDs: [int],
-  weight: int,
-  stop: boolean // gets always overridden from server
-}
-*/
+	playerAction {
+	  id: int,
+	  timestamp: long,
+	  target: position,
+	  beeID: int,
+	  playerIDs: [int],
+	  weight: int,
+	  stop: boolean // gets always overridden from server
+	  defaultAreaAction: boolean
+	}
+	*/
 
 	static get STATES() {
 		return STATES;
@@ -89,8 +95,6 @@ playerAction {
 
 	performAction(playerAction) {
 		// Calculate here what action to perform
-		const previousAction = this.playerActions[0];
-
 		const indexOfExistingAction = this.playerActions.findIndex(
 			action =>
 				action.target.x === playerAction.target.x &&
@@ -106,10 +110,9 @@ playerAction {
 					indexOfOldPlayerAction
 				);
 			}
-			playerAction.id = this.game.lastActionId;
+			playerAction.id = this.game.lastActionId++;
 			playerAction.playerIDs = [playerAction.playerID];
 			this.playerActions.push(playerAction);
-			this.game.lastActionId++;
 		} else if (indexOfOldPlayerAction !== indexOfExistingAction) {
 			this.playerActions[indexOfExistingAction].timestamp =
 				playerAction.timestamp;
@@ -152,10 +155,9 @@ playerAction {
 	calculateWeightsForActions() {
 		this.playerActions = this.playerActions.map(action => {
 			action.weight = action.playerIDs.reduce((total, playerID) => {
-				return (
-					total +
-					this.game.players.find(player => player.id === playerID).experience
-				);
+				const player = this.game.players.find(player => player.id === playerID);
+				if (player) return total + player.experience;
+				return 0;
 			}, 0);
 			return action;
 		});
@@ -187,7 +189,7 @@ playerAction {
 	stopFlying() {
 		this.resetFlyTimer();
 		this.startIdleTimer();
-		this.destination = null;
+		this.setDestination(null);
 	}
 
 	resetFlyTimer() {
@@ -236,6 +238,8 @@ playerAction {
 	onActivateBee() {
 		this.status = Bee.STATES.IDLE;
 		this.game.updateBee(this);
+		if (this.type === BeeTypes.INSIDEBEE)
+			this.game.handleMovementRequest(-1, this.createDefaultAreaAction());
 	}
 
 	onArriveAtDestination() {
@@ -255,7 +259,10 @@ playerAction {
 			} else {
 				const flower = this.game.getFlowerForPosition(this.destination);
 				if (!flower) {
-					console.log('[WARNING] no flower found for this position', this.destination);
+					console.log(
+						'[WARNING] no flower found for this position',
+						this.destination
+					);
 					return;
 				}
 				this.game.addNectarToBee(this, flower);
@@ -272,20 +279,38 @@ playerAction {
 			console.log('[WARNING] centerPos not found', this.destination);
 		}
 
-		this.calculateNewPosition();
-		this.resetFlyTimer();
 		this.game.calculatePlayerExperienceAfterBeeArrived(this);
 		this.x = this.destination.x;
 		this.y = this.destination.y;
-		this.setDestination(null);
-		this.setInactive();
-		this.startIdleTimer();
+		this.stopFlying();
+		if (!this.playerActions[0].defaultAreaAction) this.setInactive();
 		this.game.clearPlayerActionsForBee(this);
 		this.game.updateBee(this);
 	}
 
 	destinationEqualsPosition(pos) {
 		return this.destination.x === pos.x && this.destination.y === pos.y;
+	}
+
+	createDefaultAreaAction() {
+		return {
+			id: this.game.lastActionId++,
+			timestamp: Date.now(),
+			target: this.getRandomTarget(),
+			beeID: this.id,
+			playerIDs: [-1],
+			weight: 0,
+			stop: false,
+			defaultAreaAction: true
+		};
+	}
+
+	getRandomTarget() {
+		const minX = this.game.defaultAreaTopLeft.x;
+		const maxX = this.game.defaultAreaBottomRight.x;
+		const minY = this.game.defaultAreaTopLeft.y;
+		const maxY = this.game.defaultAreaBottomRight.y;
+		return { x: this.game.randomInt(minX, maxX), y: this.game.randomInt(minY, maxY) };
 	}
 
 	getSendableBee() {

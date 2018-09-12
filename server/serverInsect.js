@@ -1,10 +1,15 @@
 class Insect {
-	constructor(id, game) {
+	constructor(
+		id,
+		game,
+		x = 0,
+		y = 0
+	) {
 		this.game = game;
 		this.age = 0;
 		this.id = id;
-		this.x = this.randomInt(100, 400);
-		this.y = this.randomInt(100, 400);
+		this.x = x;
+		this.y = y;
 		this.flyTimer = null;
 		this.destination = null;
 		this.flyDuration = 0;
@@ -20,12 +25,8 @@ class Insect {
 		return true;
 	}
 
-	die() {	// Override in subclass
-		return;
-	}
-
-	randomInt(low, high) {
-		return Math.floor(Math.random() * (high - low) + low);
+	die() {
+		throw new Error('die must be implemented by subclasses!');
 	}
 
 	startFlyTimer(destination) {

@@ -259,10 +259,13 @@ class State {
 			this.graphics.lineTo(action.target.x, action.target.y);
 		});
 		// Draw the chosen playerAction with aplha = 1
-		if(bee.tween && bee.playerActions.length > 0){
+		if (bee.tween && bee.playerActions.length > 0) {
 			this.graphics.lineStyle(10, 0xffd900, 1);
 			this.graphics.moveTo(bee.sprite.x, bee.sprite.y);
-			this.graphics.lineTo(bee.playerActions[0].target.x, bee.playerActions[0].target.y);
+			this.graphics.lineTo(
+				bee.playerActions[0].target.x,
+				bee.playerActions[0].target.y
+			);
 		}
 	}
 
@@ -323,7 +326,7 @@ class State {
 			if (bee.status === Bee.STATES.IDLE) this.activateBee(beeToBeUpdated); // Bee is free now
 		} else if (bee.status === Bee.STATES.INACTIVE) {
 			this.deactivateBee(beeToBeUpdated, 4); // Bee is now blocked
-			beeToBeUpdated.stopAnimation();
+			this.graphics.clear();
 		}
 		beeToBeUpdated.age = bee.age;
 		beeToBeUpdated.status = bee.status;
