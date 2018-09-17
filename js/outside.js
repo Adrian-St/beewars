@@ -232,6 +232,7 @@ class Outside extends State {
 
 	addNewBee(serverBee) {
 		const addedBee = super.addNewBee(serverBee);
+		addedBee.sprite.scale.setTo(1.3, 1.3);
 		if (!this.isActive()) addedBee.sprite.visible = false;
 	}
 
