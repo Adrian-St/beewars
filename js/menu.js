@@ -88,13 +88,15 @@ class Menu {
 	}
 
 	static createBeeMenu(bee) {
+		const ageSuffix = (bee.type === 1) ? '/15' : '/45'
+
 		const heading = this.createHeading('Bee Nr: ', bee.id);
 
 		const nectar = this.createTextField('Nectar: ', bee.nectar);
 
 		const pollen = this.createTextField('Pollen: ', bee.pollen);
 
-		const age = this.createTextField('Age: ', bee.age);
+		const age = this.createTextField('Age: ', bee.age + ageSuffix);
 
 		const health = this.createTextField('Heath: ', bee.health);
 
@@ -107,9 +109,9 @@ class Menu {
 		const subMenu = this.createSubmenu(
 			heading,
 			health,
+			age,
 			nectar,
 			pollen,
-			age,
 			capacity
 		);
 

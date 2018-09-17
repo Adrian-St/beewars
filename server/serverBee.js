@@ -326,7 +326,8 @@ class Bee extends Insect {
 			nectar: this.nectar,
 			capacity: this.capacity,
 			playerActions: this.playerActions,
-			target: this.destination
+			target: this.destination,
+			type: this.type
 		};
 	}
 }

@@ -106,7 +106,8 @@ class Bee extends Insect {
 			energy: this.energy,
 			pollen: this.pollen,
 			nectar: this.nectar,
-			capacity: this.capacity
+			capacity: this.capacity,
+			type: this.type,
 		};
 	}
 }
