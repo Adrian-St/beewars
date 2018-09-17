@@ -193,6 +193,7 @@ class Game {
 		bee.sprite.visible = !bee.sprite.visible;
 		bee.sprite.position.x = serverBee.x;
 		bee.sprite.position.y = serverBee.y;
+		bee.sprite.scale.setTo(1.3, 1.3);
 		if (bee.shadow) {
 			bee.shadow.destroy();
 			bee.shadow = null;
