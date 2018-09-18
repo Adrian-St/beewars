@@ -117,6 +117,8 @@ class Game {
 		this.temperatureDisplayMinOffset = 40;
 		this.temperatureDisplayMaxOffset = 288;
 		this.quitButton = null;
+		this.initialTipTimer = null;
+		this.insideTipTimer = null;
 	}
 
 	addTopMenu() {
@@ -150,6 +152,8 @@ class Game {
 			this.beehive.getSendableBeehive(),
 			this.outsideState.length
 		);
+		this.initialTipTimer = setTimeout(this.showInitialTip.bind(this), 5000);
+		this.insideTipTimer = setTimeout(this.showInsideTip.bind(this), 30000);
 		// This.setUpUserInput();
 	}
 
@@ -166,6 +170,7 @@ class Game {
 		this.currentState = this.insideState;
 		this.outsideState.disableState();
 		this.insideState.enableState();
+		if (this.insideTipTimer) clearTimeout(this.insideTipTimer);
 	}
 
 	switchToOutside() {
@@ -203,6 +208,7 @@ class Game {
 			bee.innerProgressBar = null;
 		}
 		bee.status = Bee.STATES.IDLE;
+		bee.type = 0; // outside bee
 		this.outsideState.setUpUserInputForBee(bee);
 		this.outsideState.bees.push(bee);
 		this.insideState.bees.splice(index, 1);
@@ -309,9 +315,9 @@ class Game {
 		}
 	}
 
-	showMessage(message) {
+	showMessage(message, timer = 4000) {
 		this.createMessage(message);
-		setTimeout(this.destroyMessage.bind(this), 4000); // Destroy message after 4 sec
+		setTimeout(this.destroyMessage.bind(this), timer);
 	}
 
 	createMessage(message, w = 600, h = 50) {
@@ -341,6 +347,15 @@ class Game {
 		if (this.msgBox) {
 			this.msgBox.destroy();
 		}
+	}
+
+	showInitialTip() {
+		this.showMessage("1. Select a bee", 3000);
+		setTimeout(() => this.showMessage("2. Select a flower as a destination"), 3000);
+	}
+
+	showInsideTip() {
+		this.showMessage("Click 'Switch inside'");
 	}
 }
 

@@ -44,6 +44,7 @@ class State {
 			if (bee.shadow) bee.shadow.visible = false;
 			if (bee.innerProgressBar) bee.innerProgressBar.visible = false;
 		});
+		if(this.isABeeSelected()) this.deselectBee(this.getSelectedBee());
 	}
 
 	addBees(beeCollection) {
@@ -98,6 +99,8 @@ class State {
 	}
 
 	onUp(sprite) {
+		if (Game.initialTipTimer) clearTimeout(Game.initialTipTimer);
+
 		const clickedBee = this.bees.find(item => item.sprite === sprite);
 
 		this.stopAllOtherShadowTweens(clickedBee);
@@ -357,6 +360,7 @@ class State {
 		const deletedBee = this.beeForId(bee.id);
 		if (!deletedBee) return;
 		if (deletedBee.shadow) this.deselectBee(deletedBee);
+		if (bee.innerProgressBar) bee.innerProgressBar.visible = false;
 		deletedBee.sprite.destroy();
 		const index = this.bees.indexOf(deletedBee);
 		this.bees.splice(index, 1);
