@@ -69,15 +69,16 @@ class Client {
 				Game.showMessage(message);
 			});
 
-			this.socket.on('gameOver', scores => {
+			this.socket.on('gameOver', data => {
 				// This.socket.emit('leaveGame');
 				this.socket.disconnect();
 				Game.state.start(
 					'GameOver',
 					true,
 					true,
-					scores.score,
-					scores.highscore
+					data.score,
+					data.highscore,
+					data.players
 				);
 			});
 		});

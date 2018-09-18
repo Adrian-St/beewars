@@ -105,9 +105,9 @@ Connection.broadcastMessage = (message, roomName) => {
 	io.to(roomName).emit('showMessage', message);
 };
 
-Connection.gameOver = (roomName, score) => {
+Connection.gameOver = (roomName, score, players) => {
 	if (score > highscore) highscore = score;
-	io.to(roomName).emit('gameOver', { score, highscore });
+	io.to(roomName).emit('gameOver', { score, highscore, players });
 	Connection.removeGameInstance(roomName);
 };
 

@@ -239,7 +239,7 @@ class Game {
 			if (this.beehive.freeHoneycombs > 0) {
 				this.beehive.freeHoneycombs -= 1;
 				this.beehive.occupiedHoneycombs += 1;
-				setTimeout(this.spawnBee.bind(this), 60000); // 60 sec
+				setTimeout(this.spawnBee.bind(this), this.DAY_DURATION*10);
 			} else {
 				connection.broadcastMessage('No honeycombs free', this.roomName);
 			}
@@ -411,8 +411,9 @@ class Game {
 			this.bees.length === 0 &&
 			this.beehive.occupiedHoneycombs === 0 &&
 			this.beehive.geleeRoyal === 0
-		)
-			connection.gameOver(this.roomName, this.day);
+		) {
+			connection.gameOver(this.roomName, this.day, this.players);
+		}
 	}
 }
 
