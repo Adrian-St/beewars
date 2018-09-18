@@ -360,7 +360,10 @@ class State {
 		const deletedBee = this.beeForId(bee.id);
 		if (!deletedBee) return;
 		if (deletedBee.shadow) this.deselectBee(deletedBee);
-		if (bee.innerProgressBar) bee.innerProgressBar.visible = false;
+		if (deletedBee.innerProgressBar) {
+			deletedBee.innerProgressBar.destroy();
+			deletedBee.innerProgressBar = null;
+		}
 		deletedBee.sprite.destroy();
 		const index = this.bees.indexOf(deletedBee);
 		this.bees.splice(index, 1);
