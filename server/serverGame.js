@@ -71,13 +71,9 @@ class Game {
 		for (let i = 0; i < this.STARTING_BEES_INSIDE; i++) {
 			const tmpX = this.randomInt(this.defaultAreaTopLeft.x, this.defaultAreaBottomRight.x);
 			const tmpY = this.randomInt(this.defaultAreaTopLeft.y, this.defaultAreaBottomRight.y);
-			const tmpBee = new Bee(
-				this.lastBeeID,
-				this,
-				tmpX,
-				tmpY
-			);
+			const tmpBee = new Bee(this.lastBeeID, this, tmpX, tmpY);
 			tmpBee.type = BeeTypes.INSIDEBEE;
+			tmpBee.age = i;
 			this.bees.push(tmpBee);
 			this.lastBeeID++;
 		}
@@ -86,6 +82,7 @@ class Game {
 			const tmpY = this.randomInt(100, 400);
 			const tmpBee = new Bee(this.lastBeeID, this, tmpX, tmpY);
 			tmpBee.type = BeeTypes.OUTSIDEBEE;
+			tmpBee.age = j;
 			this.bees.push(tmpBee);
 			this.lastBeeID++;
 		}
@@ -137,6 +134,7 @@ class Game {
 	}
 
 	calculatePlayerExperienceAfterBeeArrived(bee, value = 0.1) {
+		if (this.day < 5) return; // To protect player who play the game for the first time
 		const contributer = bee.playerActions[0].playerIDs;
 		contributer.forEach(playerID =>
 			this.raiseExperienceForPlayer(playerID, value)
