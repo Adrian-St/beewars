@@ -262,7 +262,7 @@ class Game {
 
 		this.insideState.updateBeehiveDisplay(beehive);
 		if (document.getElementById('menu').firstChild.id === 'hiveMenu') {
-			Menu.createHiveMenu(this.beehive, this.currentState.bees.length, this.currentState);
+			Menu.createHiveMenu(this.beehive, this.currentState.bees.length, this.currentState.name);
 		}
 	}
 
