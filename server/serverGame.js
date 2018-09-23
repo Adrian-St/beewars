@@ -55,6 +55,7 @@ class Game {
 			tmpFlower.y =
 				outsideMapJson.layers[3].objects[i].y -
 				outsideMapJson.layers[3].objects[i].height;
+			tmpFlower.color = outsideMapJson.layers[3].objects[i].name;
 			this.flowers.push(tmpFlower);
 			this.lastFlowerID++;
 		}
@@ -282,10 +283,8 @@ class Game {
 
 	addNectarToBee(bee, flower, value = 10) {
 		if (bee.capacity >= bee.pollen + bee.nectar + 2 * value) {
-			bee.pollen += value;
-			flower.pollen -= value;
-			bee.nectar += value;
-			flower.nectar -= value;
+			bee.pollen += flower.collectPollen();
+			bee.nectar += flower.collectNectar();
 		} else {
 			console.log('Bee is full');
 			this.calculatePlayerExperienceAfterBeeArrived(bee, -0.2);
@@ -353,10 +352,11 @@ class Game {
 	}
 
 	handleBuilding(workingBee) {
-		if (this.beehive.honey >= 10) {
+		if (this.beehive.honey >= 5 && this.beehive.pollen >= 3) {
 			this.beehive.freeHoneycombs += 1;
 			this.beehive.honeycombs += 1;
-			this.beehive.honey -= 10;
+			this.beehive.honey -= 5;
+			this.beehive.pollen -= 3;
 		} else {
 			this.sendMessage(
 				'Not enough honey for building',
@@ -367,8 +367,9 @@ class Game {
 	}
 
 	produceGeleeRoyal(workingBee) {
-		if (this.beehive.pollen >= 5) {
-			this.beehive.pollen -= 5;
+		if (this.beehive.pollen >= 10 && this.beehive.honey >= 10) {
+			this.beehive.pollen -= 10;
+			this.beehive.honey -= 10;
 			this.beehive.geleeRoyal += 1;
 		} else {
 			this.sendMessage(

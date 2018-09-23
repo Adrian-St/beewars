@@ -2,6 +2,7 @@ import Client from './client.js';
 import Game from './game.js';
 import State from './state.js';
 import Menu from './menu.js';
+import GeleeRoyalProgressbar from './progressBar.js';
 
 class Inside extends State {
 	constructor() {
@@ -41,6 +42,7 @@ class Inside extends State {
 			this.insideWorkareas[key].visible = true;
 		});
 		this.insideGraphics.visible = true;
+		this.enableBeehiveObject();
 	}
 
 	disableState() {
@@ -55,6 +57,7 @@ class Inside extends State {
 			this.insideWorkareas[key].visible = false;
 		});
 		this.insideGraphics.visible = false;
+		this.disableBeehiveObject();
 	}
 
 	addBackground() {
@@ -93,15 +96,14 @@ class Inside extends State {
 	}
 
 	addBeehiveDisplay() {
-		const xPosition = 800;
+		const xPosition = 720;
 		this.beehiveDisplay = {
-			pollen: this.createText(xPosition, 100),
-			honey: this.createText(xPosition, 150),
-			honeycombs: this.createText(xPosition, 200),
-			freeHoneycombs: this.createText(xPosition, 250),
-			dirtyHoneycombs: this.createText(xPosition, 300),
-			occupiedHoneycombs: this.createText(xPosition, 350),
-			geleeRoyal: this.createText(xPosition, 400)
+			honeycombs: this.createText(xPosition, 150),
+			freeHoneycombs: this.createText(xPosition, 200),
+			dirtyHoneycombs: this.createText(xPosition, 250),
+			occupiedHoneycombs: this.createText(xPosition, 300),
+			geleeRoyal: this.createText(xPosition, 380),
+			progressBar: new GeleeRoyalProgressbar(xPosition, 450, 50, 30)
 		};
 	}
 
@@ -112,8 +114,6 @@ class Inside extends State {
 	}
 
 	updateBeehiveDisplay(beehive) {
-		this.beehiveDisplay.pollen.text = 'Pollen: ' + beehive.pollen;
-		this.beehiveDisplay.honey.text = 'Honey: ' + beehive.honey;
 		this.beehiveDisplay.honeycombs.text = 'Honeycombs: ' + beehive.honeycombs;
 		this.beehiveDisplay.freeHoneycombs.text =
 			' - Free: ' + beehive.freeHoneycombs;
@@ -121,7 +121,32 @@ class Inside extends State {
 			' - Dirty: ' + beehive.dirtyHoneycombs;
 		this.beehiveDisplay.occupiedHoneycombs.text =
 			' - Occupied: ' + beehive.occupiedHoneycombs;
-		this.beehiveDisplay.geleeRoyal.text = 'Gelee Royal: ' + beehive.geleeRoyal;
+		this.beehiveDisplay.geleeRoyal.text = 'GeleeRoyal-Production: ' + beehive.geleeRoyal;
+		this.beehiveDisplay.progressBar.update(beehive.pollen, beehive.honey);
+
+		if(beehive.freeHoneycombs === 0){
+			this.beehiveDisplay.freeHoneycombs.addColor('#ff0000', 2);
+		} else {
+			this.beehiveDisplay.freeHoneycombs.addColor('#000000', 2);
+		}
+	}
+
+	enableBeehiveObject(){
+		this.beehiveDisplay.honeycombs.visible = true;
+		this.beehiveDisplay.freeHoneycombs.visible = true;
+		this.beehiveDisplay.dirtyHoneycombs.visible = true;
+		this.beehiveDisplay.occupiedHoneycombs.visible = true;
+		this.beehiveDisplay.geleeRoyal.visible = true;
+		this.beehiveDisplay.progressBar.show();
+	}
+
+	disableBeehiveObject(){
+		this.beehiveDisplay.honeycombs.visible = false;
+		this.beehiveDisplay.freeHoneycombs.visible = false; 
+		this.beehiveDisplay.dirtyHoneycombs.visible = false;
+		this.beehiveDisplay.occupiedHoneycombs.visible = false;
+		this.beehiveDisplay.geleeRoyal.visible = false;
+		this.beehiveDisplay.progressBar.hide();
 	}
 
 	addTopMenu() {

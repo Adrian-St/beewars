@@ -150,7 +150,7 @@ class Game {
 
 		Menu.createHiveMenu(
 			this.beehive.getSendableBeehive(),
-			this.outsideState.length
+			this.outsideState.bees.length
 		);
 		this.initialTipTimer = setTimeout(this.showInitialTip.bind(this), 5000);
 		this.insideTipTimer = setTimeout(this.showInsideTip.bind(this), 30000);
