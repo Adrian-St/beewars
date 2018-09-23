@@ -94,7 +94,7 @@ class GeleeRoyalProgressbar{
 		this.honeyProgress = new ProgressBar("Honey:", tmpX, y, maxWidth, height, 5, 10);
 		this.pollenProgress = new ProgressBar("Pollen:", tmpX, y + 1.5 * height, maxWidth, height, 5, 10);
 		this.backgroundGraphics.beginFill(0xFFFFFF);
-		this.backgroundGraphics.alpha = 0.6;
+		this.backgroundGraphics.alpha = 0.5;
 		this.backgroundGraphics.drawRoundedRect(tmpX - 100,y -20 , 3 * maxWidth * 2 + 20, 2.5 * height + 40, 10);
 		this.backgroundGraphics.endFill();
 	}

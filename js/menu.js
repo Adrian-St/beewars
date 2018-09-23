@@ -44,7 +44,7 @@ class Menu {
 		const subMenu = document.createElement('DIV');
 		subMenu.classList.add('label-container');
 		for (let i = 0; i < args.length; i++) {
-			subMenu.appendChild(args[i]);
+			if(args[i] !== undefined) subMenu.appendChild(args[i]);
 		}
 		return subMenu;
 	}
@@ -56,16 +56,17 @@ class Menu {
 		return menu;
 	}
 
-	static createHiveMenu(hive, beeCount) {
+	static createHiveMenu(hive, beeCount, stateName) {
 		const heading = this.createHeading('Beehive');
 
 		const honey = this.createTextField('Honey: ', hive.honey);
 
 		const pollen = this.createTextField('Pollen: ', hive.pollen);
 
-		const geleeRoyal = this.createTextField('Gelee-Royal: ', hive.geleeRoyal);
+		let geleeRoyal;
+		if (stateName === "OUTSIDE") geleeRoyal = this.createTextField('Gelee-Royal: ', hive.geleeRoyal);
 
-		const honeycombs = this.createTextField('Honeycombs: ', hive.honeycombs);
+		//const honeycombs = this.createTextField('Honeycombs: ', hive.honeycombs);
 
 		const bees = this.createTextField('Number of Bees: ', beeCount);
 
@@ -74,7 +75,6 @@ class Menu {
 			honey,
 			pollen,
 			geleeRoyal,
-			honeycombs,
 			bees
 		);
 
@@ -92,19 +92,24 @@ class Menu {
 
 		const heading = this.createHeading('Bee Nr: ', bee.id);
 
-		const nectar = this.createTextField('Nectar: ', bee.nectar);
-
-		const pollen = this.createTextField('Pollen: ', bee.pollen);
-
 		const age = this.createTextField('Age: ', bee.age + ageSuffix);
 
 		const health = this.createTextField('Heath: ', bee.health);
 
-		const capacity = this.createProgressBar(
-			'Capacity:',
-			bee.capacity,
-			bee.pollen + bee.nectar
-		);
+		let nectar;
+		if(bee.type === 0) nectar = this.createTextField('Nectar: ', bee.nectar);
+
+		let pollen;
+		if(bee.type === 0) pollen = this.createTextField('Pollen: ', bee.pollen);
+
+		let capacity;
+		if(bee.type === 0) {
+			capacity = this.createProgressBar(
+				'Capacity:',
+				bee.capacity,
+				bee.pollen + bee.nectar
+			);
+		}
 
 		const subMenu = this.createSubmenu(
 			heading,

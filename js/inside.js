@@ -7,6 +7,7 @@ import GeleeRoyalProgressbar from './progressBar.js';
 class Inside extends State {
 	constructor() {
 		super();
+		this.name = "INSIDE";
 		this.insideMap = null;
 		this.insideButton = null;
 		this.insideLayers = [];
@@ -99,10 +100,10 @@ class Inside extends State {
 	addBeehiveDisplay() {
 		const xPosition = 720;
 		this.beehiveDisplay = {
-			honeycombs: this.createText(xPosition, 150),
-			freeHoneycombs: this.createText(xPosition, 200),
-			dirtyHoneycombs: this.createText(xPosition, 250),
-			occupiedHoneycombs: this.createText(xPosition, 300),
+			honeycombs: this.createText(xPosition, 120),
+			freeHoneycombs: this.createText(xPosition, 170),
+			dirtyHoneycombs: this.createText(xPosition, 220),
+			occupiedHoneycombs: this.createText(xPosition, 270),
 			geleeRoyal: this.createText(xPosition, 380),
 			progressBar: new GeleeRoyalProgressbar(xPosition, 450, 50, 30)
 		};
@@ -129,6 +130,11 @@ class Inside extends State {
 			this.beehiveDisplay.freeHoneycombs.addColor('#ff0000', 2);
 		} else {
 			this.beehiveDisplay.freeHoneycombs.addColor('#000000', 2);
+		}
+		if(beehive.geleeRoyal === 0){
+			this.beehiveDisplay.geleeRoyal.addColor('#ff0000', 22);
+		} else {
+			this.beehiveDisplay.geleeRoyal.addColor('#000000', 22);
 		}
 	}
 
@@ -175,7 +181,7 @@ class Inside extends State {
 
 	clickedOnBackground() {
 		// It was click on the background
-		Menu.createHiveMenu(Game.beehive, this.bees.length);
+		Menu.createHiveMenu(Game.beehive, this.bees.length, this.name);
 		this.deactivateAllOtherShadows({});
 		this.stopAllOtherShadowTweens({});
 		this.graphics.clear();

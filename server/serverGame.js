@@ -359,7 +359,7 @@ class Game {
 			this.beehive.pollen -= 3;
 		} else {
 			this.sendMessage(
-				'Not enough honey for building',
+				'Not enough ressources for building',
 				workingBee.playerActions[0].playerIDs
 			);
 		}
@@ -373,7 +373,7 @@ class Game {
 			this.beehive.geleeRoyal += 1;
 		} else {
 			this.sendMessage(
-				'Not enough pollen for producing gelee-royal',
+				'Not enough ressources for producing gelee-royal',
 				workingBee.playerActions[0].playerIDs
 			);
 		}

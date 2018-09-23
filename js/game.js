@@ -106,16 +106,6 @@ class Game {
 		this.day = 0;
 		this.msgBox = null;
 		this.dayDisplay = null;
-		this.rainDisplay = null;
-		this.rainPointer = null;
-		this.temperatureDisplay = null;
-		this.temperaturePointer = null;
-		this.rainDisplay = null;
-		this.rainDisplayMinOffset = 27;
-		this.rainDisplayMaxOffset = 276;
-		this.temperatureDisplay = null;
-		this.temperatureDisplayMinOffset = 40;
-		this.temperatureDisplayMaxOffset = 288;
 		this.quitButton = null;
 		this.initialTipTimer = null;
 		this.insideTipTimer = null;
@@ -125,10 +115,6 @@ class Game {
 		this.dayDisplay = game.add.text(1020, 8, 'Day: 0', {
 			font: 'bold 28pt Raleway'
 		});
-		this.rainDisplay = game.add.image(380, 6, 'rain-button');
-		this.rainPointer = game.add.sprite(460, 16, 'pointer');
-		this.temperatureDisplay = game.add.image(700, 6, 'temperature-button');
-		this.temperaturePointer = game.add.sprite(760, 16, 'pointer');
 		this.quitButton = this.add.button(
 			6,
 			6,
@@ -150,7 +136,8 @@ class Game {
 
 		Menu.createHiveMenu(
 			this.beehive.getSendableBeehive(),
-			this.outsideState.bees.length
+			this.outsideState.bees.length,
+			this.outsideState.name
 		);
 		this.initialTipTimer = setTimeout(this.showInitialTip.bind(this), 5000);
 		this.insideTipTimer = setTimeout(this.showInsideTip.bind(this), 30000);
@@ -275,43 +262,7 @@ class Game {
 
 		this.insideState.updateBeehiveDisplay(beehive);
 		if (document.getElementById('menu').firstChild.id === 'hiveMenu') {
-			Menu.createHiveMenu(this.beehive, this.currentState.bees.length);
-		}
-	}
-
-	calculateNormedValue(value, min, max) {
-		return (value - min) / (max - min);
-	}
-
-	calculatePostion(x, y, value) {
-		return x * (1 - value) + y * value;
-	}
-
-	updateWeater(weather) {
-		const normedChanceOfRain = this.calculateNormedValue(
-			weather.chanceOfRain,
-			0,
-			100
-		);
-		this.rainPointer.x = this.calculatePostion(
-			this.rainDisplay.x + this.rainDisplayMinOffset,
-			this.rainDisplay.x + this.rainDisplayMaxOffset,
-			normedChanceOfRain
-		);
-		const normedTemperature = this.calculateNormedValue(
-			weather.temperature,
-			-20,
-			40
-		);
-		this.temperaturePointer.x = this.calculatePostion(
-			this.temperatureDisplay.x + this.temperatureDisplayMinOffset,
-			this.temperatureDisplay.x + this.temperatureDisplayMaxOffset,
-			normedTemperature
-		);
-		if (weather.raining) {
-			this.outsideState.rain.on = true;
-		} else {
-			this.outsideState.rain.on = false;
+			Menu.createHiveMenu(this.beehive, this.currentState.bees.length, this.currentState);
 		}
 	}
 

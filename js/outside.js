@@ -11,6 +11,7 @@ class Outside extends State {
 	constructor() {
 		super();
 
+		this.name = "OUTSIDE";
 		this.beehiveSprite = {}; // A Sprite
 		this.flowerSprites = {}; // A Group of sprites
 		this.flowers = [];
@@ -24,6 +25,16 @@ class Outside extends State {
 		this.outsideButton = null;
 		this.outsideMap = null;
 		this.outsideLayers = [];
+		this.rainPointer = null;
+		this.rainDisplay = null;
+		this.rainDisplay = null;
+		this.rainDisplayMinOffset = 27;
+		this.rainDisplayMaxOffset = 276;
+		this.temperatureDisplay = null;
+		this.temperaturePointer = null;
+		this.temperatureDisplay = null;
+		this.temperatureDisplayMinOffset = 40;
+		this.temperatureDisplayMaxOffset = 288;
 	}
 
 	enableState() {
@@ -46,6 +57,10 @@ class Outside extends State {
 		this.outsideMap.visible = true;
 		this.outsideButton.visible = true;
 		this.rain.visible = true;
+		this.rainDisplay.visible = true;
+		this.rainPointer.visible = true;
+		this.temperatureDisplay.visible = true;
+		this.temperaturePointer.visible = true;
 	}
 
 	disableState() {
@@ -68,6 +83,10 @@ class Outside extends State {
 		this.outsideMap.visible = false;
 		this.outsideButton.visible = false;
 		this.rain.visible = false;
+		this.rainDisplay.visible = false;
+		this.rainPointer.visible = false;
+		this.temperatureDisplay.visible = false;
+		this.temperaturePointer.visible = false;
 	}
 
 	initialize() {
@@ -92,7 +111,7 @@ class Outside extends State {
 		this.outsideLayers[0].resizeWorld();
 		this.outsideLayers[0].inputEnabled = true;
 		this.outsideLayers[0].events.onInputUp.add(() => {
-			Menu.createHiveMenu(Game.beehive, this.bees.length);
+			Menu.createHiveMenu(Game.beehive, this.bees.length, this.name);
 			this.deactivateAllOtherShadows({});
 			this.stopAllOtherShadowTweens({});
 			this.graphics.clear();
@@ -112,6 +131,10 @@ class Outside extends State {
 			0,
 			2
 		);
+		this.rainDisplay = game.add.image(380, 6, 'rain-button');
+		this.rainPointer = game.add.sprite(460, 16, 'pointer');
+		this.temperatureDisplay = game.add.image(700, 6, 'temperature-button');
+		this.temperaturePointer = game.add.sprite(760, 16, 'pointer');
 	}
 
 	addFlowers() {
@@ -272,7 +295,7 @@ class Outside extends State {
 			if (this.isABeeSelected()) {
 				this.requestGoToHive();
 			} else {
-				Menu.createHiveMenu(Game.beehive, this.bees.length);
+				Menu.createHiveMenu(Game.beehive, this.bees.length, this.name);
 			}
 		} else if (
 			['flower-white', 'flower-red', 'flower-purple', 'flower-yellow'].includes(
@@ -286,6 +309,42 @@ class Outside extends State {
 				Menu.createFlowerMenu(this.getFlowerForSprite(object));
 			}
 		}
+	}
+
+	updateWeater(weather) {
+		const normedChanceOfRain = this.calculateNormedValue(
+			weather.chanceOfRain,
+			0,
+			100
+		);
+		this.rainPointer.x = this.calculatePostion(
+			this.rainDisplay.x + this.rainDisplayMinOffset,
+			this.rainDisplay.x + this.rainDisplayMaxOffset,
+			normedChanceOfRain
+		);
+		const normedTemperature = this.calculateNormedValue(
+			weather.temperature,
+			-20,
+			40
+		);
+		this.temperaturePointer.x = this.calculatePostion(
+			this.temperatureDisplay.x + this.temperatureDisplayMinOffset,
+			this.temperatureDisplay.x + this.temperatureDisplayMaxOffset,
+			normedTemperature
+		);
+		if (weather.raining) {
+			this.rain.on = true;
+		} else {
+			this.rain.on = false;
+		}
+	}
+
+	calculateNormedValue(value, min, max) {
+		return (value - min) / (max - min);
+	}
+
+	calculatePostion(x, y, value) {
+		return x * (1 - value) + y * value;
 	}
 
 	requestGoToHive() {
