@@ -195,7 +195,7 @@ class Game {
 			bee.innerProgressBar = null;
 		}
 		bee.status = Bee.STATES.IDLE;
-		bee.type = 0; // outside bee
+		bee.type = 0; // Outside bee
 		this.outsideState.setUpUserInputForBee(bee);
 		this.outsideState.bees.push(bee);
 		this.insideState.bees.splice(index, 1);
@@ -262,7 +262,11 @@ class Game {
 
 		this.insideState.updateBeehiveDisplay(beehive);
 		if (document.getElementById('menu').firstChild.id === 'hiveMenu') {
-			Menu.createHiveMenu(this.beehive, this.currentState.bees.length, this.currentState.name);
+			Menu.createHiveMenu(
+				this.beehive,
+				this.currentState.bees.length,
+				this.currentState.name
+			);
 		}
 	}
 
@@ -301,8 +305,11 @@ class Game {
 	}
 
 	showInitialTip() {
-		this.showMessage("1. Select a bee", 3000);
-		setTimeout(() => this.showMessage("2. Select a flower as a destination"), 3000);
+		this.showMessage('1. Select a bee', 3000);
+		setTimeout(
+			() => this.showMessage('2. Select a flower as a destination'),
+			3000
+		);
 	}
 
 	showInsideTip() {

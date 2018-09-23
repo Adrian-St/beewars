@@ -44,7 +44,7 @@ class Menu {
 		const subMenu = document.createElement('DIV');
 		subMenu.classList.add('label-container');
 		for (let i = 0; i < args.length; i++) {
-			if(args[i] !== undefined) subMenu.appendChild(args[i]);
+			if (args[i] !== undefined) subMenu.appendChild(args[i]);
 		}
 		return subMenu;
 	}
@@ -64,9 +64,10 @@ class Menu {
 		const pollen = this.createTextField('Pollen: ', hive.pollen);
 
 		let geleeRoyal;
-		if (stateName === "OUTSIDE") geleeRoyal = this.createTextField('Gelee-Royal: ', hive.geleeRoyal);
+		if (stateName === 'OUTSIDE')
+			geleeRoyal = this.createTextField('Gelee-Royal: ', hive.geleeRoyal);
 
-		//const honeycombs = this.createTextField('Honeycombs: ', hive.honeycombs);
+		// Const honeycombs = this.createTextField('Honeycombs: ', hive.honeycombs);
 
 		const bees = this.createTextField('Number of Bees: ', beeCount);
 
@@ -88,7 +89,7 @@ class Menu {
 	}
 
 	static createBeeMenu(bee) {
-		const ageSuffix = (bee.type === 1) ? '/15' : '/45'
+		const ageSuffix = bee.type === 1 ? '/15' : '/45';
 
 		const heading = this.createHeading('Bee Nr: ', bee.id);
 
@@ -97,13 +98,13 @@ class Menu {
 		const health = this.createTextField('Heath: ', bee.health);
 
 		let nectar;
-		if(bee.type === 0) nectar = this.createTextField('Nectar: ', bee.nectar);
+		if (bee.type === 0) nectar = this.createTextField('Nectar: ', bee.nectar);
 
 		let pollen;
-		if(bee.type === 0) pollen = this.createTextField('Pollen: ', bee.pollen);
+		if (bee.type === 0) pollen = this.createTextField('Pollen: ', bee.pollen);
 
 		let capacity;
-		if(bee.type === 0) {
+		if (bee.type === 0) {
 			capacity = this.createProgressBar(
 				'Capacity:',
 				bee.capacity,

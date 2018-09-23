@@ -11,12 +11,7 @@ const BeeTypes = {
 };
 
 class Bee extends Insect {
-	constructor(
-		id,
-		game,
-		x = 0,
-		y = 0
-	) {
+	constructor(id, game, x = 0, y = 0) {
 		super(id, game, x, y);
 		this.status = Bee.STATES.IDLE;
 		this.health = 100;
@@ -310,7 +305,10 @@ class Bee extends Insect {
 		const maxX = this.game.defaultAreaBottomRight.x;
 		const minY = this.game.defaultAreaTopLeft.y;
 		const maxY = this.game.defaultAreaBottomRight.y;
-		return { x: this.game.randomInt(minX, maxX), y: this.game.randomInt(minY, maxY) };
+		return {
+			x: this.game.randomInt(minX, maxX),
+			y: this.game.randomInt(minY, maxY)
+		};
 	}
 
 	getSendableBee() {

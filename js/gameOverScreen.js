@@ -4,7 +4,7 @@ class GameOverScreen {
 	init(score, highscore, players) {
 		this.score = score;
 		this.highscore = highscore;
-		this.players = players
+		this.players = players;
 	}
 
 	create() {
@@ -27,7 +27,11 @@ class GameOverScreen {
 		const gameOverText = game.add.text(game.world.centerX, 150, 'Game Over');
 		const scoreText = game.add.text(game.world.centerX, 250, scoreTxt);
 		const menuText = game.add.text(game.world.centerX, 350, 'go back to menu');
-		const statisticsText = game.add.text(game.world.centerX, 450, 'view player statistics');
+		const statisticsText = game.add.text(
+			game.world.centerX,
+			450,
+			'view player statistics'
+		);
 		gameOverText.anchor.setTo(0.5);
 		scoreText.anchor.setTo(0.5);
 		menuText.anchor.setTo(0.5);
@@ -46,12 +50,7 @@ class GameOverScreen {
 
 		statisticsText.events.onInputUp.add(() => {
 			document.getElementById('gameover').style.visibility = 'visible';
-			game.state.start(
-					'Statistics',
-					true,
-					true,
-					this.players
-				);
+			game.state.start('Statistics', true, true, this.players);
 		});
 	}
 }

@@ -11,7 +11,7 @@ class Outside extends State {
 	constructor() {
 		super();
 
-		this.name = "OUTSIDE";
+		this.name = 'OUTSIDE';
 		this.beehiveSprite = {}; // A Sprite
 		this.flowerSprites = {}; // A Group of sprites
 		this.flowers = [];

@@ -1,10 +1,5 @@
 class Insect {
-	constructor(
-		id,
-		game,
-		x = 0,
-		y = 0
-	) {
+	constructor(id, game, x = 0, y = 0) {
 		this.game = game;
 		this.age = 0;
 		this.id = id;

@@ -12,9 +12,10 @@ class StatisticsScreen {
 		game.stage.disableVisibilityChange = true;
 		game.stage.backgroundColor = '#FFFFFF';
 
-		let lines = "PlayerID   Experience\n";
+		let lines = 'PlayerID   Experience\n';
 		this.players.forEach(player => {
-			lines += "        " + player.id + "               " + player.experience + "\n";
+			lines +=
+				'        ' + player.id + '               ' + player.experience + '\n';
 		});
 
 		const heading = game.add.text(game.world.centerX, 150, 'Statistics');

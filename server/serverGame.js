@@ -70,8 +70,14 @@ class Game {
 			this.lastFrogID++;
 		}
 		for (let i = 0; i < this.STARTING_BEES_INSIDE; i++) {
-			const tmpX = this.randomInt(this.defaultAreaTopLeft.x, this.defaultAreaBottomRight.x);
-			const tmpY = this.randomInt(this.defaultAreaTopLeft.y, this.defaultAreaBottomRight.y);
+			const tmpX = this.randomInt(
+				this.defaultAreaTopLeft.x,
+				this.defaultAreaBottomRight.x
+			);
+			const tmpY = this.randomInt(
+				this.defaultAreaTopLeft.y,
+				this.defaultAreaBottomRight.y
+			);
 			const tmpBee = new Bee(this.lastBeeID, this, tmpX, tmpY);
 			tmpBee.type = BeeTypes.INSIDEBEE;
 			tmpBee.age = i;
@@ -240,7 +246,7 @@ class Game {
 			if (this.beehive.freeHoneycombs > 0) {
 				this.beehive.freeHoneycombs -= 1;
 				this.beehive.occupiedHoneycombs += 1;
-				setTimeout(this.spawnBee.bind(this), this.DAY_DURATION*10);
+				setTimeout(this.spawnBee.bind(this), this.DAY_DURATION * 10);
 			} else {
 				connection.broadcastMessage('No honeycombs free', this.roomName);
 			}
@@ -254,14 +260,15 @@ class Game {
 	}
 
 	spawnBee() {
-		const tmpX = this.randomInt(this.defaultAreaTopLeft.x, this.defaultAreaBottomRight.x);
-		const tmpY = this.randomInt(this.defaultAreaTopLeft.y, this.defaultAreaBottomRight.y);
-		const newBee = new Bee(
-			this.lastBeeID,
-			this,
-			tmpX,
-			tmpY,
+		const tmpX = this.randomInt(
+			this.defaultAreaTopLeft.x,
+			this.defaultAreaBottomRight.x
 		);
+		const tmpY = this.randomInt(
+			this.defaultAreaTopLeft.y,
+			this.defaultAreaBottomRight.y
+		);
+		const newBee = new Bee(this.lastBeeID, this, tmpX, tmpY);
 		this.lastBeeID++;
 		this.beehive.occupiedHoneycombs -= 1;
 		this.beehive.dirtyHoneycombs += 1;
@@ -401,7 +408,6 @@ class Game {
 		this.players.splice(playerID, 1);
 		return this.players.length;
 	}
-
 
 	randomInt(low, high) {
 		return Math.floor(Math.random() * (high - low) + low);

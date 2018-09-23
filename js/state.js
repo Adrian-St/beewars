@@ -20,7 +20,7 @@ class State {
 			y: 0
 		};
 		this.multipleBeeSelectionCollection = [];
-		this.name = "" // override in subclass
+		this.name = ''; // Override in subclass
 	}
 
 	initialize() {
@@ -37,7 +37,11 @@ class State {
 			if (bee.shadow) bee.shadow.visible = true;
 			if (bee.innerProgressBar) bee.innerProgressBar.visible = true;
 		});
-		Menu.createHiveMenu(Game.beehive.getSendableBeehive(), this.bees.length, this.name);
+		Menu.createHiveMenu(
+			Game.beehive.getSendableBeehive(),
+			this.bees.length,
+			this.name
+		);
 	}
 
 	disableState() {
@@ -46,7 +50,7 @@ class State {
 			if (bee.shadow) bee.shadow.visible = false;
 			if (bee.innerProgressBar) bee.innerProgressBar.visible = false;
 		});
-		if(this.isABeeSelected()) this.deselectBee(this.getSelectedBee());
+		if (this.isABeeSelected()) this.deselectBee(this.getSelectedBee());
 	}
 
 	addBees(beeCollection) {
@@ -206,7 +210,11 @@ class State {
 	}
 
 	deselectBee(bee) {
-		Menu.createHiveMenu(Game.beehive.getSendableBeehive(), this.bees.length, this.name);
+		Menu.createHiveMenu(
+			Game.beehive.getSendableBeehive(),
+			this.bees.length,
+			this.name
+		);
 		bee.deactivateShadow();
 		this.graphics.clear();
 	}
@@ -369,7 +377,11 @@ class State {
 		deletedBee.sprite.destroy();
 		const index = this.bees.indexOf(deletedBee);
 		this.bees.splice(index, 1);
-		Menu.createHiveMenu(Game.beehive.getSendableBeehive(), this.bees.length, this.name);
+		Menu.createHiveMenu(
+			Game.beehive.getSendableBeehive(),
+			this.bees.length,
+			this.name
+		);
 	}
 }
 

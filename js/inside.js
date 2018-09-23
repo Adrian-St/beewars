@@ -7,7 +7,7 @@ import GeleeRoyalProgressbar from './progressBar.js';
 class Inside extends State {
 	constructor() {
 		super();
-		this.name = "INSIDE";
+		this.name = 'INSIDE';
 		this.insideMap = null;
 		this.insideButton = null;
 		this.insideLayers = [];
@@ -87,7 +87,7 @@ class Inside extends State {
 				'Full-Beehive',
 				index
 			);
-			if(index > 0){
+			if (index > 0) {
 				this.insideWorkareas[object.name].inputEnabled = true;
 				this.insideWorkareas[object.name].events.onInputUp.add(
 					this.getWorkarea,
@@ -124,22 +124,23 @@ class Inside extends State {
 			' - Dirty: ' + beehive.dirtyHoneycombs;
 		this.beehiveDisplay.occupiedHoneycombs.text =
 			' - Occupied: ' + beehive.occupiedHoneycombs;
-		this.beehiveDisplay.geleeRoyal.text = 'GeleeRoyal-Production: ' + beehive.geleeRoyal;
+		this.beehiveDisplay.geleeRoyal.text =
+			'GeleeRoyal-Production: ' + beehive.geleeRoyal;
 		this.beehiveDisplay.progressBar.update(beehive.pollen, beehive.honey);
 
-		if(beehive.freeHoneycombs === 0){
+		if (beehive.freeHoneycombs === 0) {
 			this.beehiveDisplay.freeHoneycombs.addColor('#ff0000', 2);
 		} else {
 			this.beehiveDisplay.freeHoneycombs.addColor('#000000', 2);
 		}
-		if(beehive.geleeRoyal === 0){
+		if (beehive.geleeRoyal === 0) {
 			this.beehiveDisplay.geleeRoyal.addColor('#ff0000', 22);
 		} else {
 			this.beehiveDisplay.geleeRoyal.addColor('#000000', 22);
 		}
 	}
 
-	enableBeehiveObject(){
+	enableBeehiveObject() {
 		this.beehiveDisplay.honeycombs.visible = true;
 		this.beehiveDisplay.freeHoneycombs.visible = true;
 		this.beehiveDisplay.dirtyHoneycombs.visible = true;
@@ -148,9 +149,9 @@ class Inside extends State {
 		this.beehiveDisplay.progressBar.show();
 	}
 
-	disableBeehiveObject(){
+	disableBeehiveObject() {
 		this.beehiveDisplay.honeycombs.visible = false;
-		this.beehiveDisplay.freeHoneycombs.visible = false; 
+		this.beehiveDisplay.freeHoneycombs.visible = false;
 		this.beehiveDisplay.dirtyHoneycombs.visible = false;
 		this.beehiveDisplay.occupiedHoneycombs.visible = false;
 		this.beehiveDisplay.geleeRoyal.visible = false;
