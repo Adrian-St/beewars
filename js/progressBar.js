@@ -77,9 +77,9 @@ class ProgressBar{
 	}
 
 	createText(x, y, lable) {
-		const text = Game.add.text(x, y, '', {
-			font: 'bold 18pt Raleway'
-		});
+		const text = Game.add.text(x, y, '');
+		text.fontSize = 22;
+		text.font = 'Arial';
 		text.text = lable;
 		text.anchor.setTo(1, 0.5);
 		return text;

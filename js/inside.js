@@ -110,9 +110,10 @@ class Inside extends State {
 	}
 
 	createText(x, y) {
-		return Game.add.text(x, y, '', {
-			font: 'bold 28pt Raleway'
-		});
+		const text = Game.add.text(x, y, '');
+		text.fontSize = 36;
+		text.font = 'Arial';
+		return text;
 	}
 
 	updateBeehiveDisplay(beehive) {

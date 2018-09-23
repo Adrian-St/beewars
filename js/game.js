@@ -113,7 +113,7 @@ class Game {
 
 	addTopMenu() {
 		this.dayDisplay = game.add.text(1020, 8, 'Day: 0', {
-			font: 'bold 28pt Raleway'
+			font: 'bold 28pt Arial'
 		});
 		this.quitButton = this.add.button(
 			6,
