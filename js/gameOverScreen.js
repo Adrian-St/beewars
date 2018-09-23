@@ -7,6 +7,10 @@ class GameOverScreen {
 		this.players = players;
 	}
 
+	preload() {
+		game.load.image('menu-background', '/assets/Menu/menu-background.png');
+	}
+
 	create() {
 		document.getElementById('gameover').style.visibility = 'hidden';
 		document.getElementById('game').style.visibility = 'visible';
@@ -24,6 +28,7 @@ class GameOverScreen {
 				' days. The highscore is: ' +
 				this.highscore;
 
+		const background = game.add.sprite(0, 0, 'menu-background');
 		const gameOverText = game.add.text(game.world.centerX, 150, 'Game Over');
 		const scoreText = game.add.text(game.world.centerX, 250, scoreTxt);
 		const menuText = game.add.text(game.world.centerX, 350, 'go back to menu');
