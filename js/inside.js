@@ -11,7 +11,6 @@ class Inside extends State {
 		this.insideButton = null;
 		this.insideLayers = [];
 		this.insideWorkareas = {};
-		this.insideWorkareaCenters = {};
 		this.insideGraphics = null; // For drawing the borders of the hive
 
 		this.initialize();
@@ -87,11 +86,13 @@ class Inside extends State {
 				'Full-Beehive',
 				index
 			);
-			this.insideWorkareas[object.name].inputEnabled = true;
-			this.insideWorkareas[object.name].events.onInputUp.add(
-				this.getWorkarea,
-				this
-			);
+			if(index > 0){
+				this.insideWorkareas[object.name].inputEnabled = true;
+				this.insideWorkareas[object.name].events.onInputUp.add(
+					this.getWorkarea,
+					this
+				);
+			}
 		});
 	}
 
