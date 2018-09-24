@@ -2,7 +2,7 @@ import Client from './client.js';
 import Game from './game.js';
 import State from './state.js';
 import Menu from './menu.js';
-import GeleeRoyalProgressbar from './progressBar.js';
+import DoubleProgressbar from './progressBar.js';
 
 class Inside extends State {
 	constructor() {
@@ -98,20 +98,26 @@ class Inside extends State {
 	}
 
 	addBeehiveDisplay() {
-		const xPosition = 720;
+		const xPosition = 780;
 		this.beehiveDisplay = {
-			honeycombs: this.createText(xPosition, 120),
-			freeHoneycombs: this.createText(xPosition, 170),
-			dirtyHoneycombs: this.createText(xPosition, 220),
-			occupiedHoneycombs: this.createText(xPosition, 270),
-			geleeRoyal: this.createText(xPosition, 380),
-			progressBar: new GeleeRoyalProgressbar(xPosition, 450, 50, 30)
+			honeycombs: this.createText(xPosition, 90),
+			freeHoneycombs: this.createText(xPosition, 120),
+			dirtyHoneycombs: this.createText(xPosition, 145),
+			occupiedHoneycombs: this.createText(xPosition, 170),
+			geleeRoyal: this.createText(xPosition, 230),
+			geleeRoyalProgressBar: new DoubleProgressbar(xPosition, 285, 50, 20, 'Honey:', 'Pollen:', 10, 10),
+			buildingText: this.createText(xPosition, 390),
+			buildingProgressBar: new DoubleProgressbar(xPosition, 445, 50, 20, 'Honey:', 'Pollen:', 5, 3)
 		};
+		this.beehiveDisplay.freeHoneycombs.fontSize = 26;
+		this.beehiveDisplay.dirtyHoneycombs.fontSize = 26;
+		this.beehiveDisplay.occupiedHoneycombs.fontSize = 26;
+		this.beehiveDisplay.buildingText.text = "Building:"
 	}
 
 	createText(x, y) {
 		const text = Game.add.text(x, y, '');
-		text.fontSize = 36;
+		text.fontSize = 30;
 		text.font = 'Arial';
 		return text;
 	}
@@ -125,8 +131,9 @@ class Inside extends State {
 		this.beehiveDisplay.occupiedHoneycombs.text =
 			' - Occupied: ' + beehive.occupiedHoneycombs;
 		this.beehiveDisplay.geleeRoyal.text =
-			'GeleeRoyal-Production: ' + beehive.geleeRoyal;
-		this.beehiveDisplay.progressBar.update(beehive.pollen, beehive.honey);
+			'GeleeRoyal: ' + beehive.geleeRoyal;
+		this.beehiveDisplay.geleeRoyalProgressBar.update(beehive.pollen, beehive.honey);
+		this.beehiveDisplay.buildingProgressBar.update(beehive.pollen, beehive.honey);
 
 		if (beehive.freeHoneycombs === 0) {
 			this.beehiveDisplay.freeHoneycombs.addColor('#ff0000', 2);
@@ -134,9 +141,9 @@ class Inside extends State {
 			this.beehiveDisplay.freeHoneycombs.addColor('#000000', 2);
 		}
 		if (beehive.geleeRoyal === 0) {
-			this.beehiveDisplay.geleeRoyal.addColor('#ff0000', 22);
+			this.beehiveDisplay.geleeRoyal.addColor('#ff0000', 11);
 		} else {
-			this.beehiveDisplay.geleeRoyal.addColor('#000000', 22);
+			this.beehiveDisplay.geleeRoyal.addColor('#000000', 11);
 		}
 	}
 
@@ -146,7 +153,9 @@ class Inside extends State {
 		this.beehiveDisplay.dirtyHoneycombs.visible = true;
 		this.beehiveDisplay.occupiedHoneycombs.visible = true;
 		this.beehiveDisplay.geleeRoyal.visible = true;
-		this.beehiveDisplay.progressBar.show();
+		this.beehiveDisplay.geleeRoyalProgressBar.show();
+		this.beehiveDisplay.buildingProgressBar.show();
+		this.beehiveDisplay.buildingText.visible = true;
 	}
 
 	disableBeehiveObject() {
@@ -155,7 +164,9 @@ class Inside extends State {
 		this.beehiveDisplay.dirtyHoneycombs.visible = false;
 		this.beehiveDisplay.occupiedHoneycombs.visible = false;
 		this.beehiveDisplay.geleeRoyal.visible = false;
-		this.beehiveDisplay.progressBar.hide();
+		this.beehiveDisplay.geleeRoyalProgressBar.hide();
+		this.beehiveDisplay.buildingProgressBar.hide();
+		this.beehiveDisplay.buildingText.visible = false;
 	}
 
 	addTopMenu() {

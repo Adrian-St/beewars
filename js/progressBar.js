@@ -110,8 +110,8 @@ class ProgressBar {
 	}
 }
 
-class GeleeRoyalProgressbar {
-	constructor(x, y, maxWidth, height, offset = 120) {
+class DoubleProgressbar {
+	constructor(x, y, maxWidth, height, lable1, lable2, threshold1, threshold2, offset = 120) {
 		const tmpX = x + offset;
 		this.backgroundGraphics = Game.add.graphics(0, 0);
 		Game.world.bringToTop(this.backgroundGraphics);
@@ -122,16 +122,16 @@ class GeleeRoyalProgressbar {
 			maxWidth,
 			height,
 			5,
-			10
+			threshold1
 		);
 		this.pollenProgress = new ProgressBar(
-			'Pollen:',
+			lable2,
 			tmpX,
 			y + 1.5 * height,
 			maxWidth,
 			height,
 			5,
-			10
+			threshold2
 		);
 		this.backgroundGraphics.beginFill(0xffffff);
 		this.backgroundGraphics.alpha = 0.5;
@@ -162,4 +162,4 @@ class GeleeRoyalProgressbar {
 	}
 }
 
-export default GeleeRoyalProgressbar;
+export default DoubleProgressbar;
