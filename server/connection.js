@@ -145,6 +145,19 @@ Connection.removeGameInstance = roomName => {
 	}
 };
 
+Connection.killAllGames = () => {
+	for (var key in gameInstances){
+  		console.log(`key: ${key}, value: ${gameInstances[key]}`);
+  		const game = gameInstances[key];
+  		Connection.gameOver(game.roomName, game.day, game.players);
+	}
+	/*
+	gameInstances.forEach(game => {
+		Connection.gameOver(game.roomName, game.day, game.players);
+	});
+	*/
+};
+
 function labelForName(roomName) {
 	// The lable is the name until the first '-'
 	return roomName.substr(0, roomName.indexOf('-'));

@@ -9,6 +9,10 @@ class GameOverScreen {
 
 	preload() {
 		game.load.image('menu-background', '/assets/Menu/menu-background.png');
+		game.load.image(
+			'message-background',
+			'/assets/sprites/message-background.png'
+		);
 	}
 
 	create() {

@@ -46,6 +46,11 @@ app.get('/instructions', (req, res) => {
 	res.render('instructions');
 });
 
+app.get('/killallgames', (req, res) => {
+	connection.killAllGames();
+	res.render("");
+});
+
 server.listen(process.env.PORT || 8081, () => {
 	console.log('Listening on ' + server.address().port);
 });

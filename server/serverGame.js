@@ -16,6 +16,7 @@ class Game {
 		this.DAY_DURATION = 5000;
 		this.STARTING_BEES_INSIDE = 3;
 		this.STARTING_BEES_OUTSIDE = 3;
+		this.START_EXP_DAY = 5;
 		this.day = 0;
 		this.lastPlayerID = 0;
 		this.lastBeeID = 0;
@@ -141,11 +142,12 @@ class Game {
 	}
 
 	calculatePlayerExperienceAfterBeeArrived(bee, value = 0.1) {
-		if (this.day < 5) return; // To protect player who play the game for the first time
-		const contributer = bee.playerActions[0].playerIDs;
-		contributer.forEach(playerID =>
-			this.raiseExperienceForPlayer(playerID, value)
-		);
+		if (this.day > this.START_EXP_DAY) { // To protect player who play the game for the first time
+			const contributer = bee.playerActions[0].playerIDs;
+			contributer.forEach(playerID =>
+				this.raiseExperienceForPlayer(playerID, value)
+			);
+		}
 	}
 
 	raiseExperienceForPlayer(playerID, value) {
@@ -193,9 +195,11 @@ class Game {
 		bee.playerActions.forEach(a => {
 			participatingPlayerIds = participatingPlayerIds.concat(a.playerIDs);
 		});
-		this.players.forEach(player => {
-			if (!(player.id in participatingPlayerIds)) player.raiseExpBy(-0.1);
-		});
+		if(this.day > this.START_EXP_DAY) {
+			this.players.forEach(player => {
+				if (!(player.id in participatingPlayerIds)) player.raiseExpBy(-0.2);
+			});
+		}
 	}
 
 	handleMovementRequest(playerId, moveData) {
