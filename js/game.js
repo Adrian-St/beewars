@@ -31,7 +31,7 @@ class Game {
 			'Full-Beehive',
 			'/assets/honeycombs/Full-Beehive.png',
 			448,
-			136
+			134
 		);
 		game.load.spritesheet('inside-tree', '/assets/map/inside-tree.png', 32, 32);
 		game.load.spritesheet(

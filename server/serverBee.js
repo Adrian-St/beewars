@@ -20,10 +20,12 @@ class Bee extends Insect {
 		this.nectar = 0;
 		this.capacity = 100;
 		this.playerActions = [];
+		this.oldPlayerActions = [];
 		this.idleTimer = null; // Meassures the time since the bee performed the last action
 		this.inactiveTimer = null; // Blocks the bee for a while after an action is performed
 		this.attackPower = 25;
 		this.type = BeeTypes.INSIDEBEE;
+		this.isConfused = false;
 	}
 
 	/* Schema of a playerAction
@@ -78,6 +80,8 @@ class Bee extends Insect {
 		this.health -= amount;
 		if (this.health <= 0) {
 			this.health = 0;
+			// Punish players who last sent the bee and are therfore responsible for it's death
+			this.game.changeExperienceForPlayers(this.oldPlayerActions[0].playerIDs);
 			this.die();
 		} else {
 			this.game.reduceHealth(this);
@@ -128,7 +132,15 @@ class Bee extends Insect {
 
 		if (this.playerActions.length > 1) {
 			if (this.playerActions[0].weight - this.playerActions[1].weight < 0.2) {
+				this.isConfused = true;
 				return 'stop';
+			}
+			else {
+				if (this.isConfused == true) {
+					//Experience for resolving a conflict
+					this.game.changeExperienceForPlayer(playerAction.playerID, 0.2);
+					this.isConfused = false;
+				}
 			}
 		}
 	}
@@ -241,46 +253,70 @@ class Bee extends Insect {
 		this.calculateFlownDistancePercentage();
 		if (this.destination === null)
 			console.log('[WARNING] destination is null but it shouldnt');
-
 		if (this.type === BeeTypes.OUTSIDEBEE) {
-			if (this.destinationEqualsPosition(this.game.beehive)) {
-				this.restoreHealth();
-				this.game.returnNectar(this);
-			} else if (
-				this.game.isFrogPosition(this.destination.x, this.destination.y)
-			) {
-				this.die();
-				return;
-			} else {
-				const flower = this.game.getFlowerForPosition(this.destination);
-				if (!flower) {
-					console.log(
-						'[WARNING] no flower found for this position',
-						this.destination
-					);
-					return;
-				}
-				this.game.addNectarToBee(this, flower);
-			}
-		} else if (this.destinationEqualsPosition(this.game.centerPoints[0])) {
-			console.log('Queen'); // TODO
-		} else if (this.destinationEqualsPosition(this.game.centerPoints[1])) {
-			this.game.produceGeleeRoyal(this);
-		} else if (this.destinationEqualsPosition(this.game.centerPoints[2])) {
-			this.game.handleBuilding(this);
-		} else if (this.destinationEqualsPosition(this.game.centerPoints[3])) {
-			this.game.handleCleaning(this);
+			const success = this.handleOutsideBee();
+			if(!success) return;
 		} else {
-			console.log('[WARNING] centerPos not found', this.destination);
+			this.handleInsideBee();
 		}
 
-		this.game.calculatePlayerExperienceAfterBeeArrived(this);
 		this.x = this.destination.x;
 		this.y = this.destination.y;
 		this.stopFlying();
 		if (!this.playerActions[0].defaultAreaAction) this.setInactive();
 		this.game.clearPlayerActionsForBee(this);
 		this.game.updateBee(this);
+	}
+
+	handleOutsideBee() {
+		if (this.destinationEqualsPosition(this.game.beehive)) {
+			this.restoreHealth();
+			this.game.returnNectar(this);
+		} else if (
+			this.game.isFrogPosition(this.destination.x, this.destination.y)
+		) {
+			this.changePlayerExperience(-0.5);
+			this.die();
+			return false;
+		} else {
+			const flower = this.game.getFlowerForPosition(this.destination);
+			if (!flower) {
+				console.log(
+					'[WARNING] no flower found for this position',
+					this.destination
+				);
+				return false;
+			}
+			this.game.addNectarToBee(this, flower);
+		}
+		return true;
+	}
+
+	handleInsideBee() {
+		let success;
+		if (this.destinationEqualsPosition(this.game.centerPoints[0])) {
+			console.log('Idle'); // TODO
+		} else if (this.destinationEqualsPosition(this.game.centerPoints[1])) {
+			success = this.game.produceGeleeRoyal(this);
+		} else if (this.destinationEqualsPosition(this.game.centerPoints[2])) {
+			success = this.game.handleBuilding(this);
+		} else if (this.destinationEqualsPosition(this.game.centerPoints[3])) {
+			success = this.game.handleCleaning(this);
+		} else {
+			console.log('[WARNING] centerPos not found', this.destination);
+			return;
+		}
+		if(success) {
+			this.changePlayerExperience(0.1);
+		}
+		else {
+			this.changePlayerExperience(-0.3);
+		}
+	}
+
+	changePlayerExperience(value = 0.1) {
+		const contributers = this.playerActions[0].playerIDs;
+		this.game.changeExperienceForPlayers(contributers, value);
 	}
 
 	destinationEqualsPosition(pos) {

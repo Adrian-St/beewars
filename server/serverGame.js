@@ -42,7 +42,7 @@ class Game {
 	}
 
 	start() {
-		const offset = 128; // Caused by difference in map generator, needs to be changed on client site too!
+		const offset = 160; // Caused by difference in map generator, needs to be changed on client site too!
 		const firstLayer = insideMapJson.layers[3].objects[0];
 		this.defaultAreaTopLeft = { x: firstLayer.x, y: firstLayer.y - offset };
 		this.defaultAreaBottomRight = {
@@ -141,16 +141,15 @@ class Game {
 		};
 	}
 
-	calculatePlayerExperienceAfterBeeArrived(bee, value = 0.1) {
+	changeExperienceForPlayers(playerIDs, value = 0.1) {
 		if (this.day > this.START_EXP_DAY) { // To protect player who play the game for the first time
-			const contributer = bee.playerActions[0].playerIDs;
-			contributer.forEach(playerID =>
-				this.raiseExperienceForPlayer(playerID, value)
+			playerIDs.forEach(playerID =>
+				this.changeExperienceForPlayer(playerID, value)
 			);
 		}
 	}
 
-	raiseExperienceForPlayer(playerID, value) {
+	changeExperienceForPlayer(playerID, value) {
 		const currPlayer = this.players.find(player => player.id === playerID);
 		if (currPlayer) currPlayer.raiseExpBy(value);
 	}
@@ -296,9 +295,10 @@ class Game {
 		if (bee.capacity >= bee.pollen + bee.nectar + 2 * value) {
 			bee.pollen += flower.collectPollen();
 			bee.nectar += flower.collectNectar();
+			bee.changePlayerExperience(0.1);
 		} else {
 			console.log('Bee is full');
-			this.calculatePlayerExperienceAfterBeeArrived(bee, -0.2);
+			bee.changePlayerExperience(-0.2);
 		}
 		connection.updateFlower(flower, this.roomName);
 		connection.updateBee(bee.getSendableBee(), this.roomName);
@@ -311,6 +311,15 @@ class Game {
 		bee.nectar = 0;
 		connection.updateBeehive(this.beehive, this.roomName);
 		connection.updateBee(bee.getSendableBee(), this.roomName);
+		if(this.weather.raining || bee.health < 100) {
+			bee.changePlayerExperience(0.1);
+		}
+		if(!this.weather.raining && bee.health == 100 && bee.pollen == 0 && bee.nectar == 0) {
+			bee.changePlayerExperience(-0.1);
+		}
+		else {
+			bee.changePlayerExperience(0.1);
+		}
 	}
 
 	getFlowerForPosition(position) {
@@ -321,6 +330,7 @@ class Game {
 	}
 
 	clearPlayerActionsForBee(bee) {
+		bee.oldPlayerActions = bee.playerActions.slice();
 		bee.playerActions = [];
 		connection.updateBee(bee.getSendableBee(), this.roomName);
 	}
@@ -363,45 +373,57 @@ class Game {
 	}
 
 	handleBuilding(workingBee) {
+		let success;
 		if (this.beehive.honey >= 5 && this.beehive.pollen >= 3) {
 			this.beehive.freeHoneycombs += 1;
 			this.beehive.honeycombs += 1;
 			this.beehive.honey -= 5;
 			this.beehive.pollen -= 3;
+			success = true;
 		} else {
 			this.sendMessage(
 				'Not enough ressources for building',
 				workingBee.playerActions[0].playerIDs
 			);
+			success = false;
 		}
 		connection.updateBeehive(this.beehive, this.roomName);
+		return success;
 	}
 
 	produceGeleeRoyal(workingBee) {
+		let success;
 		if (this.beehive.pollen >= 10 && this.beehive.honey >= 10) {
 			this.beehive.pollen -= 10;
 			this.beehive.honey -= 10;
 			this.beehive.geleeRoyal += 1;
+			success = true;
 		} else {
 			this.sendMessage(
 				'Not enough ressources for producing gelee-royal',
 				workingBee.playerActions[0].playerIDs
 			);
+			success = false;
 		}
 		connection.updateBeehive(this.beehive, this.roomName);
+		return success;
 	}
 
 	handleCleaning(workingBee) {
+		let success;
 		if (this.beehive.dirtyHoneycombs > 0) {
 			this.beehive.freeHoneycombs += 1;
 			this.beehive.dirtyHoneycombs -= 1;
+			success = true;
 		} else {
 			this.sendMessage(
 				'There are no honeycombs to be cleaned',
 				workingBee.playerActions[0].playerIDs
 			);
+			success = false;
 		}
 		connection.updateBeehive(this.beehive, this.roomName);
+		return success;
 	}
 
 	sendMessage(message, clients) {

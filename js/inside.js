@@ -80,7 +80,8 @@ class Inside extends State {
 		this.insideGraphics = Game.add.graphics(0, 0);
 		this.insideMap.addTilesetImage('Full-Beehive');
 		this.insideMap.objects['Inner Beehive'].forEach((object, index) => {
-			const offset = 128; // Caused by difference in map generator, needs to be changed on server site too!
+			const offset = 160; // Caused by difference in map generator, needs to be changed on server site too!
+			if(index>=2)index--;
 			this.insideWorkareas[object.name] = Game.add.sprite(
 				object.x,
 				object.y - offset,
