@@ -81,7 +81,8 @@ class Bee extends Insect {
 		if (this.health <= 0) {
 			this.health = 0;
 			// Punish players who last sent the bee and are therfore responsible for it's death
-			this.game.changeExperienceForPlayers(this.oldPlayerActions[0].playerIDs);
+			// Only punish players for bees that are not in mid-flight
+			if (this.oldPlayerActions[0]) this.game.changeExperienceForPlayers(this.oldPlayerActions[0].playerIDs, -0.2);
 			this.die();
 		} else {
 			this.game.reduceHealth(this);
@@ -135,12 +136,10 @@ class Bee extends Insect {
 				this.isConfused = true;
 				return 'stop';
 			}
-			else {
-				if (this.isConfused == true) {
-					//Experience for resolving a conflict
-					this.game.changeExperienceForPlayer(playerAction.playerID, 0.2);
-					this.isConfused = false;
-				}
+			if (this.isConfused === true) {
+				// Experience for resolving a conflict
+				this.game.changeExperienceForPlayer(playerAction.playerID, 0.2);
+				this.isConfused = false;
 			}
 		}
 	}
@@ -210,7 +209,7 @@ class Bee extends Insect {
 
 	startIdleTimer() {
 		this.resetIdleTimer();
-		this.idleTimer = setTimeout(this.onIdleForTooLong.bind(this), 10000); // 10ces
+		this.idleTimer = setTimeout(this.onIdleForTooLong.bind(this), 15000); // 15sec
 	}
 
 	resetIdleTimer() {
@@ -239,7 +238,7 @@ class Bee extends Insect {
 	}
 
 	onIdleForTooLong() {
-		this.game.handleBeeIsIdleForTooLong(this.id);
+		// this.game.handleBeeIsIdleForTooLong(this.id);
 	}
 
 	onActivateBee() {
@@ -315,6 +314,7 @@ class Bee extends Insect {
 	}
 
 	changePlayerExperience(value = 0.1) {
+		// change the player experience for each player how contributed to the last action
 		const contributers = this.playerActions[0].playerIDs;
 		this.game.changeExperienceForPlayers(contributers, value);
 	}

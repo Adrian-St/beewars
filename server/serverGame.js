@@ -305,21 +305,20 @@ class Game {
 	}
 
 	returnNectar(bee) {
+		if (this.weather.raining || bee.health < 100) {
+			bee.changePlayerExperience(0.1);
+		}
+		if (!this.weather.raining && bee.health === 100 && bee.pollen === 0 && bee.nectar === 0) {
+			bee.changePlayerExperience(-0.1);
+		} else {
+			bee.changePlayerExperience(0.1);
+		}
 		this.beehive.pollen += bee.pollen;
 		this.beehive.honey += bee.nectar;
 		bee.pollen = 0;
 		bee.nectar = 0;
 		connection.updateBeehive(this.beehive, this.roomName);
 		connection.updateBee(bee.getSendableBee(), this.roomName);
-		if(this.weather.raining || bee.health < 100) {
-			bee.changePlayerExperience(0.1);
-		}
-		if(!this.weather.raining && bee.health == 100 && bee.pollen == 0 && bee.nectar == 0) {
-			bee.changePlayerExperience(-0.1);
-		}
-		else {
-			bee.changePlayerExperience(0.1);
-		}
 	}
 
 	getFlowerForPosition(position) {
