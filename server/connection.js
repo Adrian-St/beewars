@@ -15,7 +15,7 @@ Connection.start = param => {
 			socket.join(roomName);
 
 			socket.player = gameInstances[roomName].newPlayer();
-			socket.emit('gameObjects', gameInstances[roomName].allObjects());
+			socket.emit('gameObjects', gameInstances[roomName].allObjects(), socket.player.id);
 
 			socket.on('requestMovement', moveData => {
 				const currGameInstance = gameInstances[roomName];

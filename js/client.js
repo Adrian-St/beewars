@@ -7,7 +7,8 @@ class Client {
 
 		console.log(this.room);
 
-		this.socket.on('gameObjects', data => {
+		this.socket.on('gameObjects', (data, id) => {
+			console.log('Your playerId is: ', id)
 			Game.addProperties(data);
 
 			this.socket.on('stateOfBee', bee => {
