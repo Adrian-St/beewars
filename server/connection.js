@@ -146,13 +146,13 @@ Connection.removeGameInstance = roomName => {
 };
 
 Connection.killAllGames = () => {
-	for (var key in gameInstances){
-  		console.log(`key: ${key}, value: ${gameInstances[key]}`);
-  		const game = gameInstances[key];
-  		Connection.gameOver(game.roomName, game.day, game.players);
+	for (const key in gameInstances) {
+		console.log(`key: ${key}, value: ${gameInstances[key]}`);
+		const game = gameInstances[key];
+		Connection.gameOver(game.roomName, game.day, game.players);
 	}
 	/*
-	gameInstances.forEach(game => {
+	GameInstances.forEach(game => {
 		Connection.gameOver(game.roomName, game.day, game.players);
 	});
 	*/

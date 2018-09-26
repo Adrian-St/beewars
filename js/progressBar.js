@@ -111,7 +111,17 @@ class ProgressBar {
 }
 
 class DoubleProgressbar {
-	constructor(x, y, maxWidth, height, lable1, lable2, threshold1, threshold2, offset = 120) {
+	constructor(
+		x,
+		y,
+		maxWidth,
+		height,
+		lable1,
+		lable2,
+		threshold1,
+		threshold2,
+		offset = 120
+	) {
 		const tmpX = x + offset;
 		this.backgroundGraphics = Game.add.graphics(0, 0);
 		Game.world.bringToTop(this.backgroundGraphics);

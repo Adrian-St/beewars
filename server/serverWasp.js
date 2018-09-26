@@ -77,12 +77,15 @@ class Wasp extends Insect {
 		const died = bees.some(bee => {
 			return this.takeDamage(bee);
 		});
-		if(died) this.calculatePlayerExperience(bees);
+		if (died) this.calculatePlayerExperience(bees);
 	}
 
 	calculatePlayerExperience(bees) {
-		bees.forEach( (bee) => {
-			this.game.changeExperienceForPlayers(bee.oldPlayerActions[0].playerIDs, 0.1);
+		bees.forEach(bee => {
+			this.game.changeExperienceForPlayers(
+				bee.oldPlayerActions[0].playerIDs,
+				0.1
+			);
 		});
 	}
 

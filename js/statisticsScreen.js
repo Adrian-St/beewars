@@ -21,9 +21,11 @@ class StatisticsScreen {
 		game.stage.backgroundColor = '#FFFFFF';
 
 		let lines = 'PlayerID   Experience\n';
-	
-		this.players.sort(function(p1,p2){return p2.experience - p1.experience});
-		this.players.slice(0,5).forEach(player => {
+
+		this.players.sort((p1, p2) => {
+			return p2.experience - p1.experience;
+		});
+		this.players.slice(0, 5).forEach(player => {
 			lines +=
 				'        ' + player.id + '               ' + player.experience + '\n';
 		});

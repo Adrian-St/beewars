@@ -48,7 +48,7 @@ app.get('/instructions', (req, res) => {
 
 app.get('/killallgames', (req, res) => {
 	connection.killAllGames();
-	res.render("");
+	res.render('');
 });
 
 server.listen(process.env.PORT || 8081, () => {

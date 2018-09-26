@@ -142,7 +142,8 @@ class Game {
 	}
 
 	changeExperienceForPlayers(playerIDs, value = 0.1) {
-		if (this.day > this.START_EXP_DAY) { // To protect player who play the game for the first time
+		if (this.day > this.START_EXP_DAY) {
+			// To protect player who play the game for the first time
 			playerIDs.forEach(playerID =>
 				this.changeExperienceForPlayer(playerID, value)
 			);
@@ -194,7 +195,7 @@ class Game {
 		bee.playerActions.forEach(a => {
 			participatingPlayerIds = participatingPlayerIds.concat(a.playerIDs);
 		});
-		if(this.day > this.START_EXP_DAY) {
+		if (this.day > this.START_EXP_DAY) {
 			this.players.forEach(player => {
 				if (!(player.id in participatingPlayerIds)) player.raiseExpBy(-0.2);
 			});
@@ -308,7 +309,12 @@ class Game {
 		if (this.weather.raining || bee.health < 100) {
 			bee.changePlayerExperience(0.1);
 		}
-		if (!this.weather.raining && bee.health === 100 && bee.pollen === 0 && bee.nectar === 0) {
+		if (
+			!this.weather.raining &&
+			bee.health === 100 &&
+			bee.pollen === 0 &&
+			bee.nectar === 0
+		) {
 			bee.changePlayerExperience(-0.1);
 		} else {
 			bee.changePlayerExperience(0.1);

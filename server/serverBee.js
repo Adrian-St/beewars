@@ -82,7 +82,11 @@ class Bee extends Insect {
 			this.health = 0;
 			// Punish players who last sent the bee and are therfore responsible for it's death
 			// Only punish players for bees that are not in mid-flight
-			if (this.oldPlayerActions[0]) this.game.changeExperienceForPlayers(this.oldPlayerActions[0].playerIDs, -0.2);
+			if (this.oldPlayerActions[0])
+				this.game.changeExperienceForPlayers(
+					this.oldPlayerActions[0].playerIDs,
+					-0.2
+				);
 			this.die();
 		} else {
 			this.game.reduceHealth(this);
@@ -238,7 +242,7 @@ class Bee extends Insect {
 	}
 
 	onIdleForTooLong() {
-		// this.game.handleBeeIsIdleForTooLong(this.id);
+		// This.game.handleBeeIsIdleForTooLong(this.id);
 	}
 
 	onActivateBee() {
@@ -254,7 +258,7 @@ class Bee extends Insect {
 			console.log('[WARNING] destination is null but it shouldnt');
 		if (this.type === BeeTypes.OUTSIDEBEE) {
 			const success = this.handleOutsideBee();
-			if(!success) return;
+			if (!success) return;
 		} else {
 			this.handleInsideBee();
 		}
@@ -305,16 +309,15 @@ class Bee extends Insect {
 			console.log('[WARNING] centerPos not found', this.destination);
 			return;
 		}
-		if(success) {
+		if (success) {
 			this.changePlayerExperience(0.1);
-		}
-		else {
+		} else {
 			this.changePlayerExperience(-0.3);
 		}
 	}
 
 	changePlayerExperience(value = 0.1) {
-		// change the player experience for each player how contributed to the last action
+		// Change the player experience for each player how contributed to the last action
 		const contributers = this.playerActions[0].playerIDs;
 		this.game.changeExperienceForPlayers(contributers, value);
 	}
