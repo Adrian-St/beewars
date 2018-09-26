@@ -205,7 +205,7 @@ class Game {
 	handleMovementRequest(playerId, moveData) {
 		const bee = this.beeForId(moveData.beeID);
 		if (!bee) return;
-
+		if (bee.x === moveData.target.x && bee.y === moveData.target.y) return;
 		// Remove "defaultAreaActions" of bee
 		bee.playerActions = bee.playerActions.filter(
 			action => !action.defaultAreaAction
